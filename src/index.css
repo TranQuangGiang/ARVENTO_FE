@@ -1,0 +1,9 @@
+@import "tailwindcss";
+.slick-slide:focus {
+  outline: none !important;
+}
+.font-pacifico {
+  @apply text-[30px];
+  font-family: 'Pacifico', cursive;
+}
+  
