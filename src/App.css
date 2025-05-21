@@ -1,0 +1,11 @@
+/* trong file .css hoặc file module */
+.clip-diagonal {
+  clip-path: polygon(65% 0, 100% 0, 100% 100%, 0% 100%);
+}
+.clip-do {
+  clip-path: polygon(120% 0, 100% 100%, 0 100%);
+}
+/* styles.css hoặc global.css */
+.clip-diagonal-2 {
+  clip-path: polygon(150% 0, 100% 100%, 0% 100%, 0% 70%);
+}

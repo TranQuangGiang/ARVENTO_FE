@@ -5,9 +5,9 @@ import FooterClient from './client/footer'
 
 const LayoutClient = () => {
   return (
-    <main className='w-[100%] mx-auto max-h-[3560px] bg-[#fff]'>
+    <main className='w-[100%] mx-auto bg-[#fff]'>
       <HeaderClient />
-      <div className='w-full mt-[40px]'>
+      <div className='mt-[40px]'>
         <Outlet/>
       </div>
       <FooterClient />
