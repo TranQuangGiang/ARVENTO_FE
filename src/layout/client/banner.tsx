@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const BannerClient = () => {
     return (
         <div className='banner w-full'>
-            <section className="relative w-full h-[650px] overflow-hidden">
+            <section className="relative w-full h-[600px] overflow-hidden">
                 {/* Video Background */}
                 <video
                     autoPlay
@@ -53,51 +53,51 @@ const BannerClient = () => {
                     <div className="relative mt-6 lg:mt-0">
                         <img src="/img3.png" alt="shoe" className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[580px] xl:w-[620px] z-50 relative mx-auto lg:mx-0" />
 
-                        <div className="absolute top-[0px] left-[60px] sm:left-[90px] md:left-[110px] font-sans text-sm sm:text-base bg-[#a3a1d2] text-[#dbbd4b] font-bold px-3 sm:px-4 py-2 sm:py-4">
+                        <div className="absolute top-[0px] left-[30px] sm:left-[60px] md:left-[75px] font-sans text-sm sm:text-base bg-[#a3a1d2] text-[#dbbd4b] font-bold px-3 sm:px-4 py-2 sm:py-3">
                             <FontAwesomeIcon className='rotate-270' icon={faShoePrints}/> STRONG & TRENDY
                         </div>
 
-                        <div className="absolute bottom-[70px] sm:bottom-[90px] right-[20px] sm:right-[40px] text-blue-900 font-bold font-sans px-3 sm:px-4 py-2 sm:py-3.5 shadow-md z-50 bg-gradient-to-r from-[#c9d2f1] via-[#fcefb4] to-[#f7a7a7] text-sm sm:text-base">
-                            <FontAwesomeIcon icon={faFeather}/> ZUPER LIGHTWEIGHT
+                        <div className="absolute bottom-[70px] sm:bottom-[90px] right-[10px] sm:right-[20px] text-blue-900 font-bold font-sans px-3 sm:px-4.5 py-2 sm:py-3.5 shadow-md z-50 bg-gradient-to-r from-[#c9d2f1] via-[#fcefb4] to-[#f7a7a7] text-sm sm:text-base">
+                            <FontAwesomeIcon className='mr-[5px]' icon={faFeather}/> ZUPER LIGHTWEIGHT
                         </div>
                     </div>
                 </div>
 
                 {/* Trang trí dưới */}
-                <div className="w-full md:w-[55%] h-[650px] absolute right-0 top-0 z-10 hidden sm:block clip-diagonal">
+                <div className="w-full md:w-[55%] h-[600px] absolute right-0 top-0 z-10 hidden sm:block clip-diagonal">
                     <img src="/73.jpg" alt="" className='w-full h-full' />
                 </div>
             </section>
-            <section className='w-full h-[80px] bg-[#ededed]'>
-                <div className='w-[60%] h-full mx-auto flex justify-between items-center [&_span]:flex [&_span]:items-center [&_p]:uppercase [&_p]:text-[14px] [&_p]:font-sans [&_p]:ml-[10px] [&_p]:font-semibold'>
+            <section className='w-full h-[70px] bg-[#ededed]'>
+                <div className='w-[60%] h-full mx-auto flex justify-between items-center [&_span]:flex [&_span]:items-center [&_p]:uppercase [&_p]:text-[13px] [&_p]:font-sans [&_p]:ml-[10px] [&_p]:font-semibold'>
                     <span>
-                        <FontAwesomeIcon className='text-[17px] text-[#0b1f4e]' icon={faCircleCheck}/> <p>Original Product</p>
+                        <FontAwesomeIcon className='text-[16px] text-[#0b1f4e]' icon={faCircleCheck}/> <p>Original Product</p>
                     </span>
                     <span>
-                        <FontAwesomeIcon className='text-[17px] text-[#0b1f4e]' icon={faCartShopping}/> <p>Interesting promo & Deals</p>
+                        <FontAwesomeIcon className='text-[16px] text-[#0b1f4e]' icon={faCartShopping}/> <p>Interesting promo & Deals</p>
                     </span>
                     <span>
-                        <FontAwesomeIcon className='text-[17px] text-[#0b1f4e]' icon={faHandHoldingDollar}/> <p> days MOney-back Guarantee</p>
+                        <FontAwesomeIcon className='text-[16px] text-[#0b1f4e]' icon={faHandHoldingDollar}/> <p> days MOney-back Guarantee</p>
                     </span>
                     <span>
-                        <FontAwesomeIcon className='text-[17px] text-[#0b1f4e]' icon={faAward}/> <p>expereinced Seller</p>
+                        <FontAwesomeIcon className='text-[16px] text-[#0b1f4e]' icon={faAward}/> <p>expereinced Seller</p>
                     </span>
                 </div>
             </section>
             <section className='w-[75%] mt-[80px] justify-around mx-auto flex items-center '>
-                <div className='w-[50%] h-[290px]'>
+                <div className='w-[50%] h-[270px]'>
                     <div className='img w-full h-full relative'>
-                        <img className='w-full h-full ' src="/running.jpg" alt="" />
+                        <img className='object-fill h-full w-full' src="/running.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
                             <img className='w-full h-full' src="/mo.png" alt="" />
                         </div>
                         <span className='absolute bottom-9 right-9'>
-                            <h3 className='text-white font-sans font-bold text-[29px] uppercase'>Running.</h3>
-                            <button className='border-1 w-[140px] h-[50px] border-white text-[18px] text-white font-sans uppercase mt-[10px] cursor-pointer'>See Product</button>
+                            <h3 className='text-white font-sans font-bold text-[25px] uppercase'>Running.</h3>
+                            <button className='border-1 w-[130px] h-[45px] border-white text-[13px] text-white font-medium font-sans uppercase mt-[10px] cursor-pointer'>See Product</button>
                         </span>
                     </div>
                 </div>
-                <div className='w-[22%] h-[290px]'>
+                <div className='w-[22%] h-[270px]'>
                     <div className='img w-full h-full relative'>
                         <img className=' h-full' src="/wonman.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
@@ -107,12 +107,12 @@ const BannerClient = () => {
                            <p className='w-[100%] h-[150px] bg-[#ff0000] clip-do'></p>
                         </div>
                         <span className='absolute top-7 left-8'>
-                            <h3 className='text-white font-sans font-bold text-[29px] uppercase'>Wonman.</h3>
-                            <button className='border-1 w-[140px] h-[50px] border-white text-[18px] text-white font-sans uppercase mt-[10px] cursor-pointer'>See Product</button>
+                            <h3 className='text-white font-sans font-bold text-[25px] uppercase'>Wonman.</h3>
+                            <button className='border-1 w-[130px] h-[45px] border-white text-[13px] text-white font-medium font-sans uppercase mt-[10px] cursor-pointer'>See Product</button>
                         </span>
                     </div>
                 </div>
-                <div className='w-[22%] h-[290px]'>
+                <div className='w-[22%] h-[270px]'>
                     <div className='img w-full h-full relative'>
                         <img className=' h-full' src="/man.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
@@ -122,8 +122,8 @@ const BannerClient = () => {
                             <p className='w-[100%] h-[150px] bg-[#ff0000] clip-do'></p> 
                         </div>
                         <span className='absolute top-7 left-8'>
-                            <h3 className='text-white font-sans font-bold text-[29px] uppercase'>Man.</h3>
-                            <button className='border-1 w-[140px] h-[50px] border-white text-[18px] text-white font-sans uppercase mt-[10px]  cursor-pointer'>See Product</button>
+                            <h3 className='text-white font-sans font-bold text-[25px] uppercase'>Man.</h3>
+                            <button className='border-1 w-[130px] h-[45px] border-white text-[13px] text-white font-medium font-sans uppercase mt-[10px] cursor-pointer'>See Product</button>
                         </span>
                     </div>
                 </div>

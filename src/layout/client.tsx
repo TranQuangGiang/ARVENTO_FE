@@ -7,7 +7,7 @@ const LayoutClient = () => {
   return (
     <main className='w-[100%] mx-auto bg-[#fff]'>
       <HeaderClient />
-      <div className='mt-[40px]'>
+      <div className=''>
         <Outlet/>
       </div>
       <FooterClient />

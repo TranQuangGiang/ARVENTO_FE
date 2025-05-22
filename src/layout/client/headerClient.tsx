@@ -17,7 +17,7 @@ const HeaderClient = () => {
         {/* Menu + Search */}
         <section className='header-menu flex items-center gap-5'>
           {/* Menu */}
-          <nav className='flex gap-6 transition-all duration-300 [&_a]:text-[#0b1f4e]'>
+          <nav className='flex gap-6 transition-all duration-300 [&_a]:text-[15px] [&_a]:text-[#0b1f4e]'>
             <a href="">Trang chủ</a>
             <a href="">Sản phẩm</a>
             <a href="">Tin tức</a>

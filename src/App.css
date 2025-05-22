@@ -3,7 +3,7 @@
   clip-path: polygon(65% 0, 100% 0, 100% 100%, 0% 100%);
 }
 .clip-do {
-  clip-path: polygon(120% 0, 100% 100%, 0 100%);
+  clip-path: polygon(130% 0, 100% 100%, 0 100%);
 }
 /* styles.css hoặc global.css */
 .clip-diagonal-2 {
