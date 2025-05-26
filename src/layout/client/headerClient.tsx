@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BannerClient from './banner';
+import { Link, useLocation } from 'react-router-dom';
+import Login from '../../components/client/Login';
+import Register from '../../components/client/Register';
 
 const HeaderClient = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-
+  const location = useLocation();
+  const [showModal, setShowModal] = useState<string | null>(null);
+ 
   return (
     <div>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
         {/* Logo */}
         <section className='header-logo [&_img]:w-[200px] [&_img]:cursor-pointer'>
-          <img src="logo.png" alt="logo" />
+          <Link to={'/'}>
+            <img src="logo.png" alt="logo" />
+          </Link>
         </section>
 
         {/* Menu + Search */}
@@ -47,11 +54,34 @@ const HeaderClient = () => {
 
         {/* Icons */}
         <section className='header-person flex gap-4'>
-          <FontAwesomeIcon className='text-[18px]' icon={faUser} />
-          <FontAwesomeIcon className='text-[18px] pl-[10px]' icon={faCartShopping} />
+          <div className='group relative'>
+            <FontAwesomeIcon className='text-[18px] cursor-pointer' icon={faUser} />
+            <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
+              [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
+              p-2.5 transition-all duration-300
+              ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}>
+              
+              <button
+                onClick={() => setShowModal("login")}
+                className='block px-3 py-2 border-0 hover:bg-gray-200 text-left'
+              >
+                Đăng nhập
+              </button>
+              <button 
+                onClick={() => setShowModal("register")}  
+                className='block px-3 py-2 hover:bg-gray-200 text-left'
+              >
+                Đăng ký
+              </button>
+              <button className='block px-3 py-2 hover:bg-gray-200 text-left'>Tài khoản của tôi</button>
+            </div>
+          </div>
+          <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
         </section>
+        <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
+        <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
       </div>
-      <BannerClient />
+       {location.pathname === "/" && <BannerClient />}
     </div>
   );
 };

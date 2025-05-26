@@ -87,7 +87,7 @@ const BannerClient = () => {
             <section className='w-[75%] mt-[80px] justify-around mx-auto flex items-center '>
                 <div className='w-[50%] h-[270px]'>
                     <div className='img w-full h-full relative'>
-                        <img className='object-fill h-full w-full' src="/running.jpg" alt="" />
+                        <img className='object-cover h-full w-full' src="/running.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
                             <img className='w-full h-full' src="/mo.png" alt="" />
                         </div>
@@ -99,7 +99,7 @@ const BannerClient = () => {
                 </div>
                 <div className='w-[22%] h-[270px]'>
                     <div className='img w-full h-full relative'>
-                        <img className=' h-full' src="/wonman.jpg" alt="" />
+                        <img className='object-cover h-full' src="/wonman.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
                             <img className='w-full h-full' src="/mo.png" alt="" />
                         </div>
@@ -114,7 +114,7 @@ const BannerClient = () => {
                 </div>
                 <div className='w-[22%] h-[270px]'>
                     <div className='img w-full h-full relative'>
-                        <img className=' h-full' src="/man.jpg" alt="" />
+                        <img className='object-cover h-full' src="/man.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>
                             <img className='w-full h-full' src="/mo.png" alt="" />
                         </div>
