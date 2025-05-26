@@ -79,10 +79,10 @@ const ListProductClient = () => {
                 </li>
             </ul>
         </div>
-        <div className='banner w-full h-[400px] mt-[10px] mb-[60px]'>
-            <div className='w-full h-full relative overflow-hidden'>
-                <img className='w-full h-full' src="/den.jpg" alt="" />
-                <div className='content w-[30%]  absolute top-[75px] left-[290px]'>
+        <div className='banner w-full h-[350px] mt-[10px] mb-[60px] overflow-hidden'>
+            <div className='w-[1800px] h-full relative overflow-hidden'>
+                <img className='absolute object-cover w-[1800px] -top-[250px] ' src="/healthy.jpg" alt="" />
+                <div className='content w-[30%]  absolute top-[55px] left-[290px]'>
                     <h3 className='text-white font-sans font-bold text-[36px] leading-11 uppercase'>Makes Yourself Keep SPorty & Stylish</h3>
                     <p className='text-white text-[14px] font-medium mt-[20px] font-sans'>
                         Lorem ipsum dolor sit amet, consectetuer adipiscing elit. 
@@ -91,9 +91,6 @@ const ListProductClient = () => {
                         parturient montes, nascetur ridiculus mus.
                     </p>
                     <button className='text-white mt-[20px] w-[140px] uppercase font-sans text-[14px] h-[50px] border border-[#fff] hover:bg-white hover:text-black transition-all duration-300 cursor-pointer'>Show now</button>
-                </div>
-                <div className='img w-[1000px] h-full absolute -top-[240px] -right-[650px] rotate-60'>
-                    <img className='w-full' src="/giay.png" alt="" />
                 </div>
             </div>
         </div>
@@ -248,9 +245,9 @@ const ListProductClient = () => {
             </div>
         </div>
         <div className='list-page w-[74%] mx-auto flex gap-[25px] mb-[120px]'>
-            <div className='list-page-1 w-[50%] h-[300px] overflow-hidden relative group'>
-                <img className='w-full h-full transition-all duration-300 group-hover:scale-[1.1]' src="/mani.webp" alt="" />
-                <div className="className='w-full h-full absolute inset-0 bg-black/50"></div>
+            <div className='list-page-1 w-[50%] h-[320px] overflow-hidden relative group'>
+                <img className='w-full absolute -top-[280px] transition-all duration-300 group-hover:scale-[1.1]' src="/nu.jpg" alt="" />
+                <div className="className='w-full h-full absolute inset-0 bg-black/40"></div>
                 <div className='content w-full h-full absolute flex flex-col justify-center items-end text-right top-[30px] right-7'>
                     <h3 className='text-white font-sans uppercase text-[24px] font-bold mb-4'>WOman SNEAKER sale.</h3>
                     <p className="text-white font-sans font-medium text-[14px] mb-5 max-w-[450px]">
@@ -262,9 +259,9 @@ const ListProductClient = () => {
                     </button>
                 </div>
             </div>
-            <div className='list-page-1 w-[50%] h-[300px] overflow-hidden relative group'>
-                <img className='w-full h-full transition-all duration-300 group-hover:scale-[1.1]' src="/nm.jpg" alt="" />
-                <div className="className='w-full h-full absolute inset-0 bg-black/50"></div>
+            <div className='list-page-1 w-[50%] h-[320px] overflow-hidden relative group'>
+                <img className='w-full transition-all duration-300 group-hover:scale-[1.1]' src="/nam.jpg" alt="" />
+                <div className="className='w-full h-full absolute inset-0 bg-black/40"></div>
                 <div className='content w-full h-full absolute flex flex-col text-left top-[30px] left-7'>
                     <h3 className='text-white font-sans uppercase text-[26px] font-bold mb-4'>15% Off SPORT SNEAKER.</h3>
                     <p className="text-white font-sans font-medium text-[15px] mb-5 max-w-[450px]">

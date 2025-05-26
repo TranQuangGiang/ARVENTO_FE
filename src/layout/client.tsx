@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 import FooterClient from './client/footer'
 
 const LayoutClient = () => {
+  
   return (
     <main className='w-[100%] mx-auto bg-[#fff]'>
       <HeaderClient />
