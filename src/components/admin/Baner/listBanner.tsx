@@ -48,7 +48,7 @@ const slides = [
   },
 ];
 
-const SlideAdmin = () => {
+const ListBanner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,4 +208,4 @@ const SlideAdmin = () => {
   );
 };
 
-export default SlideAdmin;
+export default ListBanner;
