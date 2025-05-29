@@ -10,9 +10,9 @@ import ListProductClient from './components/client/listProductClient'
 import LayoutAdmin from './layout/admin'
 import Dashboad from './components/admin/dashboad'
 import './index.css';
-import ListBanner from './components/admin/Baner/listBanner'
-import AddBanner from './components/admin/Baner/addBanner'
-import EditBanner from './components/admin/Baner/editBanner'
+import ListBanner from './components/admin/banner/listBanner'
+import AddBanner from './components/admin/banner/addBanner'
+import EditBanner from './components/admin/banner/editBanner'
 import ListCategory from './components/admin/category/listCategory'
 import AddCategory from './components/admin/category/addCategory'
 import EditCategory from './components/admin/category/editCategory'
@@ -28,7 +28,7 @@ function App() {
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
-        {path: 'dashboads', element: <Dashboad />},
+        {path: '', element: <Dashboad />},
         {path: 'listbanner', element: <ListBanner />},
         {path: 'addbanner', element: <AddBanner />},
         {path: 'editbanner', element: <EditBanner />},

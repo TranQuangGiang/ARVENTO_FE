@@ -1,13 +1,26 @@
 import { LayoutDashboard, Users, Package, Heart, ShoppingBag, FileText, Clock, Settings, MessageCircle, File, ChevronUp, ChevronDown, ChartBarStacked, MessageCircleHeart, Images, ChartNoAxesCombined } from 'lucide-react';
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useState } from "react";
 import { Link } from 'react-router-dom';
+import autoAnimate from '@formkit/auto-animate'
 
 const AdminSidebar = () => {
+    const categoryRef = useRef(null);
+    const productRef = useRef(null);
+    const cartRef = useRef(null);
+    const commentRef = useRef(null);
+
     const [openCategory, setOpenCategory] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
     const [openCart, setOpenCart] = useState(false);
     const [openComment, setOpenComment] = useState(false);
+
+    useEffect(() => {
+        categoryRef.current && autoAnimate(categoryRef.current);
+        productRef.current && autoAnimate(productRef.current);
+        cartRef.current && autoAnimate(cartRef.current);
+        commentRef.current && autoAnimate(commentRef.current);
+    })
      return (
         <div className='w-full bg-white h-screen border-r-[#E0E4ED] border-r overflow-y-auto 
             [scrollbar-width:none]'
@@ -39,7 +52,7 @@ const AdminSidebar = () => {
                         </a>
                         </Link>
                     </li>
-                    <li>
+                    <li ref={categoryRef}>
                         <button
                             onClick={() => setOpenCategory(!openCategory)}
                             className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] rounded-tr-none rounded-br-none transition-all duration-300 font-sans text-[17px] leading-[1.6]"
@@ -72,7 +85,7 @@ const AdminSidebar = () => {
                             </ul>
                         )}
                     </li>
-                    <li>
+                    <li ref={productRef}>
                         <button
                             onClick={() => setOpenProducts(!openProducts)}
                             className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] rounded-tr-none rounded-br-none transition-all duration-300 font-sans text-[17px] leading-[1.6]"
@@ -115,7 +128,7 @@ const AdminSidebar = () => {
                         </a>
                         </Link>
                     </li>                 
-                    <li>
+                    <li ref={cartRef}>
                         <button
                             onClick={() => setOpenCart(!openCart)}
                             className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] rounded-tr-none rounded-br-none transition-all duration-300 font-sans text-[17px] leading-[1.6]"
@@ -138,7 +151,7 @@ const AdminSidebar = () => {
                             </ul>
                         )}
                     </li>
-                    <li>
+                    <li ref={commentRef}>
                         <button
                             onClick={() => setOpenComment(!openComment)}
                             className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] rounded-tr-none rounded-br-none transition-all duration-300 font-sans text-[17px] leading-[1.6]"
