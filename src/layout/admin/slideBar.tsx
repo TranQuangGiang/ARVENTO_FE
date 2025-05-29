@@ -162,7 +162,7 @@ const AdminSidebar = () => {
                         )}
                     </li> 
                     <li>
-                        <Link to={`/dashboard`}>
+                        <Link to={`/z`}>
                         <a
                             className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] rounded-tr-none rounded-br-none transition-all font-sans text-[17px] leading-[1.6]"
                             href="#"
