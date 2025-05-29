@@ -21,7 +21,7 @@ function App() {
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
-        {path: 'dashboads', element: <Dashboad />}
+        {path: '', element: <Dashboad />}
       ]
     }
   ])
