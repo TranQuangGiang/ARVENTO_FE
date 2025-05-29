@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AddSlide = () => {
+const EditBanner = () => {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -36,8 +36,9 @@ const AddSlide = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-30 bg-white shadow-xl border border-gray-200 rounded-xl p-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">Thêm Slide Mới</h2>
+  <div className="w-full px-6 py-10 bg-gray-50 min-h-screen ">
+    <div className="max-w-3xl mx-auto mt-30 bg-white shadow-xl border border-gray-200 rounded-l p-8">
+      <h2 className="text-3xl font-bold text-gray-800 mb-8">Update Banner</h2>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <div>
@@ -47,7 +48,7 @@ const AddSlide = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Nhập tiêu đề slide"
+            placeholder="Nhập tiêu đề Banner"
           />
         </div>
 
@@ -99,13 +100,14 @@ const AddSlide = () => {
             type="submit"
             className="inline-flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
           >
-            Thêm Slide
+            Update Banner
           </button>
         </div>
 
       </form>
     </div>
+  </div>
   );
 };
 
-export default AddSlide;
+export default EditBanner;
