@@ -9,6 +9,10 @@ import Cart from './components/client/Cart'
 import ListProductClient from './components/client/listProductClient'
 import LayoutAdmin from './layout/admin'
 import Dashboad from './components/admin/dashboad'
+import SlideAdmin from './components/admin/slide'
+import './index.css';
+import AddSlide from './components/admin/addSlide'
+import EditSlide from './components/admin/editSlide'
 
 function App() {
   const routes = useRoutes([
@@ -21,7 +25,10 @@ function App() {
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
-        {path: 'dashboads', element: <Dashboad />}
+        {path: 'dashboads', element: <Dashboad />},
+        {path: 'slide', element: <SlideAdmin />},
+        {path: 'addslide', element: <AddSlide />},
+        {path: 'editslide', element: <EditSlide />}
       ]
     }
   ])
