@@ -6,4 +6,12 @@
   @apply text-[30px];
   font-family: 'Pacifico', cursive;
 }
-  
+
+
+
+body {
+  @apply bg-white text-black;
+}
+.dark body {
+  @apply bg-red-900 text-red-500;
+}

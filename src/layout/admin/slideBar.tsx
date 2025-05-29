@@ -193,8 +193,7 @@ const AdminSidebar = () => {
                     <li>
                         <Link
                             to="/dashboard/banner"
-                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]"
-                        >
+                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]">
                             <Images className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
                             Banner
                         </Link>
