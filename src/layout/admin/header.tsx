@@ -1,5 +1,8 @@
 import React from 'react';
-import { Moon, ChevronDown,Search  , Bell, Mail, Power, MessagesSquare, UserRound } from 'lucide-react';
+
+import { Moon, ChevronDown,Search,Bell,Mail, UserRound, MessagesSquare, Power } from 'lucide-react';
+
+
 
 const HeaderAdmin = () => {
   return (
@@ -9,7 +12,7 @@ const HeaderAdmin = () => {
         <input
           type="text"
           placeholder="Search"
-          className="w-full h-[45px] pl-4 pr-10 rounded-md border border-blue-200 bg-[#f3f4f7] text-gray-900 text-sm placeholder:text-gray-500 outline-0"
+          className="w-full h-[45px] pl-4 pr-10 rounded-md border border-[#E0E4ED] bg-[#f3f4f7] text-gray-900 text-sm placeholder:text-gray-500 outline-0"
         />
         <Search
           className="absolute top-1/2 right-3 transform -translate-y-1/2 text-[#01225a] text-[16px]"
@@ -38,46 +41,46 @@ const HeaderAdmin = () => {
         />
         {/* Profile */}
         <div className="relative group">
-          <div className='flex items-center gap-3 cursor-pointer px-3 py-2 rounded-md hover:bg-gray-100 transition'>
+          <div className='flex items-center gap-3 cursor-pointer  px-3 py-2 rounded-md hover:bg-gray-100 transition'>
             <img
               src="/pic.png"
               alt="User Avatar"
-              className="w-[40px] h-[40px] rounded-full object-cover border border-gray-300"
+              className="w-[40px] h-[40x] rounded-full object-cover border border-gray-300"
             />
             <span className="text-black font-medium text-[16px] flex items-center gap-2">
               Quang Giang
               <ChevronDown className="text-gray-400 text-sm" />
             </span>
           </div>
-          <div className='w-[100%] z-50 absolute transition-all duration-300 opacity-0 invisible -left-32 top-[75px] bg-[#fff] shadow-lg group-hover:opacity-100 group-hover:visible group-hover:-translate-y-2.5 rounded-md'>
-            <div className="absolute -top-2.5 right-[22px] w-[40px] h-[40px] bg-white rotate-45 border border-[#E0E4ED] z-0"></div>
-            <ul className='relative z-10 flex flex-col border border-[#E0E4ED] rounded-md bg-white'>
+          <div className='w-[220px] z-50 absolute transition-all duration-300 -left-[135px] opacity-0 invisible top-[75px] shadow-lg group-hover:opacity-100 group-hover:visible group-hover:-translate-y-2.5 '>
+            <div className="absolute top-[12px] right-6 -translate-x-1/2 z-0 -translate-y-full w-[26px] h-[26px] bg-white rotate-45 border border-gray-200"></div>
+            <ul className='relative flex z-20 flex-col border bg-white border-[#E0E4ED] rounded-[6px] [&_a]:text-[17px] [&_a]:font-sans [&_a]:text-[#01225a] [&_a]:cursor-pointer [&_a]:pl-[10px]'>
               <li className='px-2 py-4 pl-[30px] border-b border-b-[#E0E4ED] font-semibold text-[20px] font-sans'>
                 My Profile
               </li>
               <li>
-                <span className='flex items-center pl-[25px] px-2 py-4 text-left cursor-pointer'>
-                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-full'>
+                <span className='flex items-center pl-[25px] px-2 py-4 text-left '>
+                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-[50%]'>
                     <UserRound className='w-[20px] text-red-600' />
                   </span>
-                  <a className='ml-3 transition-all duration-300 hover:text-red-600'>My Profile</a>
-                </span>
+                  <a className='transition-all duration-300 hover:text-red-600'>My Profile</a>
+                </span> 
               </li>
               <li>
-                <span className='flex items-center pl-[25px] px-2 py-4 text-left cursor-pointer'>
-                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-full'>
-                    <MessagesSquare className='w-[20px] text-red-600' />
+                <span className='flex items-center pl-[25px] px-2 py-4 text-left'>
+                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-[50%]'>
+                    <MessagesSquare  className='w-[20px] text-red-600' />
                   </span>
-                  <a className='ml-3 transition-all duration-300 hover:text-red-600'>Message</a>
-                </span>
+                  <a className='transition-all duration-300 hover:text-red-600'>Message</a>
+                </span> 
               </li>
               <li>
-                <span className='flex items-center pl-[25px] px-2 py-4 text-left cursor-pointer'>
-                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-full'>
+                <span className='flex items-center pl-[25px] px-2 py-4 text-left'>
+                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-[50%]'>
                     <Power className='w-[20px] text-red-600' />
                   </span>
-                  <a className='ml-3 transition-all duration-300 hover:text-red-600'>Log Out</a>
-                </span>
+                  <a className='transition-all duration-300 hover:text-red-600'>Log Out</a>
+                </span> 
               </li>
             </ul>
           </div>

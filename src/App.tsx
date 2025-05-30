@@ -32,7 +32,7 @@ function App() {
         {path: 'listbanner', element: <ListBanner />},
         {path: 'addbanner', element: <AddBanner />},
         {path: 'editbanner', element: <EditBanner />},
-         {path: 'listcategory', element: <ListCategory />},
+        {path: 'listcategory', element: <ListCategory />},
         {path: 'addcategory', element: <AddCategory />},
         {path: 'editcategory', element: <EditCategory />}
       ]
