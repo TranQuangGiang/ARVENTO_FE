@@ -1,49 +1,61 @@
 import React, { useState } from "react";
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Popconfirm } from "antd";
+import './custom-switch.css';
+
 const slides = [
   {
     id: 1,
     title: "Giày thể thao mùa hè",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 2,
     title: "Giày đi bộ",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 3,
     title: "Giày công sở nam",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 4,
     title: "Giày thể thao mùa hè",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 5,
     title: "Giày đi bộ",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 6,
     title: "Giày công sở nam",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
-  }, {
+  },
+  {
     id: 7,
     title: "Giày thể thao mùa hè",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 8,
     title: "Giày đi bộ",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 9,
     title: "Giày công sở nam",
+    link: "https://example.com/summer-shoes",
     imageUrl: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80",
   },
 ];
@@ -52,6 +64,7 @@ const ListBanner = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
+  const [slideStatuses, setSlideStatuses] = useState<{ [id: number]: boolean }>({});
 
   const filteredSlides = slides.filter((slide) =>
     slide.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,16 +74,13 @@ const ListBanner = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentSlides = filteredSlides.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleChangePage = (page) => {
+  const handleChangePage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
-  };
-
-  return (
-    <div className="w-full px-6 py-10 bg-gray-50 min-h-screen ">
-      <div className="w-full h-auto px-6 py-5 bg-white  mt-20 rounded-lg border-2 border-gray-100">
-
+  }; return (
+    <div className="w-full px-6 py-10 bg-gray-50 min-h-screen">
+      <div className="w-full h-auto px-6 py-5 bg-white mt-20 rounded-lg border-2 border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2 pl-2">
             <span className="text-gray-500">Showing</span>
@@ -101,19 +111,19 @@ const ListBanner = () => {
             >
               Search
             </button>
-
           </div>
         </div>
 
-        <div className="overflow-x-auto ">
+        <div className="overflow-x-auto">
           <table className="min-w-full text-base text-left">
-            <thead className="bg-gray-200 text-gray-800 font-bold">
+            <thead className="bg-gray-200 text-gray-800 ">
               <tr className="text-lg">
-                <th className="px-5 py-4 text-center"><input type="checkbox" /></th>
-                <th className="px-5 py-4">Image</th>
-                <th className="px-5 py-4">Title</th>
-                <th className="px-5 py-4">ID</th>
-                <th className="px-10 py-4 text-right">Action</th>
+                <th className="px-5 py-4 text-center font-semibold">Status</th>
+                <th className="px-5 py-4 font-semibold">ID</th>
+                <th className="px-5 py-4 font-semibold">Title</th>
+                <th className="px-5 py-4 font-semibold">Link</th>
+                <th className="px-5 py-4 font-semibold">Image</th>
+                <th className="px-25 py-4 text-right font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -122,47 +132,89 @@ const ListBanner = () => {
                   key={slide.id}
                   className={`text-lg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
                 >
-                  <td className="px-5 py-4 text-center"><input type="checkbox" /></td>
+                  <td className="px-5 py-4 text-center">
+                    <button
+                      onClick={() =>
+                        setSlideStatuses((prev) => ({
+                          ...prev,
+                          [slide.id]: !prev[slide.id],
+                        }))
+                      }
+                      className={`relative w-12 h-12 rounded-full font-bold text-white text-sm transition duration-300
+                          shadow-[0_4px_10px_rgba(0,0,0,0.4),inset_0_-4px_8px_rgba(0,0,0,0.6),inset_0_4px_8px_rgba(255,255,255,0.3)]
+                             border-[6px] ${slideStatuses[slide.id]
+                          ? "bg-green-500 border-gray-300"
+                          : "bg-gray-400 border-gray-300"
+                          }
+                          hover:scale-105 active:scale-95`}
+                    >
+                      <div className="absolute top-0 left-0 w-full h-full rounded-full overflow-hidden pointer-events-none">
+                        <div className="absolute top-0 left-0 w-full h-1/2 bg-white opacity-20 blur-sm" />
+                      </div>
+                      {slideStatuses[slide.id] ? "ON" : "OFF"}
+                    </button>
+
+                  </td>
+                  <td className="px-5 py-4 text-gray-700">{slide.id}</td>
+                  <td className="px-5 py-4 font-light text-gray-900">{slide.title}</td>
+                  <td className="px-5 py-4 font-light text-gray-900">{slide.link}</td>
                   <td className="px-5 py-4">
                     <img
                       src={slide.imageUrl}
                       alt={slide.title}
                       className="w-14 h-14 rounded-full object-cover border-2 border-blue-300"
                     />
-                  </td>
-                  <td className="px-5 py-4 font-medium text-gray-900">{slide.title}</td>
-                  <td className="px-5 py-4 text-gray-700">{slide.id}</td>
-                  <td className="px-7 py-4 text-right space-x-2">
+                  </td><td className="px-7 py-4 text-right space-x-2">
                     <Button
-                      type="text"
-                      icon={<EditOutlined style={{ fontSize: 20, color: '#1890ff' }} />}
-                    />
+                      type="default"
+                      className="flex items-center px-3 py-1.5 rounded transition-colors duration-200"
+                      style={{ color: undefined }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.color = '#3b82f6';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.color = '';
+                      }}
+                      icon={<EditOutlined style={{ fontSize: 20, color: 'inherit' }} />}
+                    >
+                      Edit
+                    </Button>
+
                     <Popconfirm
                       title="Bạn có chắc muốn xoá không?"
                       okText="Xoá"
                       cancelText="Hủy"
                     >
                       <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined style={{ fontSize: 20 }} />}
-                      />
+                        type="default"
+                        className="flex items-center px-3 py-1.5 rounded transition-colors duration-200"
+                        onMouseEnter={e => {
+                          e.currentTarget.style.color = '#ef4444';
+                          e.currentTarget.style.borderColor = '#ef4444';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.borderColor = '';
+                        }}
+                        icon={<DeleteOutlined style={{ fontSize: 20, color: 'inherit' }} />}
+                      >
+                        Delete
+                      </Button>
                     </Popconfirm>
+
+
                   </td>
                 </tr>
               ))}
               {filteredSlides.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-5 py-6 text-center text-gray-500">
+                  <td colSpan={5} className="px-5 py-6 text-center text-gray-500">
                     No slides found.
                   </td>
                 </tr>
               )}
             </tbody>
-          </table>
-
-
-          {totalPages > 1 && (
+          </table>{totalPages > 1 && (
             <div className="mt-6 flex float-right items-center space-x-2">
               <button
                 onClick={() => handleChangePage(currentPage - 1)}
@@ -180,7 +232,7 @@ const ListBanner = () => {
                     key={page}
                     onClick={() => handleChangePage(page)}
                     className={`w-10 h-10 flex items-center justify-center rounded border transition 
-            ${isActive
+                      ${isActive
                         ? 'bg-blue-600 text-white'
                         : 'border-gray-300 text-gray-700 hover:bg-gray-100'
                       }`}
@@ -199,12 +251,9 @@ const ListBanner = () => {
               </button>
             </div>
           )}
-
         </div>
       </div>
     </div>
-
-
   );
 };
 
