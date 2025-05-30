@@ -92,19 +92,21 @@ const AddBanner = () => {
           />
         )}
 
-        <Form.Item className="flex justify-end gap-2">
-          <Button type="primary" htmlType="submit">
-            Add Banner
-          </Button>
-          <Button
-            onClick={() => {
-              form.resetFields();
-              setPreviewUrl(null);
-            }}
-          >
-            Cancel
-          </Button>
-        </Form.Item>
+          <Form.Item>
+           <div className="flex justify-end space-x-3">
+             <Button type="primary" htmlType="submit">
+               Add Banner
+             </Button>
+             <Button
+               onClick={() => {
+                 form.resetFields();
+                 setPreviewUrl(null);
+               }}
+             >
+               Cancel
+             </Button>
+           </div>
+         </Form.Item>
       </Form>
     </div>
   );
