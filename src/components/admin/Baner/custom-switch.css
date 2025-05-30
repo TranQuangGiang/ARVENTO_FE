@@ -1,0 +1,29 @@
+.custom-switch.ant-switch {
+  width: 50px !important;
+  height: 28px !important;
+  border-radius: 14px !important;
+  background-color: #d1d5db !important; /* màu nền tắt */
+  border: none !important;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
+}
+
+.custom-switch.ant-switch-checked {
+  background-color: #3b82f6 !important; /* màu nền bật */
+  box-shadow: 0 0 8px #3b82f6;
+}
+
+.custom-switch .ant-switch-handle {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  top: 2px !important;
+  left: 2px !important;
+  background-color: #fff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-switch.ant-switch-checked .ant-switch-handle {
+  left: 24px !important;
+}
