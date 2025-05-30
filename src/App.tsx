@@ -8,7 +8,7 @@ import Login from './components/client/Login'
 import Cart from './components/client/Cart'
 import ListProductClient from './components/client/listProductClient'
 import LayoutAdmin from './layout/admin'
-import Dashboad from './components/admin/dashboad'
+import Dashboad from './components/admin/dashboard/dashboad'
 import './index.css';
 import ListBanner from './components/admin/banner/listBanner'
 import AddBanner from './components/admin/banner/addBanner'

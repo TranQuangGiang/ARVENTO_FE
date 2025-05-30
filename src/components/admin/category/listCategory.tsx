@@ -28,7 +28,7 @@ const ListCategory = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentSlides = filteredSlides.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleChangePage = (page) => {
+  const handleChangePage = (page:any) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
@@ -113,7 +113,7 @@ const ListCategory = () => {
               ))}
               {filteredSlides.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="px-5 py-6 text-center text-gray-500">
+                  <td colSpan={5} className="px-5 py-6 text-center text-gray-500">
                     No slides found.
                   </td>
                 </tr>
