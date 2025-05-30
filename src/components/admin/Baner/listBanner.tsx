@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Popconfirm } from "antd";
-import './custom-switch.css';
+import { Button, Popconfirm, Switch } from "antd";
 
 const slides = [
   {
@@ -133,27 +132,7 @@ const ListBanner = () => {
                   className={`text-lg ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}
                 >
                   <td className="px-5 py-4 text-center">
-                    <button
-                      onClick={() =>
-                        setSlideStatuses((prev) => ({
-                          ...prev,
-                          [slide.id]: !prev[slide.id],
-                        }))
-                      }
-                      className={`relative w-12 h-12 rounded-full font-bold text-white text-sm transition duration-300
-                          shadow-[0_4px_10px_rgba(0,0,0,0.4),inset_0_-4px_8px_rgba(0,0,0,0.6),inset_0_4px_8px_rgba(255,255,255,0.3)]
-                             border-[6px] ${slideStatuses[slide.id]
-                          ? "bg-green-500 border-gray-300"
-                          : "bg-gray-400 border-gray-300"
-                          }
-                          hover:scale-105 active:scale-95`}
-                    >
-                      <div className="absolute top-0 left-0 w-full h-full rounded-full overflow-hidden pointer-events-none">
-                        <div className="absolute top-0 left-0 w-full h-1/2 bg-white opacity-20 blur-sm" />
-                      </div>
-                      {slideStatuses[slide.id] ? "ON" : "OFF"}
-                    </button>
-
+                    <Switch defaultChecked/>
                   </td>
                   <td className="px-5 py-4 text-gray-700">{slide.id}</td>
                   <td className="px-5 py-4 font-light text-gray-900">{slide.title}</td>
