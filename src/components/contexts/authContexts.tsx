@@ -18,19 +18,34 @@ export const AuthProvider = ({ children }:any ) => {
     const [ user, setUser ] = useState<any>(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
-        // đồng bộ lại 
-        const cookieToken = Cookies.get("token");
-        const cookieUser = Cookies.get("user");
-        if (!storedUser && cookieUser && cookieToken) {
-            localStorage.setItem("user", JSON.parse(cookieUser));
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    const cookieToken = Cookies.get("token");
+    const cookieUser = Cookies.get("user");
+
+    if (!storedUser && cookieUser && cookieToken) {
+        try {
+            const parsedUser = JSON.parse(cookieUser);
+            localStorage.setItem("user", cookieUser);
             localStorage.setItem("token", cookieToken);
-            setUser(JSON.parse(cookieUser)); 
-        } else if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
+            setUser(parsedUser);
+        } catch (error) {
+            console.error("❌ Lỗi parse cookieUser:", error);
+            Cookies.remove("user");
+            Cookies.remove("token");
         }
-    }, []);
+    } else if (storedUser && storedToken) {
+        try {
+            setUser(JSON.parse(storedUser));
+        } catch (error) {
+            console.error("❌ Lỗi parse storedUser:", error);
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+        }
+    }
+}, []);
+
 
     const login = (userInfo:any) => {
         setUser(userInfo);

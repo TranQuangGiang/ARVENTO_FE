@@ -18,7 +18,7 @@ const ListProductClient = () => {
                 </div>
             </div>
             <div className='list-product-one w-[220px] h-[300px] bg-[#ededed] flex flex-col items-center justify-center cursor-pointer group'>
-                <img  className='w-[120px] transition-all duration-300 group-hover:scale-[1.1]' src="/img1.png" alt="" />
+                <img  className='w-[120px] transition-all duration-300 group-hover:scale-[1.1]' src="http://localhost:3000/uploads/banners/banner-1748707980630-312531873.jpg" alt="" />
                 <div className='content w-[75%] mt-[20px]'>
                     <h4 className='w-full text-[16px] font-semibold text-black'>Fillo – Xtrema 3 Retro</h4>
                     <p className='pt-[4px] font-sans font-semibold text-[#0b1f4e] text-[15px]'>20.00 $</p>

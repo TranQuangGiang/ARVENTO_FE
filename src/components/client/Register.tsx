@@ -63,7 +63,7 @@ const Register = ({  isOpen, onClose, switchToLogin }: any ) => {
               </Form.Item>
               <Form.Item 
                 label="Email"
-                name="enail"
+                name="email"
                 rules={[{required: true, type: "email"}]}
                 className="block text-gray-700 font-medium mb-1">
                   <Input

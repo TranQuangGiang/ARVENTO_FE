@@ -31,7 +31,7 @@ function App() {
         {path: '', element: <Dashboad />},
         {path: 'listbanner', element: <ListBanner />},
         {path: 'addbanner', element: <AddBanner />},
-        {path: 'editbanner', element: <EditBanner />},
+        {path: 'editbanner/:id', element: <EditBanner />},
         {path: 'listcategory', element: <ListCategory />},
         {path: 'addcategory', element: <AddCategory />},
         {path: 'editcategory', element: <EditCategory />}
