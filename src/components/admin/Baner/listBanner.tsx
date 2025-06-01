@@ -4,6 +4,7 @@ import { Button, Popconfirm, Switch, message } from "antd";
 import { useDeleteBanner, useBannersAdmin, useUpdateBannerStatus } from "../../../hooks/listbanner";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { FiPlus } from "react-icons/fi"; 
 
 const ListBanner = () => {
   const location = useLocation();
@@ -102,12 +103,13 @@ useEffect(() => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button
-              className="px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-md shadow hover:opacity-90 transition"
-              onClick={() => setCurrentPage(1)}
-            >
-              Search
-            </button>
+           <button
+      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-md shadow hover:opacity-90 transition"
+      onClick={() => navigate("/admin/addbanner")}
+    >
+      <FiPlus className="text-lg" />
+      ADD NEW
+    </button>
           </div>
         </div>
 

@@ -102,8 +102,7 @@ const AddBanner = () => {
                     </Button>
                     <Button
                       onClick={() => {
-                        form.resetFields();
-                        setPreviewUrl(null);
+                        navigate("/admin/listbanner")
                       }}
                     >
                       Cancel
