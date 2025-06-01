@@ -4,8 +4,7 @@ import { Button, Popconfirm, Switch, message } from "antd";
 import { useDeleteBanner, useBannersAdmin, useUpdateBannerStatus } from "../../../hooks/listbanner";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { FiPlus } from "react-icons/fi"; // Icon cộng
-
+import { FiPlus } from "react-icons/fi"; 
 
 const ListBanner = () => {
   const location = useLocation();
