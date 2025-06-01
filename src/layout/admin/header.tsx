@@ -1,5 +1,6 @@
 import React from 'react';
-import { Moon, ChevronDown,Search,Bell,Mail, CircleUserRound, UserRound, MessagesSquare, Power } from 'lucide-react';
+
+import { Moon, ChevronDown,Search,Bell,Mail, UserRound, MessagesSquare, Power } from 'lucide-react';
 
 
 

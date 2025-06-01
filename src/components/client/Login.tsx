@@ -24,7 +24,7 @@ const Login = ({ isOpen, onClose, switchToRegister }: any) => {
     mutate(values, {
       onSuccess: (data:any) => {
         message.success("Đăng nhập thành công");
-        login(data)
+        login(data);
         onClose();
         nav('/');
       },

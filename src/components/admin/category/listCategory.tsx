@@ -28,6 +28,7 @@ const ListCategory = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentSlides = filteredSlides.slice(startIndex, startIndex + itemsPerPage);
 
+
   const handleChangePage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);

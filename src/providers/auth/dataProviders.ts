@@ -1,5 +1,7 @@
 import axios from 'axios';
+
 import apiClient from '../../hooks/refreshToken';
+
 
 {/* Đăng ký */}
 export type registerForm = {
@@ -24,6 +26,7 @@ type loginParams = {
 type refreshParams = {
     resource: string,
 }
+
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 const dataProvider = {
@@ -40,5 +43,5 @@ const dataProvider = {
         return data;
     }
 }
-
 export const { register, login, refreshToken } = dataProvider;
+

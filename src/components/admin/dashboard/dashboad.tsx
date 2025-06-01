@@ -3,7 +3,7 @@ import React from 'react'
 
 const Dashboad = () => {
   return (
-    <div className='w-[94%] pt-[100px] min-h-screen ml-[40px]'>
+    <div className='w-[94%] pt-[100px] min-h-screen ml-[40px] transition-all duration-500 -translate-2.5'>
       <div className='w-[full] mx-auto flex mt-[40px] gap-[20px]'>
         <div className='relative w-[30%] h-[150px] bg-[#fff] border border-[#E0E4ED] rounded-[2px]'>
           <div className='w-[60px] absolute -top-[30px] right-[40px] h-[60px] bg-white border border-[#E0E4ED] rounded-[50%] flex items-center justify-center'>

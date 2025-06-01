@@ -25,13 +25,14 @@ const AdminSidebar = () => {
     const [openProducts, setOpenProducts] = useState(false);
     const [openCart, setOpenCart] = useState(false);
     const [openComment, setOpenComment] = useState(false);
+
     useEffect(() => {
         categoryRef.current && autoAnimate(categoryRef.current);
         productRef.current && autoAnimate(productRef.current);
         cartRef.current && autoAnimate(cartRef.current);
         commentRef.current && autoAnimate(commentRef.current);
-    }, []);
 
+    }, []);
     return (
         <div className="w-full bg-white h-screen border-r-[#E0E4ED] border-r overflow-y-auto [scrollbar-width:none]">
             <span className="logo w-full h-[80px] [&_img]:object-cover">
@@ -67,8 +68,6 @@ const AdminSidebar = () => {
                         Vendors
                         </Link>
                     </li>
-
-                    {/* Category */}
                     <li ref={categoryRef}>
                         <button
                             onClick={() => setOpenCategory(!openCategory)}
@@ -85,7 +84,7 @@ const AdminSidebar = () => {
                                 <li>
                                 <Link
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/categories"
+                                    to="/admin/listcategory"
                                 >
                                     Category List
                                 </Link>
@@ -93,7 +92,7 @@ const AdminSidebar = () => {
                                 <li>
                                 <Link
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/categories/create"
+                                    to="/admin/addcategory"
                                 >
                                     Category Create
                                 </Link>
@@ -115,20 +114,20 @@ const AdminSidebar = () => {
                         {openProducts && (
                             <ul className="ml-10 p-2 space-y-1.5">
                                 <li>
-                                <Link
-                                    className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/products"
-                                >
-                                    Product List
-                                </Link>
+                                    <Link
+                                        className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
+                                        to="/admin/products"
+                                    >
+                                        Product List
+                                    </Link>
                                 </li>
                                 <li>
-                                <Link
-                                    className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/products/create"
-                                >
-                                    Product Create
-                                </Link>
+                                    <Link
+                                        className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
+                                        to="/admin/products/create"
+                                    >
+                                        Product Create
+                                    </Link>
                                 </li>
                             </ul>
                         )}
@@ -182,7 +181,7 @@ const AdminSidebar = () => {
                                 <li>
                                 <Link
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/comments"
+                                    to="/admin/comments"
                                 >
                                     Comment List
                                 </Link>
@@ -192,7 +191,7 @@ const AdminSidebar = () => {
                     </li>
                     <li>
                         <Link
-                            to="/dashboard/banner"
+                            to="/admin/listbanner"
                             className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]">
                             <Images className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
                             Banner
