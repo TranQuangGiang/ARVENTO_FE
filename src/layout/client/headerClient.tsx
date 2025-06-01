@@ -1,4 +1,5 @@
-import { useContext, useState } from 'react';
+
+import { useContext, useEffect, useRef, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BannerClient from './banner';
@@ -58,21 +59,22 @@ const HeaderClient = () => {
         <section className='header-person flex gap-4'>
           <div className='group relative'>
             <FontAwesomeIcon className='text-[18px] cursor-pointer' icon={faUser} />
-            {user ? (
+            { user ? (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
                 [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
               >
+              
                 <button
                   onClick={() => setShowModal("login")}
-                  className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'
+                  className='block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
                 >
                   Tài khoản của tôi
                 </button>
                 <button 
                   onClick={logout}  
-                  className='block px-3 py-2 hover:bg-gray-200 text-left cursor-pointer'
+                  className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'
                 >
                   Đăng xuất
                 </button>
@@ -91,7 +93,7 @@ const HeaderClient = () => {
                 </button>
                 <button 
                   onClick={() => setShowModal("register")}  
-                  className='block px-3 py-2 hover:bg-gray-200 text-left cursor-pointer'
+                  className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'
                 >
                   Đăng ký
                 </button>

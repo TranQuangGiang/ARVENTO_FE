@@ -1,12 +1,13 @@
-import { useMutation } from "@tanstack/react-query"
-import { login, type loginForm } from "../providers/auth/dataProviders"
+import { useMutation } from "@tanstack/react-query";
+import { login, type loginForm } from "../providers/auth/dataProviders";
+
 
 type useListParams = {
-    resource: string
+    resource: string;
 }
 
-export const useLogin = ( {resource}: useListParams ) => {
+export const useLogin = ({resource}: useListParams) => {
     return useMutation({
-        mutationFn: (values: loginForm) => login({resource, values})  
+        mutationFn: (values: loginForm) => login({resource, values})
     })
 }

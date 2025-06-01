@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+import apiClient from '../../hooks/refreshToken';
+
+
 {/* Đăng ký */}
 export type registerForm = {
     name: string,
@@ -20,6 +23,10 @@ type loginParams = {
     resource: string,
     values: loginForm
 }
+type refreshParams = {
+    resource: string,
+}
+
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 const dataProvider = {
@@ -30,7 +37,11 @@ const dataProvider = {
     login: async ({resource, values}: loginParams) => {
         const { data } = await axios.post(`${resource}`, values);
         return data;
+    },
+    refreshToken: async ({resource}: refreshParams) => {
+        const { data } = await apiClient.post(`${resource}`, {})
+        return data;
     }
 }
+export const { register, login, refreshToken } = dataProvider;
 
-export const { register, login } = dataProvider;

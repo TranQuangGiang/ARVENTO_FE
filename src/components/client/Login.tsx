@@ -4,7 +4,6 @@ import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { useLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
-import { login } from "../../providers/auth/dataProviders";
 import { AuthContexts } from "../contexts/authContexts";
 
 
@@ -23,7 +22,7 @@ const Login = ({ isOpen, onClose, switchToRegister }: any) => {
   });
   function onFinish(values:any) {
     mutate(values, {
-      onSuccess: (data) => {
+      onSuccess: (data:any) => {
         message.success("Đăng nhập thành công");
         login(data);
         onClose();

@@ -1,7 +1,7 @@
-import React from "react";
-import { useRegister } from "../../hooks/useSignup";
 import { Button, Form, Input, message } from "antd";
 import { motion, AnimatePresence } from 'framer-motion';
+
+import { useRegister } from "../../hooks/useRegister";
 
 const Register = ({  isOpen, onClose, switchToLogin }: any ) => {
   if (!switchToLogin) return null;
