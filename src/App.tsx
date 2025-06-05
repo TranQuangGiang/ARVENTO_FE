@@ -16,6 +16,13 @@ import EditBanner from './components/admin/banner/editBanner'
 import ListCategory from './components/admin/category/listCategory'
 import AddCategory from './components/admin/category/addCategory'
 import EditCategory from './components/admin/category/editCategory'
+import AddBlog from './components/admin/blog/addBlog'
+import EditBlog from './components/admin/blog/editBlog'
+import AddCategoryBlog from './components/admin/categoryBlog/addCategoryBlog'
+import ListCategoryBlog from './components/admin/categoryBlog/listCategoryBlog'
+import EditCategoryBlog from './components/admin/categoryBlog/updateCategoryBlog'
+import ListBlog from './components/admin/blog/listBlog'
+import DetailBlog from './components/admin/blog/detailBlog'
 
 function App() {
   const routes = useRoutes([
@@ -34,7 +41,14 @@ function App() {
         {path: 'editbanner/:id', element: <EditBanner />},
         {path: 'listcategory', element: <ListCategory />},
         {path: 'addcategory', element: <AddCategory />},
-        {path: 'editcategory', element: <EditCategory />}
+        {path: 'editcategory', element: <EditCategory />},
+        {path: 'listBlog', element: <ListBlog/>},
+        {path: 'addBlog', element: <AddBlog/>},
+        {path: 'editBlog/:id', element: <EditBlog/>},
+        {path: 'detailBlog/:id', element: <DetailBlog/>},
+        {path: 'addCategoryBlog', element: <AddCategoryBlog />},
+        {path: 'listCategoryBlog', element: <ListCategoryBlog />},
+        {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
       ]
     }
   ])

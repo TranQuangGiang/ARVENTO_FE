@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import apiClient from "../../hooks/refreshToken";
 
 type AuthContextType = {
   user: any;
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }: any) => {
         localStorage.setItem("token", cookieToken);
         setUser(parsedUser);
       } catch (error) {
-        console.error("❌ Lỗi parse cookieUser:", error);
+        console.error(" Lỗi parse cookieUser:", error);
         Cookies.remove("user");
         Cookies.remove("token");
       }
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }: any) => {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error("❌ Lỗi parse storedUser:", error);
+        console.error("Lỗi parse storedUser:", error);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
@@ -48,22 +49,35 @@ export const AuthProvider = ({ children }: any) => {
   const login = (userInfo: any) => {
     setUser(userInfo);
 
+    const { user, access_token } = userInfo.data;
+    console.log(userInfo.data);
     // Cookies
-    Cookies.set("user", JSON.stringify(userInfo.data.user), { expires: 7 });
-    Cookies.set("token", userInfo.data.access_token, { expires: 7 });
+    Cookies.set("user", JSON.stringify(user), { expires: 7 });
+    Cookies.set("token", access_token, { expires: 7 });
+   
 
     // Local storage
-    localStorage.setItem("user", JSON.stringify(userInfo.data.user));
-    localStorage.setItem("token", userInfo.data.access_token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", access_token);
+
+    apiClient.defaults.headers.common["Authorization"] = "Bearer " + access_token;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    Cookies.remove("user");
-    Cookies.remove("token");
+  const logout = async () => {
+    try {
+      await apiClient.post("/auth/logout");
+    } catch (error) {
+      console.error("Lỗi khi gọi API logout:", error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      Cookies.remove("user");
+      Cookies.remove("token");
+
+    }
   };
+
 
   return (
     <AuthContexts.Provider value={{ user, login, logout }}>

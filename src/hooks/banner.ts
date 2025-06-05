@@ -38,7 +38,7 @@
       },
 
       onSuccess: () => {
-        queryClient.invalidateQueries(["banners"]);
+        queryClient.invalidateQueries({queryKey:["banners"]});
       },
     });
   };

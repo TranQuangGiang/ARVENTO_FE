@@ -1,81 +1,87 @@
+// src/api/apiClient.ts
 import axios from "axios";
-import Cookies from 'js-cookie';
 
+// Tạo axios instance
 const apiClient = axios.create({
-    baseURL: "http://localhost:3000/api",
-    withCredentials: true
+  baseURL: "http://localhost:3000/api",
+  withCredentials: true, // Quan trọng: để gửi cookie chứa refresh_token
 });
 
-apiClient.interceptors.request.use(config => {
-    const token = localStorage.getItem("token") || Cookies.get('token');
-    if (token && config.headers) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
+// Thêm token vào header trước mỗi request
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token && config.headers) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
 });
 
+// Biến kiểm soát refresh
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
 const processQueue = (error: any, token: string | null = null) => {
-    failedQueue.forEach(prom => {
-        if (error) {
-            prom.reject(error)
-        }
-        else {
-            prom.resolve(token);
-        }
-    });
-    failedQueue = [];
-};
-apiClient.interceptors.response.use(
-    response => response,
-    async error => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            if (isRefreshing) {
-                return new Promise(function(resolve, reject){
-                    failedQueue.push({resolve, reject});
-                }).then(token => {
-                    originalRequest.headers['Authorization'] = 'Bearer' + token;
-                    return apiClient(originalRequest);
-                }).catch(err => {
-                    return Promise.reject(err);
-                }) 
-            }
-
-            originalRequest._retry = true;
-            isRefreshing = true;
-            try {
-                const { data } = await apiClient.post(`/auth/refresh-token`);
-
-                Cookies.set("token", data.access_token, { expires: 7 });
-                localStorage.setItem("token", data.access_token);
-
-                // cập nhập
-                apiClient.defaults.headers.common['Authorization'] = 'Bearer' + data.access_token;
-                originalRequest.headers['Authorization'] = 'Bearer' + data.access_token;
-
-                processQueue(null, data.access_token);
-                return apiClient(originalRequest);
-            } catch (error) {
-                processQueue(error, null);
-                
-                return Promise.reject(error);
-            } finally {
-                isRefreshing = false
-            }
-        }        
-        
-        return Promise.reject(error);
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
     }
-    
-);
+  });
+  failedQueue = [];
+};
 
-const token = Cookies.get("token") || localStorage.getItem("token");
-if(token) {
-  apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-}
+// Xử lý lỗi 401 – Token hết hạn
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Nếu token hết hạn
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = "Bearer " + token;
+            return apiClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Quan trọng: Gọi trực tiếp axios không có interceptor để tránh vòng lặp
+        const { data } = await axios.post(
+          "http://localhost:3000/api/auth/refresh-token",
+          {},
+          { withCredentials: true }
+        );
+
+        const newToken = data.access_token;
+        localStorage.setItem("token", newToken);
+
+        apiClient.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+
+        processQueue(null, newToken);
+        return apiClient(originalRequest);
+      } catch (err) {
+        processQueue(err, null);
+        localStorage.removeItem("token");
+        // 👉 Logout người dùng
+        window.location.href = "/login";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;

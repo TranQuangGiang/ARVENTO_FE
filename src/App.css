@@ -12,3 +12,6 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+.ck-editor__editable {
+  min-height: 300px; /* Hoặc bạn set max-height hay height cụ thể */
+}
