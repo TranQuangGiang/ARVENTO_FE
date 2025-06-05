@@ -23,25 +23,21 @@ type loginParams = {
     resource: string,
     values: loginForm
 }
-type refreshParams = {
-    resource: string,
-}
+
 
 axios.defaults.baseURL = "http://localhost:3000/api";
 
-const dataProvider = {
+const authProvider = {
     register: async ({resource, values}: registerParams) => {
         const { data } = await axios.post(`${resource}`, values);
+        apiClient.defaults.headers.common["Authorization"] = "Bearer " + data?.data.access_token;
         return data;
     },
     login: async ({resource, values}: loginParams) => {
         const { data } = await axios.post(`${resource}`, values);
         return data;
     },
-    refreshToken: async ({resource}: refreshParams) => {
-        const { data } = await apiClient.post(`${resource}`, {})
-        return data;
-    }
+    
 }
-export const { register, login, refreshToken } = dataProvider;
+export const { register, login } = authProvider;
 
