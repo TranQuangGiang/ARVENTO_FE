@@ -13,7 +13,7 @@ const LayoutAdmin = () => {
       {/* Nội dung chính chiếm 80% bên phải, chia dọc: Header + Content */}
       <div className='w-[82%] flex flex-col'>
         <HeaderAdmin />
-        <div className='w-[100%] bg-[#f5f7fa]'>
+        <div className='w-[100%] min-h-screen bg-[#f5f7fa] mt-[80px]'>
           <Outlet />
         </div>
       </div>

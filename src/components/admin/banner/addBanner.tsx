@@ -96,19 +96,19 @@ const AddBanner = () => {
         </Form.Item>
 
         <Form.Item>
-                  <div className="flex justify-end space-x-3">
-                    <Button type="primary" htmlType="submit">
-                      Add Banner
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        navigate("/admin/listbanner")
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </Form.Item>
+          <div className="flex justify-end space-x-3">
+            <Button type="primary" htmlType="submit">
+              Add Banner
+            </Button>
+            <Button
+              onClick={() => {
+                navigate("/admin/listbanner")
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </Form.Item>
       </Form>
     </div>
   );

@@ -10,6 +10,8 @@ import {
   MessageCircleHeart,
   Images,
   ChartNoAxesCombined,
+  LetterText,
+  FileText,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -34,7 +36,7 @@ const AdminSidebar = () => {
 
     }, []);
     return (
-        <div className="w-full bg-white h-screen border-r-[#E0E4ED] border-r overflow-y-auto [scrollbar-width:none]">
+        <div className="w-[18%] fixed top-0 left-0 bg-white h-screen border-r-[#E0E4ED] border-r overflow-y-auto [scrollbar-width:none]">
             <span className="logo w-full h-[80px] [&_img]:object-cover">
                 <img
                 className="ml-[0px] cursor-pointer mt-[10px]"
@@ -206,6 +208,24 @@ const AdminSidebar = () => {
                         >
                             <ChartNoAxesCombined className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
                             Statistics
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            to="/admin/listCategoryBlog"
+                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]"
+                        >
+                            <LetterText   className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
+                            Category Blog
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
+                            to="/admin/listBlog"
+                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]"
+                        >
+                            <FileText className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
+                            Blog
                         </Link>
                     </li>
                 </ul>

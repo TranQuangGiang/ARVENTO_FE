@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { login, type loginForm } from "../providers/auth/dataProviders";
+import { login, type loginForm } from "../providers/auth/authProviders";
 
 
 type useListParams = {

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { register, type registerForm } from "../providers/auth/dataProviders"
+import { register, type registerForm } from "../providers/auth/authProviders"
 
 type useListParams = {
     resource: string
