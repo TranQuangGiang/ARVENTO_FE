@@ -41,7 +41,7 @@ function App() {
         {path: 'editbanner/:id', element: <EditBanner />},
         {path: 'listcategory', element: <ListCategory />},
         {path: 'addcategory', element: <AddCategory />},
-        {path: 'editcategory', element: <EditCategory />},
+        {path: 'editcategory/:id', element: <EditCategory />},
         {path: 'listBlog', element: <ListBlog/>},
         {path: 'addBlog', element: <AddBlog/>},
         {path: 'editBlog/:id', element: <EditBlog/>},
