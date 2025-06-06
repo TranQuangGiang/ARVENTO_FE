@@ -1,23 +1,27 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useCreate } from "../../../hooks/useCreate";
 
 const AddCategory = () => {
+  const nav = useNavigate();
   const [form] = Form.useForm();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const onFinish = (values: any) => {
-    if (!values.image || values.image.length === 0) {
-      message.error("Please upload an image");
-      return;
-    }
+  const {mutate} = useCreate<FormData>({
+    resource: "/categories/admin"
+  })
+   const onFinish = (values: any) => {
+  console.log("dl", values);
 
-    const imageFile = values.image[0].originFileObj;
+  mutate({
+    name: values.name,
+    slug: values.slug,
+    description: values.description
+  });
+  nav('/admin/listcategory');
+};
 
-    console.log("Submitted values:", {
-      ...values,
-      image: imageFile,
-    });
-  };
 
   return (
     <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
@@ -37,7 +41,7 @@ const AddCategory = () => {
               Title
             </span>
           }
-          name="title"
+          name="name"
           rules={[{ required: true, message: "Please enter the title" }]}
         >
           <Input placeholder="Enter title" />
@@ -54,13 +58,18 @@ const AddCategory = () => {
         >
           <Input placeholder="Enter slug" />
         </Form.Item>
-        {previewUrl && (
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="w-32 h-32 object-cover rounded-lg border border-gray-300 mb-4"
-          />
-        )}
+        <Form.Item
+          label={
+            <span className="text-[15px]" >
+              Description
+            </span>
+          }
+          name="description"
+          rules={[{ required: false, message: "Please enter the description" }]}
+        >
+          <Input placeholder="Enter description" />
+        </Form.Item>
+        
 
         <Form.Item>
           <div className="flex justify-end space-x-3">
@@ -68,10 +77,7 @@ const AddCategory = () => {
               Add Category
             </Button>
             <Button
-              onClick={() => {
-                form.resetFields();
-                setPreviewUrl(null);
-              }}
+              onClick={() => nav("/admin/listcategory")}
             >
               Cancel
             </Button>
