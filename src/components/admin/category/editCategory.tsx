@@ -1,34 +1,53 @@
-import { useState } from "react";
-import { Form, Input, Button, message } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import { useOneData } from "../../../hooks/useOne";
+import { useUpdate } from "../../../hooks/useUpdate";
 
 const EditCategory = () => {
   const [form] = Form.useForm();
+  const nav = useNavigate();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const onFinish = (values: any) => {
-    if (!values.image || values.image.length === 0) {
-      message.error("Please upload an image");
-      return;
-    }
+  const { id } = useParams();
 
-    const imageFile = values.image[0].originFileObj;
+  const { data: category} = useOneData({resource: `/categories/admin`, _id:id});
+      useEffect(() => {
+          if (!category || !category.data) return;
+          // Gán dữ liệu form
+          form.setFieldsValue({
+              ...category.data,
+              category: category.data.category?._id || "",
+          });
+         
+      }, [category, form]);
+   const {mutate} = useUpdate<FormData>({
+       resource: "/categories/admin",
+       _id:id
+     })
+      const onFinish = (values: any) => {
+     console.log("dl", values);
+   
+     mutate({
+       name: values.name,
+       slug: values.slug,
+       description: values.description
+     });
+     nav('/admin/listcategory');
+   };
+   
 
-    console.log("Submitted values:", {
-      ...values,
-      image: imageFile,
-    });
-  };
 
   return (
     <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
-      <h3 className="text-2xl font-semibold mb-1">UPDATE CATEGORY</h3>
-      <p className="text-sm text-gray-500 mb-6">Add a category to the website</p>
+      <h3 className="text-2xl font-semibold mb-1">EDIT CATEGORY</h3>
+      <p className="text-sm text-gray-500 mb-6">Edit a category to the website</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
       <Form
         layout="vertical"
-        form={form}
         onFinish={onFinish}
+        form={form}
         className="space-y-4"
       >
         <Form.Item
@@ -37,7 +56,7 @@ const EditCategory = () => {
               Title
             </span>
           }
-          name="title"
+          name="name"
           rules={[{ required: true, message: "Please enter the title" }]}
         >
           <Input placeholder="Enter title" />
@@ -54,18 +73,23 @@ const EditCategory = () => {
         >
           <Input placeholder="Enter slug" />
         </Form.Item>
-        {previewUrl && (
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="w-32 h-32 object-cover rounded-lg border border-gray-300 mb-4"
-          />
-        )}
+        <Form.Item
+          label={
+            <span className="text-[15px]" >
+              Description
+            </span>
+          }
+          name="description"
+          rules={[{ required: false, message: "Please enter the description" }]}
+        >
+          <Input placeholder="Enter description" />
+        </Form.Item>
+        
 
         <Form.Item>
           <div className="flex justify-end space-x-3">
             <Button type="primary" htmlType="submit">
-              Update Category
+              Edit Category
             </Button>
             <Button
               onClick={() => {
@@ -84,3 +108,11 @@ const EditCategory = () => {
 };
 
 export default EditCategory;
+function setContent(content: any) {
+  throw new Error("Function not implemented.");
+}
+
+function setThumbnail(thumbnail: any) {
+  throw new Error("Function not implemented.");
+}
+
