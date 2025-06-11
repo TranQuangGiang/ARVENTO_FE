@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Form,
   Input,
@@ -16,29 +16,86 @@ import {
   PlusOutlined,
   MinusCircleOutlined,
 } from "@ant-design/icons";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { useList } from "../../../hooks/useList";
+import { useCreate } from "../../../hooks/useCreate";
+import { useNavigate } from "react-router-dom";
 
-const { TextArea } = Input;
-const SIZE_OPTIONS = [38, 39, 40, 41, 42, 43];
+const SIZE_OPTIONS = ["38", "39", "40", "41", "42", "43"];
 
 const AddProduct = () => {
   const [form] = Form.useForm();
+  const [content, setContent] = useState('');
+  const nav = useNavigate();
+  
+
+  
+  {/** Lấy ra dnah mục sản phẩm */}
+  const { data } = useList({
+    resource: "/categories/admin"
+  });
+
+  const categoryOption = data?.data.map((cat:any) => ({
+    label: cat.name,
+    value: cat._id,
+  }));
+  console.log(categoryOption);
+  
+  {/** Thêm mới sản phẩm */}
+
+  const { mutate } = useCreate<FormData>({
+    resource: "/products"
+  })
 
   const onFinish = (values: any) => {
-    console.log("Form values:", values);
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
       return;
     }
-    message.success("Form data collected (not submitted to server).");
+    const formData = new FormData();
+    formData.append('name', String(values.name));
+    formData.append('slug', String(values.slug));
+    formData.append('description', content);
+    formData.append('category_id', String(values.category_id));
+    formData.append('price', String(values.price));
+    formData.append('stock', String(values.stock));
+    (values.tags || []).forEach((tag: string) => {
+      formData.append('tags[]', tag);
+    });
+
+
+    //images
+    values.images.forEach((file: any) => {
+      formData.append('images', file.originFileObj);
+    });
+
+    // xử lý variant
+    const parsedVariants = (values.variants || []).flatMap((variant: any) => {
+      const sizes = variant.sizes || [];
+      const stockBySize = variant.stockBySize || {};
+      return sizes.map((size: string | number) => ({
+        color: variant.color,
+        size,
+        stock: Number(stockBySize[size] || 0),
+      }));
+    });
+    formData.append('variants', JSON.stringify(parsedVariants));
+    mutate(formData);
+    nav('/admin/listProduct');
   };
-
   return (
-    <div className="p-6 bg-white min-h-screen mt-20 w-full mx-auto">
-      <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
-      <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
-      <hr className="border-t border-gray-300 mb-6 -mt-3" />
-
-      <Form layout="vertical" form={form} onFinish={onFinish}>
+    <div className="w-[90%] mx-auto mt-[30px] shadow-md bg-white rounded mb-[40px]">
+      <div className="w-full pt-[20px]">
+        <h3 className="pl-[20px] text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
+        <p className="pl-[20px] text-sm text-gray-500 mb-6">Fill in the product details</p>
+        <hr className="border-t border-gray-300 mb-6 -mt-3" />
+      </div>
+      <Form 
+        layout="vertical" 
+        form={form} onFinish={onFinish}
+        style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
+      >
         <Form.Item
           label="Product Name"
           name="name"
@@ -56,7 +113,17 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item label="Description" name="description">
-          <TextArea rows={4} />
+          <CKEditor
+            editor={ClassicEditor as any}
+            data={content}
+            onChange={(_, editor) => {
+              const data = editor.getData();
+              setContent(data);
+              form.setFieldsValue({ description: data }); // 🔥 Cập nhật value cho Form
+            }}
+          >
+            
+          </CKEditor>
         </Form.Item>
 
         <Form.Item
@@ -64,11 +131,7 @@ const AddProduct = () => {
           name="category_id"
           rules={[{ required: true, message: "Please select a category" }]}
         >
-          <Select placeholder="Select a category">
-            <Select.Option value="cat1">Category 1</Select.Option>
-            <Select.Option value="cat2">Category 2</Select.Option>
-            <Select.Option value="cat3">Category 3</Select.Option>
-          </Select>
+          <Select style={{height: 40}} options={categoryOption}></Select>
         </Form.Item>
 
         <Form.Item
@@ -80,9 +143,9 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item
-          label="Stock"
           name="stock"
-          rules={[{ required: true, message: "Please enter the stock" }]}
+          label="Stock"
+          rules={[{ required: true, type: "number", message: "Enter stock" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
@@ -137,21 +200,6 @@ const AddProduct = () => {
 
                       <Form.Item
                         {...restField}
-                        name={[name, "image"]}
-                        label="Image"
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) =>
-                          Array.isArray(e) ? e : e?.fileList
-                        }
-                        rules={[{ required: true, message: "Please upload an image" }]}
-                      >
-                        <Upload beforeUpload={() => false} listType="picture">
-                          <Button icon={<UploadOutlined />}>Upload Image</Button>
-                        </Upload>
-                      </Form.Item>
-
-                      <Form.Item
-                        {...restField}
                         name={[name, "sizes"]}
                         label="Available Sizes"
                         rules={[{ required: true, message: "Select at least one size" }]}
@@ -171,7 +219,7 @@ const AddProduct = () => {
                           form.getFieldValue(["variants", name, "sizes"]) || [];
                         return currentSizes.length > 0 ? (
                           <>
-                            <Divider className="mt-4 mb-2" orientation="left">
+                            <Divider className="mt-4 mb-2 " orientation="left">
                               Stock by Size
                             </Divider>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -198,8 +246,9 @@ const AddProduct = () => {
                 ))}
               </div>
 
-              <Form.Item className="mt-4">
+              <Form.Item className="pt-3">
                 <Button
+                  style={{height: 40}}
                   type="dashed"
                   onClick={() => add()}
                   icon={<PlusOutlined />}
@@ -213,11 +262,11 @@ const AddProduct = () => {
         </Form.List>
 
         <Form.Item>
-          <div className="flex justify-end space-x-3">
-            <Button type="primary" htmlType="submit">
+          <div className="flex justify-end space-x-3 mb-6">
+            <Button type="primary" htmlType="submit" style={{height: 40}}>
               Save Product
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()}>
+            <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
               Reset
             </Button>
           </div>

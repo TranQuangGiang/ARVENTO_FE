@@ -23,8 +23,23 @@ type loginParams = {
     resource: string,
     values: loginForm
 }
-
-
+{/* Quên mật mật */}
+export type ForgotPasswordForm = {
+    email: string,
+}
+type ForgotParams = {
+    resource: string,
+    values: ForgotPasswordForm
+}
+{/* ResetPassword */}
+export type ResetPasswordForm = {
+    newPassword: string,
+    token: string,
+}
+type ResetPasswordParams = {
+    resource: string,
+    values: ResetPasswordForm,
+}
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 const authProvider = {
@@ -37,7 +52,15 @@ const authProvider = {
         const { data } = await axios.post(`${resource}`, values);
         return data;
     },
-    
+    forgotPassword: async({resource, values}: ForgotParams) => {
+        const { data } = await axios.post(`${resource}`, values);
+        return data;
+    },
+    resetPassword: async ({resource, values}: ResetPasswordParams) => {
+        const { newPassword, token } = values; 
+        const { data } = await axios.post(`${resource}`, { newPassword }, { params: {token} });
+        return data;
+    }
 }
-export const { register, login } = authProvider;
+export const { register, login, forgotPassword, resetPassword } = authProvider;
 

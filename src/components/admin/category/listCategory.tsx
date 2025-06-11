@@ -22,7 +22,7 @@ const ListCategory: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const { data, refetch } = useList<{ data: Category[] }>({
+  const { data, refetch } = useList({
     resource: "/categories/admin",
   });
 
@@ -99,7 +99,7 @@ const ListCategory: React.FC = () => {
   ];
 
   return (
-    <div className="w-full px-6 py-10 bg-gray-50 min-h-screen">
+    <div className="w-full px-6 bg-gray-50 min-h-screen">
       <div className="w-full h-auto px-6 py-5 bg-white mt-20 rounded-lg border border-gray-200">
         <div className="flex flex-wrap items-center justify-between mb-4">
           <div className="flex items-center gap-2">

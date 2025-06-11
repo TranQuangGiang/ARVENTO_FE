@@ -1,103 +1,103 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Table, Input, Select, Button, Popconfirm, Image } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FiPlus } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useList } from "../../../hooks/useList";
+import dayjs from 'dayjs';
+import type { ColumnsType } from "antd/es/table";
 
 const { Option } = Select;
 
-const products = [
-  {
-    _id: "664f1a83f1a4c8a42c123456",
-    name: "White Men's Sneakers",
-    image:
-      "https://up.yimg.com/ib/th?id=OIP.YfJJ7n-O-U0BhP3Z_0JSiAHaHa&pid=Api&rs=1&c=1&qlt=95&w=121&h=121",
-    price: 1299000,
-    category_id: { name: "Men's Shoes" },
-    tags: ["hot", "white", "men"],
-  },
-  {
-    _id: "664f1a83f1a4c8a42c123457",
-    name: "Women's High Heels",
-    image:
-      "https://up.yimg.com/ib/th?id=OIP.YfJJ7n-O-U0BhP3Z_0JSiAHaHa&pid=Api&rs=1&c=1&qlt=95&w=121&h=121",
-    price: 1599000,
-    category_id: { name: "Women's Shoes" },
-    tags: ["sale", "high heels", "women"],
-  },
-];
-
-// Extract unique categories for filter dropdown
-const categories = Array.from(
-  new Set(products.map((p) => p.category_id?.name).filter(Boolean))
-);
-
-const ProductList = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+const ProductList = ({ rawData }:any) => {
+  // const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
-  // Filter products by search term and category
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter ? product.category_id?.name === categoryFilter : true;
-    return matchesSearch && matchesCategory;
+  const { data } = useList({
+    resource: "/products",
   });
+  const products = Array.isArray(data) ? data : data?.data || [];
+  
+  // const products = Array.isArray(data) ? data : data?.data || [];
+  // const categories = Array.from(
+  //   new Set(products.map((p:any) => p.category_id?.name).filter(Boolean))
+  // );
 
-  const columns = [
+  // const filteredProducts = products.filter((product:any) => {
+  //   const matchesSearch = product.name
+  //     .toLowerCase()
+  //     .includes(searchTerm.toLowerCase());
+  //   const matchesCategory = categoryFilter
+  //     ? product.category_id?.name === categoryFilter
+  //     : true;
+  //   return matchesSearch && matchesCategory;
+  // });
+
+  const columns: ColumnsType<any> = [
     {
       title: "#",
       key: "index",
       render: (_: any, __: any, index: number) =>
         (currentPage - 1) * itemsPerPage + index + 1,
+      align: "center",
     },
     {
       title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (img: string) => (
-        <Image src={img} width={64} height={64} alt="Product Image" />
+      dataIndex: "images",
+      key: "images",
+      render: ( srcImage: string ) => (
+        <Image 
+          src={srcImage[0]}
+          width={104} height={104} alt="Product Image" 
+        />
       ),
+      align: "center",
     },
     {
-      title: "Product Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
+      align: "center",
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-      render: (price: number) => `${price.toLocaleString()}₫`,
+      title: "Slug",
+      dataIndex: "slug",
+      key: "slug",
+      align: "center",
     },
     {
-      title: "Category",
-      dataIndex: ["category_id", "name"],
-      key: "category",
-      render: (name: string) => name || "Unknown",
+      title: "Stock",
+      dataIndex: "stock",
+      key: "stock",
+      align: "center",
     },
     {
-      title: "Tags",
-      dataIndex: "tags",
-      key: "tags",
-      render: (tags: string[]) => tags?.join(", ") || "None",
+      title: "Created At",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (text: string) => dayjs(text).format('DD/MM/YYYY'),
+      align: "center",
     },
     {
       title: "Actions",
       key: "action",
-      align: "right" as const,
+      align: "center",
       render: (_: any, record: any) => (
         <>
           <Button
             icon={<EyeOutlined />}
             className="mr-2"
+            type="default" 
+            style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
             onClick={() => console.log("View:", record)}
           />
           <Button
             icon={<EditOutlined />}
             className="mr-2"
+            type="primary"
             onClick={() => console.log("Edit:", record)}
           />
           <Popconfirm
@@ -106,83 +106,86 @@ const ProductList = () => {
             cancelText="Cancel"
             onConfirm={() => console.log("Delete:", record)}
           >
-            <Button icon={<DeleteOutlined />} />
+            <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </>
       ),
     },
   ];
-
+  
   return (
+    
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="bg-white p-6 rounded-lg border border-gray-200 mt-20 ">
-        <div className="flex justify-between items-center mb-4 ">
+        <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-2">
             <span>Show</span>
-            <Select
+            {/* <Select
               value={itemsPerPage}
               onChange={(value) => {
                 setItemsPerPage(value);
                 setCurrentPage(1);
               }}
               style={{ width: 80 }}
-            >
-              {[3, 5, 10].map((num) => (
+            > */}
+              {/* {[3, 5, 10].map((num) => (
                 <Option key={num} value={num}>
                   {num}
                 </Option>
               ))}
-            </Select>
+            </Select> */}
 
             <div className="pl-5">
               <Select
-              placeholder="Filter by Category"
-              allowClear
-              value={categoryFilter}
-              onChange={(value) => {
-                setCategoryFilter(value);
-                setCurrentPage(1);
-              }}
-              style={{ width: 180 }}
-            >
-              {categories.map((cat) => (
-                <Option key={cat} value={cat}>
-                  {cat}
-                </Option>
-              ))}
-            </Select>
+                placeholder="Filter by Category"
+                allowClear
+                // value={categoryFilter}
+                // onChange={(value) => {
+                //   setCategoryFilter(value);
+                //   setCurrentPage(1);
+                // }}
+                style={{ width: 180 }}
+              >
+                {/* {categories.map((cat:any) => (
+                  <Option key={cat} value={cat}>
+                    {cat}
+                  </Option>
+                ))} */}
+              </Select>
             </div>
           </div>
 
           <div className="flex space-x-4 items-center">
             <Input
               placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              // value={searchTerm}
+              // onChange={(e) => setSearchTerm(e.target.value)}
               allowClear
               className="w-64"
             />
-            <Button
-              type="primary"
-              icon={<FiPlus />}
-              onClick={() => navigate("/admin/addbanner")}
-            >
-              Add New
-            </Button>
+            <Link to={`/admin/addProduct`}>
+              <Button
+                type="primary"
+                icon={<FiPlus />}
+                // onClick={() => navigate("/admin/addbanner")}
+              >
+                Add New
+              </Button>
+            </Link>
           </div>
         </div>
 
         <Table
           rowKey="_id"
           columns={columns}
-          dataSource={filteredProducts}
-          pagination={{
-            current: currentPage,
-            pageSize: itemsPerPage,
-            total: filteredProducts.length,
-            onChange: (page) => setCurrentPage(page),
-            showSizeChanger: false,
-          }}
+          dataSource={products?.data}
+          // pagination={{
+          //   current: currentPage,
+          //   pageSize: itemsPerPage,
+          //   total: filteredProducts.length,
+          //   onChange: (page) => setCurrentPage(page),
+          //   showSizeChanger: false,
+          // }}
         />
       </div>
     </div>
