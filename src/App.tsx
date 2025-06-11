@@ -3,8 +3,8 @@ import { useRoutes } from 'react-router-dom'
 import LayoutClient from './layout/client'
 import ScrollToTop from './components/ScrollToTop'
 import Deltai from './components/client/Deltai'
-import Register from './components/client/Register'
-import Login from './components/client/Login'
+import Register from './components/client/auth/Register'
+import Login from './components/client/auth/Login'
 import Cart from './components/client/Cart'
 import ListProductClient from './components/client/listProductClient'
 import LayoutAdmin from './layout/admin'
@@ -26,6 +26,10 @@ import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import AddProduct from './components/admin/product/addProduct'
 import EditProduct from './components/admin/product/editProduct'
+import DetailProduct from './components/admin/product/detailProduct'
+import ForgotPassword from './components/client/auth/ForgotPassword'
+import ResetPassword from './components/client/auth/ResetPassword'
+import DetailAuth from './components/client/auth/DetailAuth'
 
 function App() {
   const routes = useRoutes([
@@ -34,7 +38,10 @@ function App() {
       {path: 'detail', element: <Deltai/>},
       {path: 'cart', element: <Cart/>},
       {path: 'register', element: <Register/>},
-      {path: 'login', element: <Login/>}
+      {path: 'login', element: <Login/>},
+      {path: 'forgotPassword', element: <ForgotPassword />},
+      {path: 'resetPassword', element: <ResetPassword />},
+      {path: 'detailAuth', element: <DetailAuth />}
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
@@ -52,9 +59,10 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
-        {path: 'listproduct', element: <ListProduct />},
-        {path: 'addproduct', element: <AddProduct />},
-        {path: 'editproduct', element: <EditProduct />}
+        {path: 'listProduct', element: <ListProduct />},
+        {path: 'addProduct', element: <AddProduct />},
+        {path: 'editProduct', element: <EditProduct />},
+        {path: 'detailProduct/:id', element: <DetailProduct />}
       ]
     }
   ])
