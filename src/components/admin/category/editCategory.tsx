@@ -21,19 +21,13 @@ const EditCategory = () => {
           });
          
       }, [category, form]);
-   const {mutate} = useUpdate<FormData>({
-       resource: "/categories/admin",
-       _id:id
-     })
-      const onFinish = (values: any) => {
-     console.log("dl", values);
-   
-     mutate({
-       name: values.name,
-       slug: values.slug,
-       description: values.description
-     });
-     nav('/admin/listcategory');
+    const {mutate} = useUpdate<FormData>({
+      resource: "/categories/admin",
+      _id:id
+    })
+    function onFinish (values: any) {
+      mutate(values);
+      nav('/admin/listcategory');
    };
    
 

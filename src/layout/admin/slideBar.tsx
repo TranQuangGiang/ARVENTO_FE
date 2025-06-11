@@ -118,7 +118,7 @@ const AdminSidebar = () => {
                                 <li>
                                     <Link
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                        to="/admin/products"
+                                        to="/admin/listProduct"
                                     >
                                         Product List
                                     </Link>
@@ -126,7 +126,7 @@ const AdminSidebar = () => {
                                 <li>
                                     <Link
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                        to="/admin/products/create"
+                                        to="/admin/addProduct"
                                     >
                                         Product Create
                                     </Link>

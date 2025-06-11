@@ -1,19 +1,26 @@
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import BannerClient from './banner';
-import { Link, useLocation } from 'react-router-dom';
-import Login from '../../components/client/Login';
-import Register from '../../components/client/Register';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import Login from '../../components/client/auth/Login';
+import Register from '../../components/client/auth/Register';
 import { AuthContexts } from '../../components/contexts/authContexts';
+
 
 const HeaderClient = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const [showModal, setShowModal] = useState<string | null>(null);
   const { user, logout } = useContext(AuthContexts);
- 
+  const [searchParams] = useSearchParams(); 
+  const modalParam = searchParams.get("modal");
+  useEffect(() => {
+  if (modalParam) {
+    setShowModal(modalParam);
+  }
+}, [modalParam]);
   return (
     <div>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
@@ -65,13 +72,13 @@ const HeaderClient = () => {
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
               >
-              
-                <button
-                  onClick={() => setShowModal("login")}
-                  className='block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
-                >
-                  Tài khoản của tôi
-                </button>
+                <Link to={'/detailAuth'}>
+                  <button
+                    className='block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                  >
+                    Tài khoản của tôi
+                  </button>
+                </Link>
                 <button 
                   onClick={logout}  
                   className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'
@@ -104,6 +111,7 @@ const HeaderClient = () => {
         </section>
         <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
         <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
+        
       </div>
        {location.pathname === "/" && <BannerClient />}
     </div>
