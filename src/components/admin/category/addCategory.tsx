@@ -11,20 +11,14 @@ const AddCategory = () => {
   const {mutate} = useCreate<FormData>({
     resource: "/categories/admin"
   })
-   const onFinish = (values: any) => {
-  console.log("dl", values);
-
-  mutate({
-    name: values.name,
-    slug: values.slug,
-    description: values.description
-  });
+  function onFinish (values: any) {
+  mutate(values);
   nav('/admin/listcategory');
 };
 
 
   return (
-    <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
+    <div className="w-full mx-auto p-6 bg-white min-h-screen mt-10">
       <h3 className="text-2xl font-semibold mb-1">ADD NEW CATEGORY</h3>
       <p className="text-sm text-gray-500 mb-6">Add a new category to the website</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />

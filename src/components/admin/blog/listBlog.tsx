@@ -70,7 +70,7 @@ const ListBlog = () => {
             key: "thumbnail",
             align: "center",
             render: (imageSrc: string) => {
-                return <Image src={imageSrc} width={150}></Image>
+                return <Image src={imageSrc} width={100}></Image>
             },
             width: 120
         },
@@ -125,24 +125,24 @@ const ListBlog = () => {
                 transition={{duration: 0.3}}
             >
                 <motion.div
-                    initial={{scaleY: 0.9, opacity: 1}}
-                    animate={{scaleY:1, opacity: 1}}
-                    exit={{scaleY: 0.9, opacity: 1}}
-                    transition={{duration: 0.3}}
+                    initial={{y: 50, opacity: 0}}
+                    animate={{y:0, opacity: 1}}
+                    exit={{y: 50, opacity: 0}}
+                    transition={{duration: 0.5, ease: "easeOut"}}
                 >
-                    <div className="w-[94%] mx-auto mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
+                    <div className="ml-6 mr-6 mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
                         <span className='w-full flex items-center justify-between mb-3'>
-                        <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách bài viết</h2>
-                        <Link to={`/admin/addBlog`}>
-                            <Button
-                            style={{width: 130, height: 40}}
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            className="h-10 w-[170px] text-[18px] font-medium bg-blue-600 hover:bg-blue-700 transition-all"
-                            >
-                            Create
-                            </Button>
-                        </Link>
+                            <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách bài viết</h2>
+                            <Link to={`/admin/addBlog`}>
+                                <Button
+                                style={{width: 130, height: 40}}
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                className="h-10 w-[170px] text-[18px] font-medium bg-blue-600 hover:bg-blue-700 transition-all"
+                                >
+                                Create
+                                </Button>
+                            </Link>
                         </span>
                         <Select
                             defaultValue="desc"

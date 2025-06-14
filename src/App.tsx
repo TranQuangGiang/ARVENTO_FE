@@ -52,9 +52,16 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
+<<<<<<< Updated upstream
         {path: 'listproduct', element: <ListProduct />},
         {path: 'addproduct', element: <AddProduct />},
         {path: 'editproduct', element: <EditProduct />}
+=======
+        {path: 'listProduct', element: <ListProduct />},
+        {path: 'addProduct', element: <AddProduct />},
+        {path: 'editProduct/:id', element: <EditProduct />},
+        {path: 'detailProduct/:id', element: <DetailProduct />}
+>>>>>>> Stashed changes
       ]
     }
   ])

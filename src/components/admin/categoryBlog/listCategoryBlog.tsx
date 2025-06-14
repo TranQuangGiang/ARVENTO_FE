@@ -84,12 +84,12 @@ const ListCategoryBlog = () => {
         transition={{duration: 0.3}}
       >
         <motion.div
-          initial={{scaleY: 0.9, opacity: 1}}
-          animate={{scaleY:1, opacity: 1}}
-          exit={{scaleY: 0.9, opacity: 1}}
-          transition={{duration: 0.3}}
+          initial={{y: 50, opacity: 0}}
+          animate={{y: 0, opacity: 1}}
+          exit={{y: 50, opacity: 0}}
+          transition={{duration: 0.5, ease: "easeOut"}}
         >
-          <div className="w-[90%] mx-auto mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
+          <div className="ml-6 mr-6 mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
             <span className='w-full flex items-center justify-between mb-3'>
               <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách danh mục bài viết</h2>
               <Link to={`/admin/addCategoryBlog`}>

@@ -15,34 +15,160 @@ import {
   UploadOutlined,
   PlusOutlined,
   MinusCircleOutlined,
+  OrderedListOutlined,
 } from "@ant-design/icons";
+<<<<<<< Updated upstream
+=======
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { useList } from "../../../hooks/useList";
+import { useCreate } from "../../../hooks/useCreate";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+>>>>>>> Stashed changes
 
 const { TextArea } = Input;
 const SIZE_OPTIONS = [38, 39, 40, 41, 42, 43];
 
 const AddProduct = () => {
   const [form] = Form.useForm();
+<<<<<<< Updated upstream
 
   const onFinish = (values: any) => {
     console.log("Form values:", values);
+=======
+  const [content, setContent] = useState('');
+  const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  
+  {/** Lấy ra dnah mục sản phẩm */}
+  const { data } = useList({
+    resource: "/categories/admin"
+  });
+
+  const categoryOption = data?.data.map((cat:any) => ({
+    label: cat.name,
+    value: cat._id,
+  }));
+  console.log(categoryOption);
+  
+  {/** Thêm mới sản phẩm */}
+
+  const { mutate } = useCreate<FormData>({
+    resource: "/products"
+  })
+
+  const onFinish = async (values: any) => {
+>>>>>>> Stashed changes
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
       return;
     }
+<<<<<<< Updated upstream
     message.success("Form data collected (not submitted to server).");
+=======
+    const formData = new FormData();
+    formData.append('name', String(values.name));
+    formData.append('product_code', String(values.product_code));
+    formData.append('slug', String(values.slug));
+    formData.append('description', content);
+    formData.append('category_id', String(values.category_id));
+    formData.append('original_price', String(values.original_price));
+    formData.append('sale_price', String(values.sale_price));
+  
+    (values.tags || []).forEach((tag: string) => {
+      formData.append('tags[]', tag);
+    });
+
+
+    //images
+    values.images.forEach((file: any, index: number) => {
+      if (file.originFileObj) {
+        formData.append('images', file.originFileObj, file.name || `image_${index}.jpg`);
+      }
+    });
+
+    // xử lý variant
+    const parsedVariants = (values.variants || []).flatMap((variant: any, index: number) => {
+      const sizes = variant.sizes || [];
+      const stockBySize = variant.stockBySize || {};
+      const fileList = variant.image;
+      const imageFile = Array.isArray(fileList) ? fileList[0]?.originFileObj : null;
+      
+      if (!imageFile) {
+        message.error(`Vui lòng upload ảnh cho biến thể ${index + 1}`);
+        return [];
+      }
+      console.log(imageFile);
+     
+
+      return sizes.map((size: string | number) => ({
+        color: variant.color,
+        size,
+        stock: Number(stockBySize[size] || 0),
+        image: imageFile
+      }));
+    });
+    parsedVariants.forEach((variant: any, index: number) => {
+      if (variant.image) {
+        formData.append('variantImages', variant.image, `variant_${index}.jpg`);
+      }
+    });
+    const variantsToSend = parsedVariants.map(({ image, ...rest }:any) => rest);
+    formData.append('variants', JSON.stringify(variantsToSend));
+    setLoading(true);
+    mutate(formData, {
+      onSuccess: () => {
+        nav('/admin/listProduct', { state: { shouldRefetch: true } });
+      },
+      onError: () => {
+        setLoading(false);
+      }
+    });
+>>>>>>> Stashed changes
   };
 
   return (
+<<<<<<< Updated upstream
     <div className="p-6 bg-white min-h-screen mt-20 w-full mx-auto">
       <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
       <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
       <Form layout="vertical" form={form} onFinish={onFinish}>
+=======
+    <div className="ml-10 mr-10 mt-[30px] shadow-md bg-white rounded-xl mb-[40px]">
+      <div className="w-[96%] mx-auto flex justify-between pt-8">
+        <span>
+          <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
+          <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
+        </span>
+        <span>
+          <Link to={`/admin/listProduct`}>
+            <Button className='pr-[20px] text-[16px] font-sans' style={{height: 40, width: 150}} type='primary'><OrderedListOutlined />LIST PRODUCT</Button>
+          </Link>
+        </span>
+      </div>
+      <Form 
+        layout="vertical" 
+        form={form} onFinish={onFinish}
+        style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
+      >
+>>>>>>> Stashed changes
         <Form.Item
           label="Product Name"
           name="name"
           rules={[{ required: true, message: "Please enter the product name" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Product Code"
+          name="product_code"
+          rules={[{ required: true, message: "Please enter the product code" }]}
         >
           <Input />
         </Form.Item>
@@ -56,7 +182,21 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item label="Description" name="description">
+<<<<<<< Updated upstream
           <TextArea rows={4} />
+=======
+          <CKEditor
+            editor={ClassicEditor as any}
+            data={content}
+            onChange={(_, editor) => {
+              const data = editor.getData();
+              setContent(data);
+              form.setFieldsValue({ description: data });
+            }}
+          >
+            
+          </CKEditor>
+>>>>>>> Stashed changes
         </Form.Item>
 
         <Form.Item
@@ -72,23 +212,29 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item
-          label="Price (VND)"
-          name="price"
+          label="Original_Price (VND)"
+          name="original_price"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
+<<<<<<< Updated upstream
           label="Stock"
           name="stock"
           rules={[{ required: true, message: "Please enter the stock" }]}
+=======
+          label="Sale_Price (VND)"
+          name="sale_price"
+          rules={[{ required: true, message: "Please enter the price" }]}
+>>>>>>> Stashed changes
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item label="Tags" name="tags">
-          <Select mode="tags" style={{ width: "100%" }} placeholder="Enter tags" />
+          <Select mode="tags" style={{ width: "100%", height: 40 }} placeholder="Enter tags" />
         </Form.Item>
 
         <Form.Item
@@ -98,7 +244,10 @@ const AddProduct = () => {
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
           rules={[{ required: true, message: "Please upload product images" }]}
         >
-          <Upload beforeUpload={() => false} listType="picture-card" multiple>
+          <Upload 
+            beforeUpload={() => false} 
+            listType="picture-card" 
+            multiple>
             <div>
               <UploadOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
@@ -133,6 +282,26 @@ const AddProduct = () => {
                         rules={[{ required: true, message: "Enter color" }]}
                       >
                         <Input placeholder="Color" />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Variant Images"
+                        name={[name, "image"]}
+                        rules={[{ required: true, message: "Please upload variant images" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+                      >
+                        <Upload 
+                          beforeUpload={() => false} 
+                          listType="picture-card" 
+                          maxCount={1} 
+                          
+                        >
+                          <div>
+                            <UploadOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                          </div>
+                        </Upload>
                       </Form.Item>
 
                       <Form.Item
@@ -171,7 +340,11 @@ const AddProduct = () => {
                           form.getFieldValue(["variants", name, "sizes"]) || [];
                         return currentSizes.length > 0 ? (
                           <>
+<<<<<<< Updated upstream
                             <Divider className="mt-4 mb-2" orientation="left">
+=======
+                            <Divider className=" mt-4 mb-2 " orientation="left">
+>>>>>>> Stashed changes
                               Stock by Size
                             </Divider>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
