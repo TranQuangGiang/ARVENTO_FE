@@ -23,8 +23,11 @@ type useUpdateParams< T = any > = {
 }
 axios.defaults.baseURL = "http://localhost:3000/api";
 const token = localStorage.getItem("token") || "";
+console.log(token);
+
 const dataProvider = {
     getList: async({resource}: useListParams) => {
+         if (!token) throw new Error('Token not found');
         const { data } = await axios.get(`${resource}`, {
             headers: {
                 Authorization: `Bearer ${token}`

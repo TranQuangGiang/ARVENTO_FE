@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
@@ -15,20 +15,24 @@ import {
   UploadOutlined,
   PlusOutlined,
   MinusCircleOutlined,
+  OrderedListOutlined,
 } from "@ant-design/icons";
+
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useList } from "../../../hooks/useList";
 import { useCreate } from "../../../hooks/useCreate";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const SIZE_OPTIONS = ["38", "39", "40", "41", "42", "43"];
+const { TextArea } = Input;
+const SIZE_OPTIONS = [38, 39, 40, 41, 42, 43];
 
 const AddProduct = () => {
   const [form] = Form.useForm();
   const [content, setContent] = useState('');
   const nav = useNavigate();
-  
+  const [loading, setLoading] = useState(false);
 
   
   {/** Lấy ra dnah mục sản phẩm */}
@@ -48,48 +52,83 @@ const AddProduct = () => {
     resource: "/products"
   })
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
       return;
     }
     const formData = new FormData();
     formData.append('name', String(values.name));
+    formData.append('product_code', String(values.product_code));
     formData.append('slug', String(values.slug));
     formData.append('description', content);
     formData.append('category_id', String(values.category_id));
-    formData.append('price', String(values.price));
-    formData.append('stock', String(values.stock));
+    formData.append('original_price', String(values.original_price));
+    formData.append('sale_price', String(values.sale_price));
+  
     (values.tags || []).forEach((tag: string) => {
       formData.append('tags[]', tag);
     });
 
 
     //images
-    values.images.forEach((file: any) => {
-      formData.append('images', file.originFileObj);
+    values.images.forEach((file: any, index: number) => {
+      if (file.originFileObj) {
+        formData.append('images', file.originFileObj, file.name || `image_${index}.jpg`);
+      }
     });
 
     // xử lý variant
-    const parsedVariants = (values.variants || []).flatMap((variant: any) => {
+    const parsedVariants = (values.variants || []).flatMap((variant: any, index: number) => {
       const sizes = variant.sizes || [];
       const stockBySize = variant.stockBySize || {};
+      const fileList = variant.image;
+      const imageFile = Array.isArray(fileList) ? fileList[0]?.originFileObj : null;
+      
+      if (!imageFile) {
+        message.error(`Vui lòng upload ảnh cho biến thể ${index + 1}`);
+        return [];
+      }
+      console.log(imageFile);
+     
+
       return sizes.map((size: string | number) => ({
         color: variant.color,
-        size,
+        size: String(size),
         stock: Number(stockBySize[size] || 0),
+        image: imageFile
       }));
     });
-    formData.append('variants', JSON.stringify(parsedVariants));
-    mutate(formData);
-    nav('/admin/listProduct');
+    parsedVariants.forEach((variant: any, index: number) => {
+      if (variant.image) {
+        formData.append('variantImages', variant.image, `variant_${index}.jpg`);
+      }
+    });
+    const variantsToSend = parsedVariants.map(({ image, ...rest }:any) => rest);
+    formData.append('variants', JSON.stringify(variantsToSend));
+    setLoading(true);
+    mutate(formData, {
+      onSuccess: () => {
+        nav('/admin/listProduct', { state: { shouldRefetch: true } });
+      },
+      onError: () => {
+        setLoading(false);
+      }
+    });
   };
+
   return (
-    <div className="w-[90%] mx-auto mt-[30px] shadow-md bg-white rounded mb-[40px]">
-      <div className="w-full pt-[20px]">
-        <h3 className="pl-[20px] text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
-        <p className="pl-[20px] text-sm text-gray-500 mb-6">Fill in the product details</p>
-        <hr className="border-t border-gray-300 mb-6 -mt-3" />
+    <div className="ml-10 mr-10 mt-[30px] shadow-md bg-white rounded-xl mb-[40px]">
+      <div className="w-[96%] mx-auto flex justify-between pt-8">
+        <span>
+          <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
+          <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
+        </span>
+        <span>
+          <Link to={`/admin/listProduct`}>
+            <Button className='pr-[20px] text-[16px] font-sans' style={{height: 40, width: 150}} type='primary'><OrderedListOutlined />LIST PRODUCT</Button>
+          </Link>
+        </span>
       </div>
       <Form 
         layout="vertical" 
@@ -100,6 +139,14 @@ const AddProduct = () => {
           label="Product Name"
           name="name"
           rules={[{ required: true, message: "Please enter the product name" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Product Code"
+          name="product_code"
+          rules={[{ required: true, message: "Please enter the product code" }]}
         >
           <Input />
         </Form.Item>
@@ -119,7 +166,7 @@ const AddProduct = () => {
             onChange={(_, editor) => {
               const data = editor.getData();
               setContent(data);
-              form.setFieldsValue({ description: data }); // 🔥 Cập nhật value cho Form
+              form.setFieldsValue({ description: data });
             }}
           >
             
@@ -131,27 +178,27 @@ const AddProduct = () => {
           name="category_id"
           rules={[{ required: true, message: "Please select a category" }]}
         >
-          <Select style={{height: 40}} options={categoryOption}></Select>
+          <Select placeholder="Select a category" options={categoryOption}></Select>
         </Form.Item>
 
         <Form.Item
-          label="Price (VND)"
-          name="price"
+          label="Original_Price (VND)"
+          name="original_price"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          name="stock"
-          label="Stock"
-          rules={[{ required: true, type: "number", message: "Enter stock" }]}
+          label="Sale_Price (VND)"
+          name="sale_price"
+          rules={[{ required: true, message: "Please enter the price" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item label="Tags" name="tags">
-          <Select mode="tags" style={{ width: "100%" }} placeholder="Enter tags" />
+          <Select mode="tags" style={{ width: "100%", height: 40 }} placeholder="Enter tags" />
         </Form.Item>
 
         <Form.Item
@@ -161,7 +208,10 @@ const AddProduct = () => {
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
           rules={[{ required: true, message: "Please upload product images" }]}
         >
-          <Upload beforeUpload={() => false} listType="picture-card" multiple>
+          <Upload 
+            beforeUpload={() => false} 
+            listType="picture-card" 
+            multiple>
             <div>
               <UploadOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
@@ -199,6 +249,26 @@ const AddProduct = () => {
                       </Form.Item>
 
                       <Form.Item
+                        label="Variant Images"
+                        name={[name, "image"]}
+                        rules={[{ required: true, message: "Please upload variant images" }]}
+                        valuePropName="fileList"
+                        getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+                      >
+                        <Upload 
+                          beforeUpload={() => false} 
+                          listType="picture-card" 
+                          maxCount={1} 
+                          
+                        >
+                          <div>
+                            <UploadOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                          </div>
+                        </Upload>
+                      </Form.Item>
+
+                      <Form.Item
                         {...restField}
                         name={[name, "sizes"]}
                         label="Available Sizes"
@@ -219,7 +289,7 @@ const AddProduct = () => {
                           form.getFieldValue(["variants", name, "sizes"]) || [];
                         return currentSizes.length > 0 ? (
                           <>
-                            <Divider className="mt-4 mb-2 " orientation="left">
+                            <Divider className=" mt-4 mb-2 " orientation="left">
                               Stock by Size
                             </Divider>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -246,9 +316,8 @@ const AddProduct = () => {
                 ))}
               </div>
 
-              <Form.Item className="pt-3">
+              <Form.Item className="mt-4">
                 <Button
-                  style={{height: 40}}
                   type="dashed"
                   onClick={() => add()}
                   icon={<PlusOutlined />}
@@ -262,11 +331,11 @@ const AddProduct = () => {
         </Form.List>
 
         <Form.Item>
-          <div className="flex justify-end space-x-3 mb-6">
-            <Button type="primary" htmlType="submit" style={{height: 40}}>
+          <div className="flex justify-end space-x-3">
+            <Button type="primary" htmlType="submit">
               Save Product
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
+            <Button htmlType="button" onClick={() => form.resetFields()}>
               Reset
             </Button>
           </div>
