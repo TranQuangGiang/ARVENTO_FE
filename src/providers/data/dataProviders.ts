@@ -69,6 +69,17 @@ const dataProvider = {
             }
         });
         return data;
+    },
+     updateCoupon: async <T>({resource, _id, values}: useUpdateParams<T>) => {
+        const isFormData = values instanceof FormData;
+        if (!_id) return;
+        const { data } = await axios.patch(`${resource}/${_id}`, values, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ...(isFormData ? { "Content-Type": "multipart/form-data" } : {})
+            }
+        });
+        return data;
     }
 }
-export const { create, getList, deleteOne, update, useOne } = dataProvider;  
+export const { create, getList, deleteOne, update, useOne, updateCoupon } = dataProvider;  
