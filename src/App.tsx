@@ -24,8 +24,8 @@ import EditCategoryBlog from './components/admin/categoryBlog/updateCategoryBlog
 import ListBlog from './components/admin/blog/listBlog'
 import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
-import AddProduct from './components/admin/product/addProduct'
 import EditProduct from './components/admin/product/editProduct'
+import AddProduct from './components/admin/product/addProduct'
 
 function App() {
   const routes = useRoutes([
@@ -52,16 +52,11 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
-<<<<<<< Updated upstream
-        {path: 'listproduct', element: <ListProduct />},
-        {path: 'addproduct', element: <AddProduct />},
-        {path: 'editproduct', element: <EditProduct />}
-=======
+        {path: 'editproduct', element: <EditProduct />},
         {path: 'listProduct', element: <ListProduct />},
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct/:id', element: <EditProduct />},
-        {path: 'detailProduct/:id', element: <DetailProduct />}
->>>>>>> Stashed changes
+        // {path: 'detailProduct/:id', element: <DetailProduct />}
       ]
     }
   ])

@@ -89,9 +89,9 @@ const EditProduct = () => {
     });
 
     setContent(productData.description);
-    console.log("original_price:", productData.original_price);
-console.log("sale_price:", productData.sale_price);
-  }, [product, form]);
+      console.log("original_price:", productData.original_price);
+      console.log("sale_price:", productData.sale_price);
+    }, [product, form]);
   
   {/** Lấy ra dnah mục sản phẩm */}
   const { data } = useList({
@@ -105,7 +105,6 @@ console.log("sale_price:", productData.sale_price);
   console.log(categoryOption);
   
   {/** Thêm mới sản phẩm */}
-
   const { mutate } = useUpdate<FormData>({
     resource: "/products", _id: id
   })
@@ -145,7 +144,7 @@ console.log("sale_price:", productData.sale_price);
 
       return sizes.map((size: string | number) => ({
         color: variant.color,
-        size,
+        size: String(size),
         stock: Number(stockBySize[size] || 0),
         image: imageFile
       }));
@@ -379,7 +378,7 @@ console.log("sale_price:", productData.sale_price);
         <Form.Item>
           <div className="flex justify-end space-x-3 mb-6">
             <Button type="primary" htmlType="submit" style={{height: 40}}>
-              Save Product
+              Update Product
             </Button>
             <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
               Reset

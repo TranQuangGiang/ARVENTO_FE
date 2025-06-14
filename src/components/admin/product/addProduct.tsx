@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   Input,
@@ -17,8 +17,7 @@ import {
   MinusCircleOutlined,
   OrderedListOutlined,
 } from "@ant-design/icons";
-<<<<<<< Updated upstream
-=======
+
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useList } from "../../../hooks/useList";
@@ -26,18 +25,11 @@ import { useCreate } from "../../../hooks/useCreate";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
->>>>>>> Stashed changes
-
 const { TextArea } = Input;
 const SIZE_OPTIONS = [38, 39, 40, 41, 42, 43];
 
 const AddProduct = () => {
   const [form] = Form.useForm();
-<<<<<<< Updated upstream
-
-  const onFinish = (values: any) => {
-    console.log("Form values:", values);
-=======
   const [content, setContent] = useState('');
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -61,14 +53,10 @@ const AddProduct = () => {
   })
 
   const onFinish = async (values: any) => {
->>>>>>> Stashed changes
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
       return;
     }
-<<<<<<< Updated upstream
-    message.success("Form data collected (not submitted to server).");
-=======
     const formData = new FormData();
     formData.append('name', String(values.name));
     formData.append('product_code', String(values.product_code));
@@ -106,7 +94,7 @@ const AddProduct = () => {
 
       return sizes.map((size: string | number) => ({
         color: variant.color,
-        size,
+        size: String(size),
         stock: Number(stockBySize[size] || 0),
         image: imageFile
       }));
@@ -127,18 +115,9 @@ const AddProduct = () => {
         setLoading(false);
       }
     });
->>>>>>> Stashed changes
   };
 
   return (
-<<<<<<< Updated upstream
-    <div className="p-6 bg-white min-h-screen mt-20 w-full mx-auto">
-      <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
-      <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
-      <hr className="border-t border-gray-300 mb-6 -mt-3" />
-
-      <Form layout="vertical" form={form} onFinish={onFinish}>
-=======
     <div className="ml-10 mr-10 mt-[30px] shadow-md bg-white rounded-xl mb-[40px]">
       <div className="w-[96%] mx-auto flex justify-between pt-8">
         <span>
@@ -156,7 +135,6 @@ const AddProduct = () => {
         form={form} onFinish={onFinish}
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
->>>>>>> Stashed changes
         <Form.Item
           label="Product Name"
           name="name"
@@ -182,9 +160,6 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item label="Description" name="description">
-<<<<<<< Updated upstream
-          <TextArea rows={4} />
-=======
           <CKEditor
             editor={ClassicEditor as any}
             data={content}
@@ -196,7 +171,6 @@ const AddProduct = () => {
           >
             
           </CKEditor>
->>>>>>> Stashed changes
         </Form.Item>
 
         <Form.Item
@@ -204,11 +178,7 @@ const AddProduct = () => {
           name="category_id"
           rules={[{ required: true, message: "Please select a category" }]}
         >
-          <Select placeholder="Select a category">
-            <Select.Option value="cat1">Category 1</Select.Option>
-            <Select.Option value="cat2">Category 2</Select.Option>
-            <Select.Option value="cat3">Category 3</Select.Option>
-          </Select>
+          <Select placeholder="Select a category" options={categoryOption}></Select>
         </Form.Item>
 
         <Form.Item
@@ -220,15 +190,9 @@ const AddProduct = () => {
         </Form.Item>
 
         <Form.Item
-<<<<<<< Updated upstream
-          label="Stock"
-          name="stock"
-          rules={[{ required: true, message: "Please enter the stock" }]}
-=======
           label="Sale_Price (VND)"
           name="sale_price"
           rules={[{ required: true, message: "Please enter the price" }]}
->>>>>>> Stashed changes
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
@@ -306,21 +270,6 @@ const AddProduct = () => {
 
                       <Form.Item
                         {...restField}
-                        name={[name, "image"]}
-                        label="Image"
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) =>
-                          Array.isArray(e) ? e : e?.fileList
-                        }
-                        rules={[{ required: true, message: "Please upload an image" }]}
-                      >
-                        <Upload beforeUpload={() => false} listType="picture">
-                          <Button icon={<UploadOutlined />}>Upload Image</Button>
-                        </Upload>
-                      </Form.Item>
-
-                      <Form.Item
-                        {...restField}
                         name={[name, "sizes"]}
                         label="Available Sizes"
                         rules={[{ required: true, message: "Select at least one size" }]}
@@ -340,11 +289,7 @@ const AddProduct = () => {
                           form.getFieldValue(["variants", name, "sizes"]) || [];
                         return currentSizes.length > 0 ? (
                           <>
-<<<<<<< Updated upstream
-                            <Divider className="mt-4 mb-2" orientation="left">
-=======
                             <Divider className=" mt-4 mb-2 " orientation="left">
->>>>>>> Stashed changes
                               Stock by Size
                             </Divider>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
