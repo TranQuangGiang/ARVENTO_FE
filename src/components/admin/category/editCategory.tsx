@@ -109,4 +109,3 @@ function setContent(content: any) {
 function setThumbnail(thumbnail: any) {
   throw new Error("Function not implemented.");
 }
-

@@ -45,7 +45,8 @@
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.6",
     "tailwind-scrollbar-hide": "^2.0.0",
-    "toolbar": "^0.0.5"
+    "toolbar": "^0.0.5",
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
