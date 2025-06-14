@@ -30,6 +30,9 @@ import DetailProduct from './components/admin/product/detailProduct'
 import ForgotPassword from './components/client/auth/ForgotPassword'
 import ResetPassword from './components/client/auth/ResetPassword'
 import DetailAuth from './components/client/auth/DetailAuth'
+import ListCoupon from './components/admin/coupon/listCoupon'
+import AddCoupon from './components/admin/coupon/addCoupon'
+import EditCoupon from './components/admin/coupon/editCoupon'
 
 function App() {
   const routes = useRoutes([
@@ -62,7 +65,10 @@ function App() {
         {path: 'listProduct', element: <ListProduct />},
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct', element: <EditProduct />},
-        {path: 'detailProduct/:id', element: <DetailProduct />}
+        {path: 'detailProduct/:id', element: <DetailProduct />},
+        {path: 'listcoupon', element: <ListCoupon />},
+        {path: 'addCoupon', element: <AddCoupon />},
+        {path: 'editcoupon/:id', element: <EditCoupon />}
       ]
     }
   ])
