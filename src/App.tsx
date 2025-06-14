@@ -26,6 +26,9 @@ import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import EditProduct from './components/admin/product/editProduct'
 import AddProduct from './components/admin/product/addProduct'
+import ListCoupon from './components/admin/coupon/listCoupon'
+import AddCoupon from './components/admin/coupon/addCoupon'
+import EditCoupon from './components/admin/coupon/editCoupon'
 
 function App() {
   const routes = useRoutes([
@@ -34,7 +37,7 @@ function App() {
       {path: 'detail', element: <Deltai/>},
       {path: 'cart', element: <Cart/>},
       {path: 'register', element: <Register/>},
-      {path: 'login', element: <Login/>}
+      {path: 'login', element: <Login/>},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
@@ -57,6 +60,9 @@ function App() {
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct/:id', element: <EditProduct />},
         // {path: 'detailProduct/:id', element: <DetailProduct />}
+        {path: 'listcoupon', element: <ListCoupon />},
+        {path: 'addCoupon', element: <AddCoupon />},
+        {path: 'editcoupon/:id', element: <EditCoupon />},
       ]
     }
   ])

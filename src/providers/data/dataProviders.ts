@@ -83,6 +83,11 @@ const dataProvider = {
             }
         });
         return data;
+    },
+    getListClient: async ({ resource }: useListParams) => {
+    const { data } = await axios.get(`${resource}`);
+    return data;
     }
+
 }
-export const { create, getList, deleteOne, update, useOne, updateCoupon } = dataProvider;  
+export const { create, getList, deleteOne, update, useOne, updateCoupon, getListClient } = dataProvider;  
