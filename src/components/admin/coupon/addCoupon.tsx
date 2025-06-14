@@ -17,213 +17,223 @@ const AddCoupon = () => {
     label: cat.name,
     value: cat._id,
   }));
-  console.log("Danh mục:", categoryOption);
+  console.log("Categories:", categoryOption);
 
-   const { data: userData } = useList({
+  const { data: userData } = useList({
     resource: "/users"
   });
 
   const userOption = userData?.data?.docs?.map((user: any) => ({
-  label: user.email,
-  value: user._id,
-})) || [];
-  console.log("User:", userOption);
+    label: user.email,
+    value: user._id,
+  })) || [];
+  console.log("Users:", userOption);
 
-   const { mutate } = useCreate({
-  resource: "/coupons/admin/coupons",
-});
-
-const onFinish = (values: any) => {
-  const payload = {
-    code: values.code,
-    discountType: values.discountType,
-    discountValue: values.discountValue,
-    description: values.description,
-    usageLimit: values.usageLimit,
-    perUserLimit: values.perUserLimit,
-    startDate: values.startDate ? values.startDate.toISOString() : null,
-    expiryDate: values.expiryDate ? values.expiryDate.toISOString() : null,
-    minSpend: values.minSpend,
-    maxSpend: values.maxSpend,
-    products: values.products || [],
-    excludedProducts: values.excludedProducts || [],
-    categories: values.categories || [],
-    excludedCategories: values.excludedCategories || [],
-    userRestrictions: values.userRestrictions || [],
-    allowFreeShipping: values.allowFreeShipping || false,
-    excludeSaleItems: values.excludeSaleItems || false,
-    individualUse: values.individualUse || false,
-    isActive: values.isActive || false,
-  };
-
-  console.log("Dữ liệu gửi lên server:", payload);
-
-  mutate(payload, {
-    onSuccess: (data) => {
-      console.log("Tạo mã giảm giá thành công:", data);
-      form.resetFields(); 
-    },
-    onError: (error) => {
-      console.error("Lỗi khi tạo mã giảm giá:", error);
-    }
+  const { data: productData } = useList({
+    resource: "/products"
   });
-};
+
+  const productOption = productData?.data?.docs?.map((product: any) => ({
+    label: product.name,
+    value: product._id,
+  })) || [];
+  console.log("Products:", productOption);
+
+  const { mutate } = useCreate({
+    resource: "/coupons/admin/coupons",
+  });
+
+  const onFinish = (values: any) => {
+    const payload = {
+      code: values.code,
+      discountType: values.discountType,
+      discountValue: values.discountValue,
+      description: values.description,
+      usageLimit: values.usageLimit,
+      perUserLimit: values.perUserLimit,
+      startDate: values.startDate ? values.startDate.toISOString() : null,
+      expiryDate: values.expiryDate ? values.expiryDate.toISOString() : null,
+      minSpend: values.minSpend,
+      maxSpend: values.maxSpend,
+      products: values.products || [],
+      excludedProducts: values.excludedProducts || [],
+      categories: values.categories || [],
+      excludedCategories: values.excludedCategories || [],
+      userRestrictions: values.userRestrictions || [],
+      allowFreeShipping: values.allowFreeShipping || false,
+      excludeSaleItems: values.excludeSaleItems || false,
+      individualUse: values.individualUse || false,
+      isActive: values.isActive || false,
+    };
+
+    console.log("Submitted payload:", payload);
+
+    mutate(payload, {
+      onSuccess: (data) => {
+        console.log("Coupon created successfully:", data);
+        form.resetFields();
+      },
+      onError: (error) => {
+        console.error("Error creating coupon:", error);
+      }
+    });
+  };
 
   return (
     <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
-      <h3 className="text-2xl font-semibold mb-1">THÊM MÃ GIẢM GIÁ MỚI</h3>
-      <p className="text-sm text-gray-500 mb-6">Tạo mã giảm giá mới cho khách hàng</p>
+      <h3 className="text-2xl font-semibold mb-1">ADD NEW COUPON</h3>
+      <p className="text-sm text-gray-500 mb-6">Create a new discount coupon for customers</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
       <Form
-  form={form}
-  layout="vertical"
-  onFinish={onFinish}
-  className="space-y-4"
->
-  <Form.Item
-    label="Mã giảm giá"
-    name="code"
-    rules={[{ required: true, message: "Vui lòng nhập mã giảm giá" }]}
-  >
-    <Input placeholder="Nhập mã giảm giá (VD: SALE10)" />
-  </Form.Item>
-
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item
-        label="Loại giảm giá"
-        name="discountType"
-        rules={[{ required: true, message: "Vui lòng chọn loại giảm giá" }]}
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        className="space-y-4"
       >
-        <Select
-          placeholder="Chọn loại giảm giá"
-          onChange={(value) => setDiscountType(value)}
+        <Form.Item
+          label="Coupon Code"
+          name="code"
+          rules={[{ required: true, message: "Please enter the coupon code" }]}
         >
-          <Select.Option value="percentage">Phần trăm (%)</Select.Option>
-          <Select.Option value="fixed_amount">Số tiền cố định</Select.Option>
-        </Select>
-      </Form.Item>
-    </Col>
-    <Col span={12}>
-      <Form.Item
-        label="Giá trị giảm"
-        name="discountValue"
-        rules={[{ required: true, message: "Vui lòng nhập giá trị giảm" }]}
-      >
-        <InputNumber
-          min={0}
-          placeholder="Nhập giá trị giảm"
-          className="w-full"
-          addonAfter={discountType === 'percentage' ? "%" : "VND"}
-        />
-      </Form.Item>
-    </Col>
-  </Row>
+          <Input placeholder="Enter coupon code (e.g. SALE10)" />
+        </Form.Item>
 
-  <Form.Item label="Mô tả" name="description">
-    <Input.TextArea placeholder="Nhập mô tả (tối đa 500 ký tự)" maxLength={500} rows={3} />
-  </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Discount Type"
+              name="discountType"
+              rules={[{ required: true, message: "Please select discount type" }]}
+            >
+              <Select
+                placeholder="Select discount type"
+                onChange={(value) => setDiscountType(value)}
+              >
+                <Select.Option value="percentage">Percentage (%)</Select.Option>
+                <Select.Option value="fixed_amount">Fixed Amount</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Discount Value"
+              name="discountValue"
+              rules={[{ required: true, message: "Please enter discount value" }]}
+            >
+              <InputNumber
+                min={0}
+                placeholder="Enter discount value"
+                className="w-full"
+                addonAfter={discountType === 'percentage' ? "%" : "VND"}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-  {/* Giới hạn lượt & mỗi người */}
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item label="Giới hạn lượt sử dụng" name="usageLimit">
-        <InputNumber min={1} placeholder="Giới hạn lượt" className="w-full" />
-      </Form.Item>
-    </Col>
-    <Col span={12}>
-      <Form.Item label="Giới hạn mỗi người" name="perUserLimit">
-        <InputNumber min={1} placeholder="Giới hạn mỗi người" className="w-full" />
-      </Form.Item>
-    </Col>
-  </Row>
+        <Form.Item label="Description" name="description">
+          <Input.TextArea placeholder="Enter description (max 500 characters)" maxLength={500} rows={3} />
+        </Form.Item>
 
-  {/* Ngày bắt đầu & hết hạn */}
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item label="Ngày bắt đầu" name="startDate">
-        <DatePicker className="w-full" />
-      </Form.Item>
-    </Col>
-    <Col span={12}>
-      <Form.Item label="Ngày hết hạn" name="expiryDate">
-        <DatePicker className="w-full" />
-      </Form.Item>
-    </Col>
-  </Row>
+        {/* Usage limits */}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Usage Limit" name="usageLimit">
+              <InputNumber min={1} placeholder="Usage limit" className="w-full" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Limit per User" name="perUserLimit">
+              <InputNumber min={1} placeholder="Limit per user" className="w-full" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-  {/* Chi tiêu tối thiểu & tối đa */}
-  <Row gutter={16}>
-    <Col span={12}>
-      <Form.Item label="Chi tiêu tối thiểu" name="minSpend">
-        <InputNumber min={0} placeholder="Tối thiểu"/>
-      </Form.Item>
-    </Col>
-    <Col span={12}>
-      <Form.Item label="Chi tiêu tối đa" name="maxSpend">
-        <InputNumber min={0} placeholder="Tối đa"/>
-      </Form.Item>
-    </Col>
-  </Row>
+        {/* Start & Expiry date */}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Start Date" name="startDate">
+              <DatePicker className="w-full" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Expiry Date" name="expiryDate">
+              <DatePicker className="w-full" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-  {/* Sản phẩm & Danh mục */}
-  <Form.Item label="Sản phẩm áp dụng" name="products">
-    <Select mode="multiple" options={[]} placeholder="Chọn sản phẩm" />
-  </Form.Item>
+        {/* Spend limits */}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Minimum Spend" name="minSpend">
+              <InputNumber min={0} placeholder="Minimum spend" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Maximum Spend" name="maxSpend">
+              <InputNumber min={0} placeholder="Maximum spend" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-  <Form.Item label="Sản phẩm không áp dụng" name="excludedProducts">
-    <Select mode="multiple" options={[]} placeholder="Chọn sản phẩm" />
-  </Form.Item>
+        {/* Products & Categories */}
+        <Form.Item label="Applicable Products" name="products">
+          <Select mode="multiple" options={productOption} placeholder="Select products" />
+        </Form.Item>
 
-  <Form.Item label="Danh mục áp dụng" name="categories">
-    <Select mode="multiple" options={categoryOption} placeholder="Chọn danh mục" />
-  </Form.Item>
+        <Form.Item label="Excluded Products" name="excludedProducts">
+          <Select mode="multiple" options={productOption} placeholder="Select excluded products" />
+        </Form.Item>
 
-  <Form.Item label="Danh mục không áp dụng" name="excludedCategories">
-    <Select mode="multiple" options={categoryOption} placeholder="Chọn danh mục" />
-  </Form.Item>
+        <Form.Item label="Applicable Categories" name="categories">
+          <Select mode="multiple" options={categoryOption} placeholder="Select categories" />
+        </Form.Item>
 
-  <Form.Item label="Giới hạn người dùng" name="userRestrictions">
-    <Select mode="multiple" options={userOption} placeholder="Chọn user" />
-  </Form.Item>
+        <Form.Item label="Excluded Categories" name="excludedCategories">
+          <Select mode="multiple" options={categoryOption} placeholder="Select excluded categories" />
+        </Form.Item>
 
-  {/* Checkbox & Switch gọn gàng */}
-  <Row gutter={16}>
-    <Col span={6}>
-      <Form.Item name="allowFreeShipping" valuePropName="checked">
-        <Checkbox>Miễn phí vận chuyển</Checkbox>
-      </Form.Item>
-    </Col>
-    <Col span={6}>
-      <Form.Item name="excludeSaleItems" valuePropName="checked">
-        <Checkbox>Loại trừ sản phẩm sale</Checkbox>
-      </Form.Item>
-    </Col>
-    <Col span={6}>
-      <Form.Item name="individualUse" valuePropName="checked">
-        <Checkbox>Chỉ áp dụng riêng</Checkbox>
-      </Form.Item>
-    </Col>
-    <Col span={6}>
-      <Form.Item label="Kích hoạt" name="isActive" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-    </Col>
-  </Row>
+        <Form.Item label="User Restrictions" name="userRestrictions">
+          <Select mode="multiple" options={userOption} placeholder="Select users" />
+        </Form.Item>
 
-  {/* Buttons */}
-  <Form.Item>
-    <div className="flex justify-end space-x-3">
-      <Button type="primary" htmlType="submit">
-        Tạo mã giảm giá
-      </Button>
-      <Button htmlType="button" onClick={() => form.resetFields()}>
-        Làm mới
-      </Button>
-    </div>
-  </Form.Item>
-</Form>
+        {/* Switches */}
+        <Row gutter={16}>
+          <Col span={6}>
+            <Form.Item name="allowFreeShipping" valuePropName="checked">
+              <Checkbox>Allow Free Shipping</Checkbox>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item name="excludeSaleItems" valuePropName="checked">
+              <Checkbox>Exclude Sale Items</Checkbox>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item name="individualUse" valuePropName="checked">
+              <Checkbox>Individual Use Only</Checkbox>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item label="Active" name="isActive" valuePropName="checked">
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* Buttons */}
+        <Form.Item>
+          <div className="flex justify-end space-x-3">
+            <Button type="primary" htmlType="submit">
+              Create Coupon
+            </Button>
+            <Button htmlType="button" onClick={() => form.resetFields()}>
+              Reset
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
