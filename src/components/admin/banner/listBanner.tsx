@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Switch, message, Input, Select, Table, Image } from "antd";
 import { useDeleteBanner, useBannersAdmin, useUpdateBannerStatus } from "../../../hooks/listbanner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
+import type { ColumnsType } from "antd/es/table";
+import { Images } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const { Option } = Select;
 
@@ -13,7 +16,7 @@ const ListBanner = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const { data: banners, isLoading, isError } = useBannersAdmin();
+  const { data: banners, refetch: refetchBanner, isLoading, isError, } = useBannersAdmin();
   const updateStatus = useUpdateBannerStatus();
   const deleteBanner = useDeleteBanner();
   const [hasShownSuccess, setHasShownSuccess] = useState(false);
@@ -27,9 +30,13 @@ const ListBanner = () => {
     }
   }, [location.state, navigate, hasShownSuccess]);
 
+  // Refetch khi có cờ shouldRefetch
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+    if (location.state?.shouldRefetch) {
+      refetchBanner();
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, navigate, refetchBanner]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading banners</div>;
@@ -38,7 +45,7 @@ const ListBanner = () => {
     slide.title.toLowerCase().includes(searchTerm.toLowerCase())
   ) ?? [];
 
-  const columns = [
+  const columns: ColumnsType<any> = [
     {
       title: 'Status',
       dataIndex: 'is_active',
@@ -125,56 +132,75 @@ const ListBanner = () => {
   };
 
   return (
-    <div className="w-full px-6 py-10 bg-gray-50 min-h-screen">
-      <div className="bg-white p-6 rounded-lg border border-gray-200 shadow mt-20">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 items-center">
-            <span className="text-gray-500">Showing</span>
-            <Select
-              value={itemsPerPage}
-              onChange={(value) => {
-                setItemsPerPage(value);
-                setCurrentPage(1);
-              }}
-              style={{ width: 80 }}
-            >
-              {[3, 5, 10].map(num => (
-                <Option key={num} value={num}>{num}</Option>
-              ))}
-            </Select>
+    <AnimatePresence>
+      <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 50}}
+          animate={{ opacity: 1, y: 0}}
+          exit={{ opacity: 0, y: 50 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="pl-6 pr-6 bg-gray-50 min-h-screen">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow mt-10">
+              <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
+                <Images className="pr-2" style={{width: 35}} /> Danh sách banner
+              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex gap-2 items-center">
+                  <span className="text-gray-500">Showing</span>
+                  <Select
+                    value={itemsPerPage}
+                    onChange={(value) => {
+                      setItemsPerPage(value);
+                      setCurrentPage(1);
+                    }}
+                    style={{ width: 80 }}
+                  >
+                    {[3, 5, 10].map(num => (
+                      <Option key={num} value={num}>{num}</Option>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    allowClear
+                    className="w-64"
+                  />
+                  <Button
+                    type="primary"
+                    icon={<FiPlus />}
+                    onClick={() => navigate("/admin/addbanner")}
+                  >
+                    Add New
+                  </Button>
+                </div>
+              </div>
+              <Table
+                dataSource={filteredSlides}
+                columns={columns}
+                rowKey="_id"
+                pagination={{
+                  current: currentPage,
+                  pageSize: itemsPerPage,
+                  total: filteredSlides.length,
+                  onChange: setCurrentPage,
+                  showSizeChanger: false
+                }}
+                bordered
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              className="w-64"
-            />
-            <Button
-              type="primary"
-              icon={<FiPlus />}
-              onClick={() => navigate("/admin/addbanner")}
-            >
-              Add New
-            </Button>
-          </div>
-        </div>
-        <Table
-          dataSource={filteredSlides}
-          columns={columns}
-          rowKey="_id"
-          pagination={{
-            current: currentPage,
-            pageSize: itemsPerPage,
-            total: filteredSlides.length,
-            onChange: setCurrentPage,
-            showSizeChanger: false
-          }}
-          bordered
-        />
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

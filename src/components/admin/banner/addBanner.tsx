@@ -31,7 +31,7 @@ const AddBanner = () => {
        onSuccess: () => {
           message.success("Banner added successfully");
           form.resetFields();
-          navigate("/admin/listbanner");
+          navigate("/admin/listbanner", { state: { shouldRefetch: true } });
         },
         onError: (err: any) => {
           message.error(err.response?.data?.message || "Failed to add banner");
