@@ -29,15 +29,24 @@ import AddProduct from './components/admin/product/addProduct'
 import ListCoupon from './components/admin/coupon/listCoupon'
 import AddCoupon from './components/admin/coupon/addCoupon'
 import EditCoupon from './components/admin/coupon/editCoupon'
+import DeltaiProduct from './components/client/Deltai'
+import ResetPassword from './components/client/auth/ResetPassword'
+import DetailAuth from './components/client/auth/DetailAuth/DetailAuth'
+import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
+
 
 function App() {
   const routes = useRoutes([
     {path: '/', element: < LayoutClient />, children: [
       {path: '', element: <ListProductClient />},
-      {path: 'detail', element: <Deltai/>},
+      {path: 'detailProduct/:id', element: <DeltaiProduct />},
       {path: 'cart', element: <Cart/>},
       {path: 'register', element: <Register/>},
       {path: 'login', element: <Login/>},
+      {path: 'resetPassword', element: <ResetPassword/>},
+      {path: 'detailAuth', element: <DetailAuth/>, children: [
+        {path: 'homeAuth', element: <HomeAuth />}
+      ]}
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

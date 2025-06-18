@@ -20,10 +20,8 @@ import {
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useList } from "../../../hooks/useList";
-import { useCreate } from "../../../hooks/useCreate";
 import { useNavigate, useParams } from "react-router-dom";
 import { useOneData } from "../../../hooks/useOne";
-import { color } from "framer-motion";
 import { useUpdate } from "../../../hooks/useUpdate";
 import { convertToFile } from "../../../hooks/useUrlToFile";
 
@@ -140,21 +138,35 @@ const EditProduct = () => {
       const sizes = variant.sizes || [];
       const stockBySize = variant.stockBySize || {};
       const fileList = variant.image;
-      const imageFile = Array.isArray(fileList) ? fileList[0]?.originFileObj : null;
+      let imageFile = null;
+      let imageUrl = null;
+      if (Array.isArray(fileList) && fileList.length > 0) {
+        const file = fileList[0];
+        if (file.originFileObj) {
+          imageFile = file.originFileObj;
+        } else if (file.url) {
+          imageUrl = file.url;
+        }
+      }
 
       return sizes.map((size: string | number) => ({
         color: variant.color,
         size: String(size),
         stock: Number(stockBySize[size] || 0),
-        image: imageFile
+        image: imageFile || imageUrl
       }));
     });
     parsedVariants.forEach((variant: any, index: number) => {
-      if (variant.image) {
+      if (variant.image instanceof File) {
         formData.append('variantImages', variant.image, `variant_${index}.jpg`);
       }
+      
     });
-    const variantsToSend = parsedVariants.map(({ image, ...rest }:any) => rest);
+    const variantsToSend = parsedVariants.map((variant: any) => ({
+      ...variant,
+      image: typeof variant.image === "string" ? variant.image : undefined
+    }));
+
     formData.append('variants', JSON.stringify(variantsToSend));
     setLoading(true);
     mutate(formData, {
@@ -177,6 +189,19 @@ const EditProduct = () => {
         layout="vertical" 
         form={form} 
         onFinish={onFinish}
+        onValuesChange={(changedValues, allValues) => {
+          if ("name" in changedValues) {
+            const rawName = changedValues.name || "";
+            const generatedSlug = rawName
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/[^a-z0-9 ]/g, "")
+              .trim()
+              .replace(/\s+/g, "-");
+            form.setFieldsValue({ slug: generatedSlug });
+          }
+        }}
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
         <Form.Item
@@ -230,7 +255,14 @@ const EditProduct = () => {
           name="original_price"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber<number>
+            min={0}
+            style={{ width: "100%" }}
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            }
+            parser={(value) => Number(value?.replace(/,/g, "") || "")}
+          />
         </Form.Item>
 
         <Form.Item
@@ -238,7 +270,14 @@ const EditProduct = () => {
           name="sale_price"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber<number>
+            min={0}
+            style={{ width: "100%" }}
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+            }
+            parser={(value) => Number(value?.replace(/,/g, "") || "")}
+          />
         </Form.Item>
 
         <Form.Item label="Tags" name="tags">
@@ -377,7 +416,12 @@ const EditProduct = () => {
 
         <Form.Item>
           <div className="flex justify-end space-x-3 mb-6">
-            <Button type="primary" htmlType="submit" style={{height: 40}}>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              style={{height: 40}}
+              loading={loading}
+            >
               Update Product
             </Button>
             <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
