@@ -16,45 +16,52 @@ const ListProductClient = () => {
   const products = allProductData?.data?.docs || [];
   const categoryProducts = categoryProductData?.data?.docs || [];
 
-  const formatPrice = (price) => {
+  const formatPrice = (price:any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
-      return Number(price.$numberDecimal).toLocaleString() + ' đ';
+      return Number(price.$numberDecimal).toLocaleString();
     }
     if (typeof price === 'number') {
-      return price.toLocaleString() + ' đ';
+      return price.toLocaleString();
     }
     return 'Liên hệ';
   };
 
   const newestProducts = [...products]
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 4);
-
+   
   return (
     <main>
       <div className='list-product w-[74%] mx-auto mt-[100px] mb-[40px] flex items-center justify-center gap-[21px]'>
         {isFetchingAll && <p>Loading...</p>}
         {!isFetchingAll &&
           newestProducts.map((product) => (
-            <div
-              key={product._id}
-              className='list-product-one w-[220px] h-[300px] bg-[#ededed] flex flex-col items-center justify-center cursor-pointer group'
-            >
-              <img
-                className='w-[120px] transition-all duration-300 group-hover:scale-[1.1]'
-                src={product.images?.[0] || "/default.png"}
-                alt={product.name}
-              />
-              <div className='content w-[75%] mt-[20px]'>
-                <h4 className='w-full text-[16px] font-semibold text-black'>{product.name}</h4>
-                <p className='pt-[4px] font-sans font-semibold text-[#0b1f4e] text-[15px]'>
-                  {formatPrice(product.sale_price)}
-                </p>
+            <Link to={`/detailProduct/${product._id}`}>
+              <div
+                key={product._id}
+                className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'
+              >
+                <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                  <img
+                    className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                    src={product.images?.[0] || "/default.png"}
+                    alt={product.name}
+                  />
+                </div>
+                <div className='content w-[80%] mt-[0px]'>
+                  <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
+                  <div className='pt-1.5 flex items-center'>
+                    <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                      {formatPrice(product.original_price)}<sup>đ</sup>
+                    </p>
+                    <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                  </div>
+                </div>
+                <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
+                  <p className='text-[11px]'>Select options</p>
+                </div>
               </div>
-              <div className='mt-[10px] text-[13px] uppercase font-sans w-[75%] mx-auto border-b-1'>
-                <p>Select options</p>
-              </div>
-            </div>
+            </Link>
           ))}
 
         <div className='w-[285px] relative h-[300px] bg-[#0b1f4e] flex flex-col gap-3'>
@@ -103,7 +110,7 @@ const ListProductClient = () => {
           <div className='w-[80%] h-[80%] bg-[#ededed]/80 absolute mx-auto z-30 [&_img]:w-[150px] flex flex-col items-center justify-center group'>
             <img className='transition-all duration-300 group-hover:scale-[1.1]' src="/img1.png" alt="" />
             <div className='content mt-0 w-[80%] mx-auto'>
-              <h3 className='font-sans font-bold text-[19px] uppercase'>Fillo - Xtrema 3 Edition</h3>
+              <h3 className='font-sans font-bold text-[19px] uppercase'>Nike - Xtrema 3 Edition</h3>
               <p className='text-[13px] mt-[10px] cursor-pointer font-light font-sans text-[#0b1f4e] uppercase'>
                 See more <FontAwesomeIcon className=' text-[12px] font-light' icon={faArrowRight} />
               </p>
@@ -121,8 +128,8 @@ const ListProductClient = () => {
           <div className='list-product w-[840px] flex items-center justify-between gap-[21px] mt-[40px]'>
             {isFetchingCategory && <p>Loading...</p>}
             {!isFetchingCategory &&
-              categoryProducts.map((product) => (
-                <div key={product._id} className='list-product-one w-[220px] h-[300px] bg-[#ededed] flex flex-col items-center justify-center cursor-pointer group'>
+              categoryProducts.map((product:any) => (
+                <div key={product._id} className='list-product-one w-[220px] h-[300px] bg-[#f2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
                   <img
                     className='w-[120px] transition-all duration-300 group-hover:scale-[1.1]'
                     src={product.images?.[0] || "/default.png"}
@@ -152,10 +159,11 @@ const ListProductClient = () => {
         <div className='list-product w-full grid grid-cols-4 gap-[26px]'>
           {isFetchingAll && <p>Loading...</p>}
           {!isFetchingAll &&
-            products.map((product) => (
-              <div key={product._id} className='list-product-one w-[100%] h-[340px] bg-[#ededed] flex flex-col items-center justify-center cursor-pointer group'>
+            products.map((product:any) => (
+              <div key={product._id} className='list-product-one w-[100%] h-[340px] bg-[#f2f2f2] overflow-hidden flex flex-col items-center justify-center cursor-pointer group'>
+
                 <img
-                  className='w-[180px] transition-all duration-300 group-hover:scale-[1.1]'
+                  className='w-[230px] h-[210px] transition-all duration-300 group-hover:scale-[1.1]'
                   src={product.images?.[0] || "/default.png"}
                   alt={product.name}
                 />

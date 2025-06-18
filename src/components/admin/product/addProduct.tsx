@@ -133,6 +133,19 @@ const AddProduct = () => {
       <Form 
         layout="vertical" 
         form={form} onFinish={onFinish}
+        onValuesChange={(changedValues, allValues) => {
+          if ("name" in changedValues) {
+            const rawName = changedValues.name || "";
+            const generatedSlug = rawName
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/[^a-z0-9 ]/g, "")
+              .trim()
+              .replace(/\s+/g, "-");
+            form.setFieldsValue({ slug: generatedSlug });
+          }
+        }}
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
         <Form.Item
@@ -331,11 +344,16 @@ const AddProduct = () => {
         </Form.List>
 
         <Form.Item>
-          <div className="flex justify-end space-x-3">
-            <Button type="primary" htmlType="submit">
+          <div className="flex justify-end space-x-3 mb-6">
+            <Button 
+              type="primary"  
+              htmlType="submit"
+              loading={loading}  
+              style={{height: 40}}
+            >
               Save Product
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()}>
+            <Button htmlType="button" onClick={() => form.resetFields()} disabled={loading} style={{height: 40}}>
               Reset
             </Button>
           </div>

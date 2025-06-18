@@ -72,19 +72,26 @@ const HeaderClient = () => {
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
               >
-                <Link to={'/detailAuth'}>
+                <Link to={'/detailAuth/homeAuth'}>
                   <button
-                    className='block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
                   >
-                    Tài khoản của tôi
+                    My account
                   </button>
                 </Link>
                 <button 
                   onClick={logout}  
                   className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'
                 >
-                  Đăng xuất
+                  Log Out
                 </button>
+                <Link to={`/admin`}>
+                  <button
+                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                  >
+                    Admin Access
+                  </button>
+                </Link>
               </div>
             ) : (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
@@ -96,13 +103,13 @@ const HeaderClient = () => {
                   onClick={() => setShowModal("login")}
                   className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'
                 >
-                Đăng nhập
+                Sign In
                 </button>
                 <button 
                   onClick={() => setShowModal("register")}  
                   className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'
                 >
-                  Đăng ký
+                  Register
                 </button>
               </div>
             )}
