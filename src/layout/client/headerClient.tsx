@@ -35,11 +35,11 @@ const HeaderClient = () => {
         <section className='header-menu flex items-center gap-5'>
           {/* Menu */}
           <nav className='flex gap-6 transition-all duration-300 [&_a]:text-[15px] [&_a]:text-[#0b1f4e]'>
-            <a href="">Trang chủ</a>
-            <a href="">Sản phẩm</a>
-            <a href="">Tin tức</a>
+            <a href="">Home</a>
+            <a href="">Products</a>
             <a href="">Pages</a>
-            <a href="">Liên hệ</a>
+            <a href="">Blog New</a>
+            <a href="">Contact</a>
           </nav>
 
           {/* Search Section */}
@@ -114,7 +114,9 @@ const HeaderClient = () => {
               </div>
             )}
           </div>
-          <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
+          <Link to={`/cart`}>
+            <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
+          </Link>
         </section>
         <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
         <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />

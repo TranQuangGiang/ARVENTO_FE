@@ -35,10 +35,15 @@ const AddProduct = () => {
   const [loading, setLoading] = useState(false);
 
   
-  {/** Lấy ra dnah mục sản phẩm */}
+  {/** Lấy ra danh mục sản phẩm */}
   const { data } = useList({
     resource: "/categories/admin"
   });
+  
+  const colorOption = [
+    {value: "black", label: "Black"},
+    {value: "white", label: "White"},
+  ]
 
   const categoryOption = data?.data.map((cat:any) => ({
     label: cat.name,
@@ -258,7 +263,7 @@ const AddProduct = () => {
                         label="Color"
                         rules={[{ required: true, message: "Enter color" }]}
                       >
-                        <Input placeholder="Color" />
+                        <Select options={colorOption} placeholder="color"></Select>
                       </Form.Item>
 
                       <Form.Item

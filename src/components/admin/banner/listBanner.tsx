@@ -148,7 +148,7 @@ const ListBanner = () => {
           <div className="pl-6 pr-6 bg-gray-50 min-h-screen">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow mt-10">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <Images className="pr-2" style={{width: 35}} /> Danh sách banner
+                <Images className="pr-2" style={{width: 35}} /> Banner List
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-2 items-center">
