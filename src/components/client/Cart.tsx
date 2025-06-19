@@ -9,7 +9,6 @@ const initialItems = [
     name: 'Xịt Bọt ION Làm Sạch Giày Mycare Foaming Cleaner 300ml',
     code: 'MYC103',
     size: null,
-    rewardPoints: 990,
     quantity: 1,
     price: 99000,
   },
@@ -19,7 +18,6 @@ const initialItems = [
     name: 'Giày Nike Free RN NN Nam - Đen',
     code: 'MSN1109',
     size: 42,
-    rewardPoints: 24900,
     quantity: 1,
     price: 2490000,
   },
@@ -29,7 +27,6 @@ const initialItems = [
     name: 'Giày Nike Free RN NN Nam - Đen',
     code: 'MSN1109',
     size: 42,
-    rewardPoints: 24900,
     quantity: 1,
     price: 2490000,
   },
@@ -39,7 +36,6 @@ const initialItems = [
     name: 'Giày Nike Free RN NN Nam - Đen',
     code: 'MSN1109',
     size: 42,
-    rewardPoints: 24900,
     quantity: 1,
     price: 2490000,
   },
@@ -83,118 +79,81 @@ const Cart = () => {
   const totalSelectedCount = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="w-full mx-auto px-4 py-8 bg-white text-gray-900 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-blue-900">GIỎ HÀNG CỦA BẠN</h2>
-
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="md:w-2/3 overflow-x-auto rounded-md">
-          <table className="min-w-full text-sm text-left">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="p-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.length === items.length}
-                    onChange={handleSelectAll}
-                  />
-                </th>
-                <th className="p-3">Hình ảnh</th>
-                <th className="p-3">Tên sản phẩm</th>
-                <th className="p-3">Mã hàng</th>
-                <th className="p-3">Số lượng</th>
-                <th className="p-3">Đơn Giá</th>
-                <th className="p-3">Tổng cộng</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-gray-100">
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="p-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(item.id)}
-                      onChange={() => handleSelect(item.id)}
-                    />
-                  </td>
-                  <td className="p-3">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 object-contain"
-                    />
-                  </td>
-                  <td className="p-3">
-                    <p className="font-semibold">{item.name}</p>
-                    {item.size && (
-                      <p className="text-sm text-gray-500">Chọn size: {item.size}</p>
-                    )}
-                  </td>
-                  <td className="p-3">{item.code}</td>
-                  <td className="p-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleQuantityChange(item.id, -1)}
-                        className="px-2 py-1 border rounded bg-white text-gray-800"
-                      >
-                        –
-                      </button>
-                      <input
-                        type="text"
-                        value={item.quantity}
-                        readOnly
-                        className="w-10 text-center rounded bg-blue-300 text-gray-800"
-                      />
-                      <button
-                        onClick={() => handleQuantityChange(item.id, 1)}
-                        className="px-2 py-1 border rounded bg-white text-gray-800"
-                      >
-                        +
-                      </button>
-                      <Popconfirm
-                        title="Bạn có chắc muốn xoá?"
-                        onConfirm={() => handleRemove(item.id)}
-                        okText="Xoá"
-                        cancelText="Huỷ"
-                      >
-                        <Button
-                          type="text"
-                          danger
-                          icon={<DeleteOutlined />}
-                          className="ml-2"
-                        />
-                      </Popconfirm>
-                    </div>
-                  </td>
-                  <td className="p-3">{item.price.toLocaleString()}₫</td>
-                  <td className="p-3">
-                    {(item.price * item.quantity).toLocaleString()}₫
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="w-full bg-white text-gray-900 min-h-screen font-inter mb-16">
+      <div className="w-full border-t border-t-gray-200  px-4 md:px-10 lg:px-[180px]">
+        <h2 className="text-4xl font-bold text-gray-900 mt-16">🛒 GIỎ HÀNG CỦA BẠN</h2>
+        <p className="text-[17px] ml-2 text-gray-700 mt-2">Tổng cộng {items.length} sản phẩm đã thêm</p>
+      </div>
+      <div className="w-[78%] mt-6 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Danh sách sản phẩm */}
+        <div className="ml-4.5 w-full lg:col-span-2 space-y-6">
+          {items.map((item) => (
+            <div key={item.id} className="flex border border-gray-300 rounded-md overflow-hidden shadow-sm relative">
+              <input
+                type="checkbox"
+                className="absolute top-2 left-2 scale-125"
+                checked={selectedIds.includes(item.id)}
+                onChange={() => handleSelect(item.id)}
+              />
+              <div className='w-full flex pt-8 pl-4 pb-8'>
+                <img src={item.image} alt={item.name} className="w-28 h-28 mt-[18px] object-contain bg-slate-50" />
+                <div className="flex-1 p-4">
+                  <h3 className="text-[16px] font-sans font-semibold">{item.name}</h3>
+                  <p className="text-[15px] font-sans text-gray-600 mt-1">Mã hàng: {item.code}</p>
+                  {item.size && <p className="text-[15px] font-sans text-gray-600">Size: {item.size}</p>}
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      onClick={() => handleQuantityChange(item.id, -1)}
+                      className="px-2 py-1 border rounded-md hover:bg-gray-100"
+                    >-</button>
+                    <span className="w-8 text-center bg-gray-100 rounded-md">{item.quantity}</span>
+                    <button
+                      onClick={() => handleQuantityChange(item.id, 1)}
+                      className="px-2 py-1 border rounded-md hover:bg-gray-100"
+                    >+</button>
+                  </div>
+                </div>
+                <div className="p-4 flex flex-col items-end justify-between">
+                  <span className="text-[16px] font-bold font-sans">{(item.price * item.quantity).toLocaleString()}₫</span>
+                  <Popconfirm
+                    title="Bạn có chắc muốn xoá sản phẩm này?"
+                    onConfirm={() => handleRemove(item.id)}
+                    okText="Xoá"
+                    cancelText="Huỷ"
+                  >
+                    <DeleteOutlined style={{color: 'red'}} className="text-red-600 text-lg cursor-pointer hover:scale-110 transition" />
+                  </Popconfirm>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-
-        <div className="md:w-1/3 p-4 rounded shadow-sm bg-gray-50 h-fit">
-          <div className="flex justify-between font-semibold text-gray-700">
-            <span>Số lượng sản phẩm:</span>
-            <span>{totalSelectedCount}</span>
+        {/* Tóm tắt đơn hàng */}
+        <div className="p-6 ml-5 w-full rounded-lg shadow-md bg-slate-50 sticky top-8 h-fit">
+          <h4 className="text-2xl font-sans font-bold mb-4">TÓM TẮT ĐƠN HÀNG</h4>
+          <div className="flex justify-between mb-2">
+            <span className='text-[15px] font-sans'>{totalSelectedCount} sản phẩm</span>
+            <span className='text-[15px] font-sans'>{total.toLocaleString()}₫</span>
+          </div >
+          <div className="flex justify-between mb-2">
+            <span className='text-[15px] font-sans'>Phí giao hàng</span>
+            <span className='text-[15px] font-sans'>Miễn phí</span>
           </div>
-          <div className="flex justify-between font-bold text-lg mt-1 text-gray-900">
-            <span>Tổng:</span>
+          <div className="border-t pt-4 flex justify-between text-lg font-sans font-bold">
+            <span>Tổng cộng:</span>
             <span>{total.toLocaleString()}₫</span>
           </div>
+
           <button
             disabled={selectedItems.length === 0}
-            className="w-full mt-4 bg-blue-900 text-white py-2 rounded font-semibold hover:bg-blue-700 disabled:opacity-50"
+            className="w-full mt-8 mb-3.5 cursor-pointer text-white py-3 rounded-md bg-black hover:bg-gray-800 transition font-semibold font-sans"
           >
-            THANH TOÁN
+            THANH TOÁN →
           </button>
-
         </div>
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default Cart
