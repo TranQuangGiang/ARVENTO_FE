@@ -33,6 +33,9 @@ import DeltaiProduct from './components/client/Deltai'
 import ResetPassword from './components/client/auth/ResetPassword'
 import DetailAuth from './components/client/auth/DetailAuth/DetailAuth'
 import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
+import OrderHistory from './components/client/auth/DetailAuth/layoutAuth/OrderHistory'
+import AccountInformation from './components/client/auth/DetailAuth/layoutAuth/accountInformation'
+import DiscountCode from './components/client/auth/DetailAuth/layoutAuth/discountCode'
 
 
 function App() {
@@ -45,7 +48,10 @@ function App() {
       {path: 'login', element: <Login/>},
       {path: 'resetPassword', element: <ResetPassword/>},
       {path: 'detailAuth', element: <DetailAuth/>, children: [
-        {path: 'homeAuth', element: <HomeAuth />}
+        {path: 'homeAuth', element: <HomeAuth />},
+        {path: 'orderHistory', element: <OrderHistory />},
+        {path: 'accountInformation', element: <AccountInformation />},
+        {path: 'discountCode', element: <DiscountCode />}
       ]}
     ]},
     {

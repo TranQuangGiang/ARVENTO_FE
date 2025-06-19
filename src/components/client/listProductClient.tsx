@@ -10,7 +10,7 @@ const ListProductClient = () => {
   });
 
   const { data: categoryProductData, isFetching: isFetchingCategory } = useListClient({
-    resource: '/products?category_id=684d3d57ddd2263ad26729af',
+    resource: '/products?category_id=6843e798c4fb85b25844b4a2',
   });
 
   const products = allProductData?.data?.docs || [];
@@ -129,18 +129,28 @@ const ListProductClient = () => {
             {isFetchingCategory && <p>Loading...</p>}
             {!isFetchingCategory &&
               categoryProducts.map((product:any) => (
-                <div key={product._id} className='list-product-one w-[220px] h-[300px] bg-[#f2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
-                  <img
-                    className='w-[120px] transition-all duration-300 group-hover:scale-[1.1]'
-                    src={product.images?.[0] || "/default.png"}
-                    alt={product.name}
-                  />
-                  <div className='content w-[75%] mt-[20px]'>
-                    <h4 className='w-full text-[16px] font-semibold text-black'>{product.name}</h4>
-                    <p className='pt-[4px] font-sans font-semibold text-[#0b1f4e] text-[15px]'>{formatPrice(product.sale_price)}</p>
+                <div
+                  key={product._id}
+                  className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'
+                >
+                  <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                    <img
+                      className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                      src={product.images?.[0] || "/default.png"}
+                      alt={product.name}
+                    />
                   </div>
-                  <div className='mt-[10px] text-[13px] uppercase font-sans w-[75%] mx-auto border-b-1'>
-                    <p>Select options</p>
+                  <div className='content w-[80%] mt-[0px]'>
+                    <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
+                    <div className='pt-1.5 flex items-center'>
+                      <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                        {formatPrice(product.original_price)}<sup>đ</sup>
+                      </p>
+                      <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                    </div>
+                  </div>
+                  <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
+                    <p className='text-[11px]'>Select options</p>
                   </div>
                 </div>
               ))}
@@ -160,23 +170,31 @@ const ListProductClient = () => {
           {isFetchingAll && <p>Loading...</p>}
           {!isFetchingAll &&
             products.map((product:any) => (
-              <div key={product._id} className='list-product-one w-[100%] h-[340px] bg-[#f2f2f2] overflow-hidden flex flex-col items-center justify-center cursor-pointer group'>
-
-                <img
-                  className='w-[230px] h-[210px] transition-all duration-300 group-hover:scale-[1.1]'
-                  src={product.images?.[0] || "/default.png"}
-                  alt={product.name}
-                />
-                <div className='content w-[80%] pt-[10px]'>
-                  <h4 className='w-full text-[15px] font-bold font-sans text-black uppercase'>{product.name}</h4>
-                  <p className='pt-[5px] font-sans font-semibold text-[#0b1f4e] text-[16px]'>
-                    {formatPrice(product.sale_price)}
-                  </p>
+              <Link to={`/detailProduct/${product._id}`}>
+                <div key={product._id} 
+                  className='list-product-one w-[100%] h-[340px] bg-[#f2f2f2] overflow-hidden flex flex-col items-center justify-center cursor-pointer group'
+                >
+                  <div className='w-[260px] h-[200px] overflow-hidden flex items-center'>
+                      <img
+                        className='w-[290px] h-[280px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                        src={product.images?.[0] || "/default.png"}
+                        alt={product.name}
+                      />
+                  </div>
+                  <div className='content w-[80%] mt-0'>
+                    <h4 className='w-full text-[15px] font-semibold font-sans text-black uppercase'>{product.name}</h4>
+                    <div className='pt-1.5 flex items-center'>
+                      <p className='font-sans font-medium text-[#0b1f4e] text-[15px]'>
+                        {formatPrice(product.original_price)}<sup>đ</sup>
+                      </p>
+                      <del className='text-[15px] ml-6 font-sans font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                    </div>
+                  </div>
+                  <div className='mb-4 mt-1.5 w-[80%] mx-auto border-b-1 [&_p]:uppercase [&_p]:text-[13px] [&_p]:font-sans'>
+                    <p className='mt-[5px]'>Select options</p>
+                  </div>
                 </div>
-                <div className='pt-[10px] w-[80%] mx-auto border-b-1 [&_p]:uppercase [&_p]:text-[13px] [&_p]:font-sans'>
-                  <p className='mt-[5px]'>Select options</p>
-                </div>
-              </div>
+              </Link>
             ))}
         </div>
       </div>
