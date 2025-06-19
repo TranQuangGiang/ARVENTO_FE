@@ -12,6 +12,7 @@ import {
   ChartNoAxesCombined,
   LetterText,
   FileText,
+  Tickets,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -190,6 +191,14 @@ const AdminSidebar = () => {
                                 </li>
                             </ul>
                         )}
+                    </li>
+                    <li>
+                        <Link
+                            to="/admin/listcoupon"
+                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]">
+                            <Tickets className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
+                            Coupon Code
+                        </Link>
                     </li>
                     <li>
                         <Link
