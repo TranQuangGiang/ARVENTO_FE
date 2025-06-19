@@ -117,7 +117,7 @@ const ListCategory: React.FC = () => {
           <div className="w-full px-6 bg-gray-50 min-h-screen">
             <div className="w-full h-auto px-6 py-5 bg-white mt-10 rounded-lg border border-gray-200">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <ChartColumnStacked style={{width: 35}} className="pr-2" /> Danh sách sản phẩm
+                <ChartColumnStacked style={{width: 35}} className="pr-2" /> Category List
               </h2>
               <div className="flex flex-wrap items-center justify-between mb-4">
                 <div className="flex items-center gap-2">

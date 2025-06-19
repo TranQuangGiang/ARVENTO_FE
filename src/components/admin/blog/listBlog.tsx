@@ -132,7 +132,7 @@ const ListBlog = () => {
                 >
                     <div className="ml-6 mr-6 mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
                         <span className='w-full flex items-center justify-between mb-3'>
-                            <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách bài viết</h2>
+                            <h2 className="text-[22px] font-bold text-gray-800">📝 Post List</h2>
                             <Link to={`/admin/addBlog`}>
                                 <Button
                                 style={{width: 130, height: 40}}

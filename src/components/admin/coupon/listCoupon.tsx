@@ -4,9 +4,11 @@ import { Button, Input, message, Popconfirm, Select, Switch, Table } from "antd"
 import { Link } from "react-router-dom";
 import { useList } from "../../../hooks/useList";
 import { useDelete } from "../../../hooks/useDelete";
-import { useUpdate } from "../../../hooks/useUpdate";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../../utils/axiosInstance";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Ticket } from "lucide-react";
+
 
 const { Option } = Select;
 
@@ -32,7 +34,7 @@ const ListCoupon: React.FC = () => {
     onSuccess: refetch,
   });
 
- const { mutate: toggleCouponStatus, isLoading: isToggling } = useMutation({
+ const { mutate: toggleCouponStatus, isPending: isToggling } = useMutation({
   mutationFn: async (id: string) => {
     const res = await axiosInstance.put(`/coupons/admin/${id}/toggle`);
     return res.data;
@@ -125,47 +127,66 @@ const ListCoupon: React.FC = () => {
   ];
 
   return (
-    <div className="w-full px-6 bg-gray-50 min-h-screen">
-      <div className="w-full h-auto px-6 py-5 bg-white mt-20 rounded-lg border border-gray-200">
-        <div className="flex flex-wrap items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600">Status</span>
-            <Select
-              value={isActiveFilter}
-              onChange={(value) => setIsActiveFilter(value)}
-              style={{ width: 120 }}
-            >
-              <Option value="all">All</Option>
-              <Option value="true">Active</Option>
-              <Option value="false">Inactive</Option>
-            </Select>
-          </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
+        transition={{duration: 0.3}}
+      >
+        <motion.div
+          initial={{opacity: 0, y: 50}}
+          animate={{opacity: 1, y: 0}}
+          exit={{opacity: 0, y: 50}}
+          transition={{duration: 0.5, ease: "easeOut"}}
+        >
+          <div className="w-full px-6 bg-gray-50 min-h-screen">
+            <div className="w-full h-auto px-6 py-5 bg-white mt-10 rounded-lg border border-gray-200">
+              <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
+                <Ticket style={{width: 35}} className="pr-2" /> Coupon Code List
+              </h2>
+              <div className="flex flex-wrap items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Status</span>
+                  <Select
+                    value={isActiveFilter}
+                    onChange={(value) => setIsActiveFilter(value)}
+                    style={{ width: 120 }}
+                  >
+                    <Option value="all">All</Option>
+                    <Option value="true">Active</Option>
+                    <Option value="false">Inactive</Option>
+                  </Select>
+                </div>
 
-          <div className="flex items-center gap-2">
-            <Input
-              placeholder="Search by code..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              className="w-64"
-            />
-            <Link to="/admin/addCoupon">
-              <Button type="primary" icon={<PlusOutlined />}>
-                Add New
-              </Button>
-            </Link>
-          </div>
-        </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Search by code..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    allowClear
+                    className="w-64"
+                  />
+                  <Link to="/admin/addCoupon">
+                    <Button type="primary" icon={<PlusOutlined />}>
+                      Add New
+                    </Button>
+                  </Link>
+                </div>
+              </div>
 
-        <Table
-          rowKey="_id"
-          columns={columns}
-          dataSource={filteredData}
-          pagination={{ pageSize: 5 }}
-          bordered
-        />
-      </div>
-    </div>
+              <Table
+                rowKey="_id"
+                columns={columns}
+                dataSource={filteredData}
+                pagination={{ pageSize: 5 }}
+                bordered
+              />
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
