@@ -36,6 +36,11 @@ import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
 import OrderHistory from './components/client/auth/DetailAuth/layoutAuth/OrderHistory'
 import AccountInformation from './components/client/auth/DetailAuth/layoutAuth/accountInformation'
 import DiscountCode from './components/client/auth/DetailAuth/layoutAuth/discountCode'
+import ListColor from './components/admin/color/listClolor'
+import AddColor from './components/admin/color/addColor'
+import EditColor from './components/admin/color/editColer'
+import Checkout from './components/client/checkout'
+import Thanhtoan from './components/client/thanhtoan'
 
 
 function App() {
@@ -52,7 +57,9 @@ function App() {
         {path: 'orderHistory', element: <OrderHistory />},
         {path: 'accountInformation', element: <AccountInformation />},
         {path: 'discountCode', element: <DiscountCode />}
-      ]}
+      ]},
+      {path: 'checkout', element: <Checkout />},
+      {path: 'thanhtoan', element: <Thanhtoan />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
@@ -78,6 +85,9 @@ function App() {
         {path: 'listcoupon', element: <ListCoupon />},
         {path: 'addCoupon', element: <AddCoupon />},
         {path: 'editcoupon/:id', element: <EditCoupon />},
+        {path: 'listcolor', element: <ListColor />},
+        {path: 'addcolor', element: <AddColor />},
+        {path: 'editcolor', element: <EditColor />},
       ]
     }
   ])
