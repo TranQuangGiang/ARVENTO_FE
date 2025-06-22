@@ -69,7 +69,19 @@ const Deltai = () => {
   const handleMouseLeave = () => {
     setZoomStyle({ transform: "scale(1)", transformOrigin: "center center" });
   };
+  const getDiscountPercent = (originalPrice: any, salePrice: any) => {
+    const original = typeof originalPrice === 'object' && originalPrice?.$numberDecimal
+    ? Number(originalPrice.$numberDecimal)
+    : Number(originalPrice);
 
+    const sale = typeof salePrice === 'object' && salePrice?.$numberDecimal
+    ? Number(salePrice.$numberDecimal)
+    : Number(salePrice);
+    if (!original || original <= 0 || sale >= original) return 0;
+    const discount = ((original - sale ) / original) * 100;
+    return Math.round(discount); 
+  }
+  const discountPercent = getDiscountPercent(product.original_price, product.sale_price);
   return (
     <div className="w-full">
       <div className="w-full h-64 md:h-[250px] relative">
@@ -86,6 +98,7 @@ const Deltai = () => {
       </div>
       <div className="max-w-[75%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+<<<<<<< Updated upstream
           <div className="w-[100%] flex flex-col items-center">
             <div
               className="w-[100%] overflow-hidden relative"
@@ -101,6 +114,33 @@ const Deltai = () => {
             </div>
             <div className="flex space-x-2 mt-4 justify-center md:justify-start">
               {product.images.thumbs.map((thumb, i) => (
+=======
+          {/* Ảnh sản phẩm */}
+          <div className="w-full flex flex-col items-center">
+            <AnimatePresence>
+              <div className="w-full overflow-hidden relative">
+                {selectedImage && (
+                  <motion.div
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    exit={{opacity: 0}}
+                    transition={{duration: 0.4}}
+                    key={selectedImage}
+                  >
+                    <Image
+                      className="w-full h-full relative object-cover"
+                      src={selectedImage}
+                      alt={product.name}
+                      preview={true}
+                    />
+                    <span className="max-w-16 block px-3 h-9 absolute top-2 right-2 text-center font-semibold leading-[36px] rounded bg-blue-950 text-white font-sans text-[15px]">-{discountPercent} %</span>
+                  </motion.div>
+                )}
+              </div>
+            </AnimatePresence>
+            <div className="flex space-x-2 mt-4 justify-center md:justify-start flex-wrap">
+              {filteredImages.map((img: string, i: number) => (
+>>>>>>> Stashed changes
                 <img
                   key={i}
                   src={thumb.src}

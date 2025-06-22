@@ -109,13 +109,14 @@ const ProductList = () => {
       align: "right" as const,
       render: (_: any, record: any) => (
         <>
-          <Button
-            icon={<EyeOutlined />}
-            className="mr-2"
-            onClick={() => console.log("View:", record)}
-            type="default" style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
-          />
-          
+          <Link to={`/admin/detailProduct/${record.id}`}>
+            <Button
+              icon={<EyeOutlined />}
+              className="mr-2"
+              onClick={() => console.log("View:", record)}
+              type="default" style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
+            />
+          </Link>
           <Link to={`/admin/editProduct/${record._id}`}>
             <Button icon={<EditOutlined />} className="mr-2" type="primary" />
           </Link>

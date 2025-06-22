@@ -26,6 +26,21 @@ import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import EditProduct from './components/admin/product/editProduct'
 import AddProduct from './components/admin/product/addProduct'
+<<<<<<< Updated upstream
+=======
+import ListCoupon from './components/admin/coupon/listCoupon'
+import AddCoupon from './components/admin/coupon/addCoupon'
+import EditCoupon from './components/admin/coupon/editCoupon'
+import DeltaiProduct from './components/client/Deltai'
+import ResetPassword from './components/client/auth/ResetPassword'
+import DetailAuth from './components/client/auth/DetailAuth/DetailAuth'
+import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
+import OrderHistory from './components/client/auth/DetailAuth/layoutAuth/OrderHistory'
+import AccountInformation from './components/client/auth/DetailAuth/layoutAuth/accountInformation'
+import DiscountCode from './components/client/auth/DetailAuth/layoutAuth/discountCode'
+import DetailProductAdmin from './components/admin/product/detailProduct'
+
+>>>>>>> Stashed changes
 
 function App() {
   const routes = useRoutes([
@@ -52,11 +67,17 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
-        {path: 'editproduct', element: <EditProduct />},
         {path: 'listProduct', element: <ListProduct />},
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct/:id', element: <EditProduct />},
+<<<<<<< Updated upstream
         // {path: 'detailProduct/:id', element: <DetailProduct />}
+=======
+        {path: 'detailProduct/:id', element: <DetailProductAdmin />},
+        {path: 'listcoupon', element: <ListCoupon />},
+        {path: 'addCoupon', element: <AddCoupon />},
+        {path: 'editcoupon/:id', element: <EditCoupon />},
+>>>>>>> Stashed changes
       ]
     }
   ])
