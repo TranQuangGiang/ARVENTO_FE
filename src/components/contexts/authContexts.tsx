@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import apiClient from "../../hooks/refreshToken";
+import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   user: any;
@@ -16,6 +17,7 @@ export const AuthContexts = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
+  const nav = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -61,6 +63,7 @@ export const AuthProvider = ({ children }: any) => {
     localStorage.setItem("token", access_token);
 
     apiClient.defaults.headers.common["Authorization"] = "Bearer " + access_token;
+    nav('/');
   };
 
   const logout = async () => {
@@ -74,7 +77,7 @@ export const AuthProvider = ({ children }: any) => {
       localStorage.removeItem("token");
       Cookies.remove("user");
       Cookies.remove("token");
-
+      nav('/');
     }
   };
 

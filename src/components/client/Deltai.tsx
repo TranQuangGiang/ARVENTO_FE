@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Image } from "antd";
+import { Button, Image, message } from "antd";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, color } from 'framer-motion';
+import { useCart } from "../contexts/cartContexts";
+import { jwtDecode } from "jwt-decode";
 
 const DeltaiProduct = () => {
+  const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
 
+  const { addToCart } = useCart();
   const { id } = useParams();
   const { data: productDetail } = useOneData({ resource: '/products', _id: id });
   const product = productDetail?.data;
@@ -74,6 +79,57 @@ const DeltaiProduct = () => {
       return price.toLocaleString();
     }
     return 'Liên hệ';
+  };
+
+  // xử lý cart
+  const handleAddToCart = async () => {
+    if (!selectedColor || !selectedSize || !product || quantity <= 0) return;
+
+    const token = localStorage.getItem("token");
+    const userInfo: any = token ? jwtDecode(token) : null;
+
+    const userId = userInfo?.id;
+    console.log(userInfo);
+    
+    if (!userId) {
+      message.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    const variant = product.variants.find(
+      (v: any) => v.color === selectedColor && v.size === selectedSize
+    );
+
+    if (!variant) return;
+
+    const unitPrice =
+      typeof product.sale_price === "object"
+        ? Number(product.sale_price?.$numberDecimal || 0)
+        : product.sale_price;
+
+    const cartItem = {
+      userId: userId,
+      product_id: product._id,
+      product_name: product.name,
+      selected_variant: {
+        color: selectedColor,
+        size: String(selectedSize),
+        price: unitPrice,
+        stock: variant.stock,
+        image: variant.image,
+      },
+      quantity: quantity,
+      unit_price: unitPrice,
+      total_price: unitPrice * quantity,
+    };
+
+    try {
+      await addToCart(cartItem); 
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      message.error("Lỗi khi thêm vào giỏ hàng!");
+    }
   };
 
   return (
@@ -239,15 +295,26 @@ const DeltaiProduct = () => {
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 mt-5">
                 <input
                   type="number"
-                  defaultValue={1}
+                  value={quantity}
+                  min={1}
+                  max={currentStock}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
                   className="w-20 sm:w-16 border px-2 py-1 text-center border-[#01225a] outline-0"
                 />
-                <button
-                  className="bg-[#01225a] text-white text-[14px] cursor-pointer font-sans px-6 py-2 hover:bg-blue-900 rounded transition-all duration-300"
-                  disabled={selectedSize === null}
+                <Button
+                  style={{
+                    background: "#01225a",
+                    color: "white",
+                    fontSize: "14px",
+                    height: 40,
+                    width: 200
+                  }}  
+                  loading={loading}
+                  onClick={handleAddToCart}
+                  disabled={selectedSize === null || currentStock <= 0}
                 >
                   ADD TO CART
-                </button>
+                </Button>
               </div>
 
               {/* Thông tin bảo hành/giao hàng */}
