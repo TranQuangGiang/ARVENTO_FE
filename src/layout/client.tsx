@@ -10,7 +10,8 @@ const LayoutClient = () => {
   return (
     <main className='w-[100%] mx-auto bg-[#fff]'>
       { !hideLayout && !hideLayoutDetail && <HeaderClient />}  
-      <div className=''>
+      <div className={
+        location.pathname.startsWith("/detailAuth")  ? '' : 'mt-[80px]'}>
         <Outlet/>
       </div>
       { !hideLayout && !hideLayoutDetail && <FooterClient />}
