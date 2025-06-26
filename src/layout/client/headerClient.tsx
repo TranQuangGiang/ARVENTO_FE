@@ -1,21 +1,31 @@
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import BannerClient from './banner';
-import { Link, useLocation } from 'react-router-dom';
-import Login from '../../components/client/Login';
-import Register from '../../components/client/Register';
+import { Link, useSearchParams } from 'react-router-dom';
+// import Login from '../../components/client/auth/Login';
+// import Register from '../../components/client/auth/Register';
 import { AuthContexts } from '../../components/contexts/authContexts';
+import { Badge } from 'antd';
+import { useCart } from '../../components/contexts/cartContexts';
+
 
 const HeaderClient = () => {
   const [searchOpen, setSearchOpen] = useState(false);
-  const location = useLocation();
   const [showModal, setShowModal] = useState<string | null>(null);
   const { user, logout } = useContext(AuthContexts);
- 
+  const [searchParams] = useSearchParams(); 
+
+  const modalParam = searchParams.get("modal");
+    useEffect(() => {
+    if (modalParam) {
+      setShowModal(modalParam);
+    }
+  }, [modalParam]);
+
+  // const { state: { cartItemCount } } = useCart();
   return (
-    <div>
+    <div className='fixed top-0 left-0 right-0 z-50 w-full bg-white h-[80px]'>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
         {/* Logo */}
         <section className='header-logo [&_img]:w-[200px] [&_img]:cursor-pointer'>
@@ -28,11 +38,11 @@ const HeaderClient = () => {
         <section className='header-menu flex items-center gap-5'>
           {/* Menu */}
           <nav className='flex gap-6 transition-all duration-300 [&_a]:text-[15px] [&_a]:text-[#0b1f4e]'>
-            <a href="">Trang chủ</a>
-            <a href="">Sản phẩm</a>
-            <a href="">Tin tức</a>
+            <a href="">Home</a>
+            <a href="">Products</a>
             <a href="">Pages</a>
-            <a href="">Liên hệ</a>
+            <a href="">Blog New</a>
+            <a href="">Contact</a>
           </nav>
 
           {/* Search Section */}
@@ -65,19 +75,26 @@ const HeaderClient = () => {
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
               >
-              
-                <button
-                  onClick={() => setShowModal("login")}
-                  className='block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
-                >
-                  Tài khoản của tôi
-                </button>
+                <Link to={'/detailAuth/homeAuth'}>
+                  <button
+                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                  >
+                    My account
+                  </button>
+                </Link>
                 <button 
                   onClick={logout}  
                   className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'
                 >
-                  Đăng xuất
+                  Log Out
                 </button>
+                <Link to={`/admin`}>
+                  <button
+                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                  >
+                    Admin Access
+                  </button>
+                </Link>
               </div>
             ) : (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
@@ -89,23 +106,27 @@ const HeaderClient = () => {
                   onClick={() => setShowModal("login")}
                   className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'
                 >
-                Đăng nhập
+                Sign In
                 </button>
                 <button 
                   onClick={() => setShowModal("register")}  
                   className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'
                 >
-                  Đăng ký
+                  Register
                 </button>
               </div>
             )}
           </div>
-          <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
+          {/* <Badge count={cartItemCount} offset={[-1, 1]} size="small">
+            <Link to={`/cart`}>
+              <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
+            </Link>
+          </Badge> */}
         </section>
-        <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
-        <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
+        {/* <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
+        <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} /> */}
+        
       </div>
-       {location.pathname === "/" && <BannerClient />}
     </div>
   );
 };

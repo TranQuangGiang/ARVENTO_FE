@@ -7,7 +7,7 @@ import { useDebounce } from "use-debounce"; // npm install use-debounce
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useState } from "react";
 import { Button, Image, Input, Popconfirm, Select, Table } from "antd";
-import { AppstoreAddOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, BgColorsOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { FiPlus } from "react-icons/fi";
 const { Option } = Select;
 
@@ -74,20 +74,22 @@ const ProductList = () => {
       title: "Image",
       dataIndex: "images",
       key: "images",
-      render: (srcImage: string[]) => (
-        <Image src={srcImage?.[0]} width={104} height={104} alt="Product Image" />
+      render: (_: any, record: any) => (
+        <Image src={record.images?.[0]?.url} width={80} height={80} alt="Product Image" />
       ),
     },
     {
       title: "Product Name",
       dataIndex: "name",
       key: "name",
+      width: 250,
     },
     {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
-      align: "center"
+      align: "center",
+       width: 250,
     },
     {
 
@@ -109,16 +111,19 @@ const ProductList = () => {
       align: "right" as const,
       render: (_: any, record: any) => (
         <>
-          <Link to={`/admin/detailProduct/${record.id}`}>
+          <Link to={`/admin/detailProductAdmin/${record._id}`}>
             <Button
               icon={<EyeOutlined />}
-              className="mr-2"
+              className="mr-1"
               onClick={() => console.log("View:", record)}
               type="default" style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
             />
-          </Link>
+          </Link>          
           <Link to={`/admin/editProduct/${record._id}`}>
-            <Button icon={<EditOutlined />} className="mr-2" type="primary" />
+            <Button icon={<EditOutlined />} className="mr-1" type="primary" />
+          </Link>
+          <Link to={`/admin/listVariants/${record.id}`}>
+            <Button className="mr-1" style={{background: "#CC66FF", color: "#fff"}} icon={<BgColorsOutlined />} />
           </Link>
           <Popconfirm
             title="Are you sure you want to delete this product?"

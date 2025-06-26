@@ -66,21 +66,21 @@ const AddBlog:React.FC = () => {
                         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'>
                         <div className='w-full flex'>
                             <span className='max-w-[700px]'>
-                                <Form.Item label="Title" name="title" rules={[{required: true}]}>
+                                <Form.Item label="Title" name="title" className="font-semibold" rules={[{required: true}]}>
                                     <Input style={{width: 700}}/>
                                 </Form.Item>
-                                <Form.Item label="Slug" name="slug" rules={[{required: true}]}>
+                                <Form.Item label="Slug" name="slug" className="font-semibold" rules={[{required: true}]}>
                                     <Input style={{width: 700}}/>
                                 </Form.Item>
                             </span>
                             <span className='ml-12'>
-                                <Form.Item label='Category' name="category" rules={[{required: true}]}>
+                                <Form.Item label='Category' name="category" className="font-semibold" rules={[{required: true}]}>
                                     <Select style={{height: 40, width: 335}} options={categoryOptions} placeholder="Chọn danh mục bài viết" />
                                 </Form.Item>
                             </span>
                         </div>
                         <span className='flex items-center gap-40'>
-                            <Form.Item name='thumbnail' label="Thumbnail" rules={[{required: true}]}>
+                            <Form.Item name='thumbnail' className="font-semibold" label="Thumbnail" rules={[{required: true}]}>
                                 {thumbnail && (
                                     <img src={typeof thumbnail === 'string'
                                         ? thumbnail.startsWith('http')
@@ -101,7 +101,7 @@ const AddBlog:React.FC = () => {
                                     <Button icon={<UploadOutlined />}>Click to Upload</Button>
                                 </Upload>
                             </Form.Item>
-                            <Form.Item label="Status" name="status" rules={[{required: true}]}> 
+                            <Form.Item className="font-semibold" label="Status" name="status" rules={[{required: true}]}> 
                                 <Radio.Group>
                                     <Radio value="draft">Draft</Radio>
                                     <Radio value="published">Published</Radio>
@@ -109,7 +109,7 @@ const AddBlog:React.FC = () => {
                                 </Radio.Group>
                             </Form.Item>
                         </span>
-                        <Form.Item label="Content" className='min-h-96' name="content" rules={[{required: true}]}>
+                        <Form.Item label="Content" className='min-h-96 font-semibold' name="content" rules={[{required: true}]}>
                             <CKEditor
                                 data={content}
                                 editor={ClassicEditor as any}
@@ -117,10 +117,10 @@ const AddBlog:React.FC = () => {
                             >
                             </CKEditor>
                         </Form.Item>
-                        <Form.Item label="Excerpt" name="excerpt" rules={[{required: true}]}>
+                        <Form.Item className="font-semibold" label="Excerpt" name="excerpt" rules={[{required: true}]}>
                             <Input />
                         </Form.Item>
-                        <Form.Item label="Tags" name="tags" rules={[{ required: true }]}>
+                        <Form.Item className="font-semibold" label="Tags" name="tags" rules={[{ required: true }]}>
                             <Select mode="tags" style={{ width: '100%', height: 40}} placeholder="Nhập thẻ (nhấn Enter để thêm)">
                                 {/* Không cần options vì người dùng tự gõ */}
                             </Select>

@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Image } from "antd";
+import { Button, Image, message } from "antd";
 import { useParams } from "react-router-dom";
-
 import { motion, AnimatePresence } from 'framer-motion';
+import { jwtDecode } from "jwt-decode";
 import { useOneData } from "../../../hooks/useOne";
+import axios from "axios";
 
 const DeltaiProductAdmin = () => {
+  const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [variants, setVariants] = useState<any[]>([]);
 
   const { id } = useParams();
   const { data: productDetail } = useOneData({ resource: '/products', _id: id });
@@ -18,55 +22,56 @@ const DeltaiProductAdmin = () => {
 
   // Khi product load xong, chọn màu đầu tiên và ảnh đầu tiên tương ứng
   useEffect(() => {
-    if (!product) return;
+    const fetchVariants = async () => {
+      if (!product?._id) return;
+      const token = localStorage.getItem("token");
 
-    // Giả sử product.variants có trường image, size, color, stock
-    const variants = product.variants as Array<{
-      color: string;
-      size: number;
-      image: string;
-      stock: number;
-    }>;
+      try {
+        const res = await axios.get(`http://localhost:3000/api/variants/products/${id}/variants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    // Lấy unique từng màu
-    const colorVariants = [...new Map(variants.map((v) => [v.color, v])).values()];
+        // Sửa chỗ này
+        const variantList = res.data?.data?.data || [];
+        console.log(
+        variantList.map((v:any) => ({
+          color: v.color.name,
+          image: v.image.url,
+          size: v.size,
+          stock: v.stock
+        }))
+      );
+        setVariants(variantList);
+      } catch (error) {
+        console.error("Lỗi khi lấy variants:", error);
+        setVariants([]); // fallback để tránh lỗi .map
+      }
+    };
 
-    if (colorVariants.length > 0) {
-      const firstColor = colorVariants[0].color;
-
-      // Tìm ảnh đầu tiên của màu đó: nếu mỗi màu có 5 ảnh trong product.images
-      const uniqueColors: string[] = Array.from(new Set(variants.map((v) => v.color)));
-      const colorIndex = uniqueColors.indexOf(firstColor);
-      const imagesPerColor = 5; // giả sử mỗi màu có 5 ảnh liên tiếp
-      const startIndex = colorIndex * imagesPerColor;
-      const firstImage = product.images?.[startIndex] || "";
-
-      setSelectedColor(firstColor);
-      setSelectedImage(firstImage);
-      setSelectedSize(null);
-    }
+    fetchVariants();
   }, [product]);
 
+  useEffect(() => {
+    if (!product || variants.length === 0) return;
+    const firstColor = variants[0]?.color?.name;
+    setSelectedColor(firstColor);
+    setSelectedSize(null);
+
+    const colorIndex = Array.from(new Set(variants.map(v => v.color.name))).indexOf(firstColor);
+    const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+    setSelectedImage(filteredImages[0]?.url || "");
+  }, [product, variants])
+  
   if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
+  
+  const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
+  const sizes = variants.filter(v => v.color.name === selectedColor).map(v => v.size);
+  const colorIndex = colorNames.indexOf(selectedColor);
+  const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+  const currentStock = variants.find(v => v.color.name === selectedColor && v.size === selectedSize)?.stock || 0;
 
-  // Lọc các biến thể theo màu đã chọn để lấy danh sách size
-  const variants = product.variants || [];
-  const sizes = variants
-    .filter((v: any) => v.color === selectedColor)
-    .map((v: any) => v.size);
-
-  // Lọc 5 ảnh tương ứng với màu đã chọn
-  const uniqueColors: string[] = Array.from(new Set(variants.map((v: any) => v.color)));
-  const colorIndex = uniqueColors.indexOf(selectedColor);
-  const imagesPerColor = 5;
-  const startIndex = colorIndex * imagesPerColor;
-  const filteredImages = product.images?.slice(startIndex, startIndex + imagesPerColor) || [];
-
-  // Tồn kho: theo màu + size đã chọn
-  const currentStock =
-    variants.find((v: any) => v.size === selectedSize && v.color === selectedColor)?.stock ?? 0;
-
-  // Hàm format giá
   const formatPrice = (price: any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
       return Number(price.$numberDecimal).toLocaleString();
@@ -78,9 +83,10 @@ const DeltaiProductAdmin = () => {
   };
 
   return (
-    <div className="w-[80%] mt-10 mx-auto bg-white rounded-[15px] shadow-md">
+    <div className="w-full">
+
       {/* Nội dung chính */}
-      <div className="max-w-[100%]  mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[80%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Ảnh sản phẩm */}
           <div className="w-full flex flex-col items-center">
@@ -105,23 +111,18 @@ const DeltaiProductAdmin = () => {
                 </div>
              
             </AnimatePresence>
-            <div className="flex space-x-2 mt-4 justify-center md:justify-start flex-wrap">
-              {filteredImages.map((img: string, i: number) => (
+            <div className="flex space-x-2 mt-4 flex-wrap justify-center">
+              {filteredImages.map((img: any, i: number) => (
                 <img
                   key={i}
-                  src={img}
+                  src={img.url}
                   alt={`thumb-${i}`}
-                  className={`w-14 h-14 sm:w-20 sm:h-20 object-cover cursor-pointer border ${
-                    selectedImage === img
-                      ? "border-blue-600 opacity-100"
-                      : "border-gray-300 opacity-50"
-                  }`}
-                  onClick={() => setSelectedImage(img)}
+                  className={`w-14 h-14 object-cover cursor-pointer border ${selectedImage === img.url ? "border-blue-600" : "border-gray-300"}`}
+                  onClick={() => setSelectedImage(img.url)}
                 />
               ))}
             </div>
           </div>
-
           {/* Thông tin chi tiết */}
           <div className="w-full flex flex-col">
             <h4 className="text-lg md:text-[22px] font-bold text-[#01225a] mb-2">
@@ -158,37 +159,22 @@ const DeltaiProductAdmin = () => {
               </span>
               <div className="flex flex-wrap gap-4">
                 {/* Hiển thị 1 ảnh đại diện cho mỗi màu */}
-                {[...new Map(product.variants.map((v: any) => [v.color, v])).values()].map(
-                  (variant: any, index: number) => {
-                    const newColor = variant.color;
-                    const newColorIndex = uniqueColors.indexOf(newColor);
-                    // Ảnh đầu tiên của màu này:
-                    const imagePerColor = 5;
-                    const startIdx = newColorIndex * imagePerColor;
-                    const firstImg = product.images?.[startIdx] || "";
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center cursor-pointer"
-                      >
-                        <img
-                          src={firstImg}
-                          alt={variant.color}
-                          className={`w-[60px] h-[60px] rounded object-cover border ${
-                            selectedColor === variant.color
-                              ? "border-blue-600"
-                              : "border-gray-300"
-                          }`}
-                          onClick={() => {
-                            setSelectedColor(variant.color);
-                            setSelectedImage(firstImg);
-                            setSelectedSize(null);
-                          }}
-                        />
-                      </div>
-                    );
-                  }
-                )}
+                {colorNames.map((color, i) => {
+                  const firstImg = product.images?.[i * 5]?.url || "";
+                  return (
+                    <img
+                      key={color}
+                      src={firstImg}
+                      alt={color}
+                      className={`w-[50px] h-[50px] object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setSelectedSize(null);
+                        setSelectedImage(firstImg);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -199,44 +185,25 @@ const DeltaiProductAdmin = () => {
                   <span className="text-[#01225a] text-[15px] font-medium mr-2">
                     Size:
                   </span>
-                  {sizes.map((size: number) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3 py-1 border rounded text-[14px] font-sans cursor-pointer ${
-                        selectedSize === size
-                          ? "bg-blue-900 text-white border-blue-900"
-                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  <div className="flex gap-2 flex-wrap">
+                    {sizes.map((size, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-3 py-1 border rounded ${selectedSize === size ? "bg-blue-900 text-white" : "bg-white text-gray-800"}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               {/* Hiển thị stock chỉ khi đã chọn size */}
-              {selectedSize !== null && (
-                <p className={`text-sm mt-2 ${
-                  currentStock > 0 ? "text-green-500" : "text-red-500"
-                }`}>
+              {selectedSize && (
+                <p className={`text-sm mt-1 mb-3 ${currentStock > 0 ? "text-green-500" : "text-red-500"}`}>
                   {currentStock} in stock
                 </p>
               )}
-              {/* Add to Cart */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 mt-5">
-                <input
-                  type="number"
-                  defaultValue={1}
-                  className="w-20 sm:w-16 border px-2 py-1 text-center border-[#01225a] outline-0"
-                />
-                <button
-                  className="bg-[#01225a] text-white text-[14px] cursor-pointer font-sans px-6 py-2 hover:bg-blue-900 rounded transition-all duration-300"
-                  disabled={selectedSize === null}
-                >
-                  ADD TO CART
-                </button>
-              </div>
-
               {/* Thông tin bảo hành/giao hàng */}
               <div className="flex flex-col md:flex-row items-center gap-10">
                 <div className="flex items-center gap-1 text-[15px]">
@@ -264,7 +231,7 @@ const DeltaiProductAdmin = () => {
       </div>
 
       {/* Mô tả chi tiết */}
-      <div className="content-product max-w-[92%] mx-auto mb-8">
+      <div className="content-product w-[70%] mx-auto">
         <div
           className="font-sans text-[16px] text-[#01225a] mb-2"
           dangerouslySetInnerHTML={{ __html: product.description }}

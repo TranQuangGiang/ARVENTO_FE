@@ -10,15 +10,7 @@ import { ChartColumnStacked } from "lucide-react";
 const { Search } = Input;
 const { Option } = Select;
 
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  created_at: string;
-}
-
-const ListCategory: React.FC = () => {
+const ListCategory = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [itemsPerPage, setItemsPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -72,7 +64,7 @@ const ListCategory: React.FC = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: Category) => (
+      render: (_: any, record: any) => (
         <div className="flex space-x-2">
           <Button
             type="default"
