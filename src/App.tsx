@@ -25,6 +25,12 @@ import ListBlog from './components/admin/blog/listBlog'
 import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import EditProduct from './components/admin/product/editProduct'
+
+import DeltaiProduct from './components/client/Deltai'
+import ListUser from './components/admin/user/listUser'
+import ListVariants from './components/admin/product/variants/listVariants'
+import UpdateVariants from './components/admin/product/variants/updateVariants'
+import DeltaiProductAdmin from './components/admin/product/detailProduct'
 import AddProduct from './components/admin/product/addProduct'
 import ListCoupon from './components/admin/coupon/listCoupon'
 import AddCoupon from './components/admin/coupon/addCoupon'
@@ -47,7 +53,7 @@ function App() {
   const routes = useRoutes([
     {path: '/', element: < LayoutClient />, children: [
       {path: '', element: <ListProductClient />},
-      {path: 'detailProduct/:id', element: <DeltaiProduct />},
+      {path: 'detailProductClient/:id', element: <DeltaiProduct />},
       {path: 'cart', element: <Cart/>},
       {path: 'register', element: <Register/>},
       {path: 'login', element: <Login/>},
@@ -77,11 +83,13 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
-        {path: 'editproduct', element: <EditProduct />},
         {path: 'listProduct', element: <ListProduct />},
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct/:id', element: <EditProduct />},
-        // {path: 'detailProduct/:id', element: <DetailProduct />}
+        {path: 'detailProductAdmin/:id', element: <DeltaiProductAdmin />},
+        {path: 'listVariants/:id', element: <ListVariants />},
+        {path: 'editVariants/:productId/:id', element: <UpdateVariants />},
+        {path: 'listVendors', element: <ListUser />},
         {path: 'listcoupon', element: <ListCoupon />},
         {path: 'addCoupon', element: <AddCoupon />},
         {path: 'editcoupon/:id', element: <EditCoupon />},

@@ -35,6 +35,7 @@ const AddCategory = () => {
               Title
             </span>
           }
+          className="font-semibold"
           name="name"
           rules={[{ required: true, message: "Please enter the title" }]}
         >
@@ -47,6 +48,7 @@ const AddCategory = () => {
               Slug
             </span>
           }
+          className="font-semibold"
           name="slug"
           rules={[{ required: true, message: "Please enter the slug" }]}
         >
@@ -58,6 +60,7 @@ const AddCategory = () => {
               Description
             </span>
           }
+          className="font-semibold"
           name="description"
           rules={[{ required: false, message: "Please enter the description" }]}
         >

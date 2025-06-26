@@ -82,6 +82,14 @@ const HeaderAdmin = () => {
                   <a className='transition-all duration-300 hover:text-red-600'>Log Out</a>
                 </span> 
               </li>
+              <li>
+                <span className='flex items-center pl-[25px] px-2 py-4 text-left'>
+                  <span className='w-[35px] flex items-center justify-center h-[35px] bg-red-200 rounded-[50%]'>
+                    <Power className='w-[20px] text-red-600' />
+                  </span>
+                  <a className='transition-all duration-300 hover:text-red-600'>Back To website</a>
+                </span> 
+              </li>
             </ul>
           </div>
         </div>
