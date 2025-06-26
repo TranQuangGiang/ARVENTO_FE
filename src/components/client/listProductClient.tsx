@@ -41,7 +41,7 @@ const ListProductClient = () => {
           {isFetchingAll && <p>Loading...</p>}
           {!isFetchingAll &&
             newestProducts.map((product) => (
-              <Link to={`/detailProduct/${product._id}`}>
+              <Link to={`/detailProductClient/${product._id}`}>
                 <div
                   key={product._id}
                   className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'
@@ -49,7 +49,7 @@ const ListProductClient = () => {
                   <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
                     <img
                       className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                      src={product.images?.[0] || "/default.png"}
+                      src={product.images?.[0]?.url || "/default.png"}
                       alt={product.name}
                     />
                   </div>
@@ -141,7 +141,7 @@ const ListProductClient = () => {
                     <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
                       <img
                         className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                        src={product.images?.[0] || "/default.png"}
+                        src={product.images?.[0]?.url || "/default.png"}
                         alt={product.name}
                       />
                     </div>
@@ -175,14 +175,14 @@ const ListProductClient = () => {
             {isFetchingAll && <p>Loading...</p>}
             {!isFetchingAll &&
               products.map((product:any) => (
-                <Link to={`/detailProduct/${product._id}`}>
+                <Link to={`/detailProductClient/${product._id}`}>
                   <div key={product._id} 
                     className='list-product-one w-[100%] h-[340px] bg-[#f2f2f2] overflow-hidden flex flex-col items-center justify-center cursor-pointer group'
                   >
                     <div className='w-[260px] h-[200px] overflow-hidden flex items-center'>
                         <img
                           className='w-[290px] h-[280px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                          src={product.images?.[0] || "/default.png"}
+                          src={product.images?.[0]?.url || "/default.png"}
                           alt={product.name}
                         />
                     </div>

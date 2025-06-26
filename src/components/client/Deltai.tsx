@@ -4,16 +4,19 @@ import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { Button, Image, message } from "antd";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
-import { motion, AnimatePresence, color } from 'framer-motion';
-import { useCart } from "../contexts/cartContexts";
+import { motion, AnimatePresence } from 'framer-motion';
+
 import { jwtDecode } from "jwt-decode";
+import { useCart } from "../contexts/cartContexts";
+import axios from "axios";
 
 const DeltaiProduct = () => {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [variants, setVariants] = useState<any[]>([]);
 
   const { addToCart } = useCart();
   const { id } = useParams();
@@ -22,55 +25,57 @@ const DeltaiProduct = () => {
 
   // Khi product load xong, chọn màu đầu tiên và ảnh đầu tiên tương ứng
   useEffect(() => {
-    if (!product) return;
+    const fetchVariants = async () => {
+      if (!product?._id) return;
+      const token = localStorage.getItem("token");
 
-    // Giả sử product.variants có trường image, size, color, stock
-    const variants = product.variants as Array<{
-      color: string;
-      size: number;
-      image: string;
-      stock: number;
-    }>;
+      try {
+        const res = await axios.get(`http://localhost:3000/api/variants/products/${id}/variants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    // Lấy unique từng màu
-    const colorVariants = [...new Map(variants.map((v) => [v.color, v])).values()];
+        // Sửa chỗ này
+        const variantList = res.data?.data?.data || [];
+        console.log(
+        variantList.map((v:any) => ({
+          color: v.color.name,
+          image: v.image.url,
+          size: v.size,
+          stock: v.stock
+        }))
+      );
+        setVariants(variantList);
+      } catch (error) {
+        console.error("Lỗi khi lấy variants:", error);
+        setVariants([]); // fallback để tránh lỗi .map
+      }
+    };
 
-    if (colorVariants.length > 0) {
-      const firstColor = colorVariants[0].color;
-
-      // Tìm ảnh đầu tiên của màu đó: nếu mỗi màu có 5 ảnh trong product.images
-      const uniqueColors: string[] = Array.from(new Set(variants.map((v) => v.color)));
-      const colorIndex = uniqueColors.indexOf(firstColor);
-      const imagesPerColor = 5; // giả sử mỗi màu có 5 ảnh liên tiếp
-      const startIndex = colorIndex * imagesPerColor;
-      const firstImage = product.images?.[startIndex] || "";
-
-      setSelectedColor(firstColor);
-      setSelectedImage(firstImage);
-      setSelectedSize(null);
-    }
+    fetchVariants();
   }, [product]);
+
+  useEffect(() => {
+    if (!product || variants.length === 0) return;
+      const firstColor = variants[0]?.color?.name;
+      setSelectedColor(firstColor);
+      setSelectedSize(null);
+  
+      const colorIndex = Array.from(new Set(variants.map(v => v.color.name))).indexOf(firstColor);
+      const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+      setSelectedImage(filteredImages[0]?.url || "");
+  }, [product, variants])
 
   if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
 
-  // Lọc các biến thể theo màu đã chọn để lấy danh sách size
-  const variants = product.variants || [];
-  const sizes = variants
-    .filter((v: any) => v.color === selectedColor)
-    .map((v: any) => v.size);
-
-  // Lọc 5 ảnh tương ứng với màu đã chọn
-  const uniqueColors: string[] = Array.from(new Set(variants.map((v: any) => v.color)));
-  const colorIndex = uniqueColors.indexOf(selectedColor);
-  const imagesPerColor = 5;
-  const startIndex = colorIndex * imagesPerColor;
-  const filteredImages = product.images?.slice(startIndex, startIndex + imagesPerColor) || [];
-
-  // Tồn kho: theo màu + size đã chọn
-  const currentStock =
-    variants.find((v: any) => v.size === selectedSize && v.color === selectedColor)?.stock ?? 0;
-
-  // Hàm format giá
+  const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
+  const sizes = variants.filter(v => v.color.name === selectedColor).map(v => v.size);
+  const colorIndex = colorNames.indexOf(selectedColor);
+  const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+  const currentStock = variants.find(v => v.color.name === selectedColor && v.size === selectedSize)?.stock || 0;
+  
+  
   const formatPrice = (price: any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
       return Number(price.$numberDecimal).toLocaleString();
@@ -135,14 +140,14 @@ const DeltaiProduct = () => {
   return (
     <div className="w-full">
       {/* Banner */}
-      <div className="w-full h-60 md:h-[200px] relative">
+      <div className="w-full h-64  relative">
         <img
           src="/images/banerDeltai.jpg"
           alt="Contact Banner"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-tto-transparent flex items-center justify-center">
-          <h2 className="text-center text-xl md:text-2xl lg:text-[30px] font-bold text-white px-4">
+          <h2 className="text-center  text-xl md:text-2xl lg:text-[30px] font-bold text-white px-4">
             {product.name}
           </h2>
         </div>
@@ -174,23 +179,18 @@ const DeltaiProduct = () => {
                 </div>
              
             </AnimatePresence>
-            <div className="flex space-x-2 mt-4 justify-center md:justify-start flex-wrap">
-              {filteredImages.map((img: string, i: number) => (
+            <div className="flex space-x-2 mt-4 flex-wrap justify-center">
+              {filteredImages.map((img: any, i: number) => (
                 <img
                   key={i}
-                  src={img}
+                  src={img.url}
                   alt={`thumb-${i}`}
-                  className={`w-14 h-14 sm:w-20 sm:h-20 object-cover cursor-pointer border ${
-                    selectedImage === img
-                      ? "border-blue-600 opacity-100"
-                      : "border-gray-300 opacity-50"
-                  }`}
-                  onClick={() => setSelectedImage(img)}
+                  className={`w-14 h-14 object-cover cursor-pointer border ${selectedImage === img.url ? "border-blue-600" : "border-gray-300"}`}
+                  onClick={() => setSelectedImage(img.url)}
                 />
               ))}
             </div>
           </div>
-
           {/* Thông tin chi tiết */}
           <div className="w-full flex flex-col">
             <h4 className="text-lg md:text-[22px] font-bold text-[#01225a] mb-2">
@@ -227,37 +227,22 @@ const DeltaiProduct = () => {
               </span>
               <div className="flex flex-wrap gap-4">
                 {/* Hiển thị 1 ảnh đại diện cho mỗi màu */}
-                {[...new Map(product.variants.map((v: any) => [v.color, v])).values()].map(
-                  (variant: any, index: number) => {
-                    const newColor = variant.color;
-                    const newColorIndex = uniqueColors.indexOf(newColor);
-                    // Ảnh đầu tiên của màu này:
-                    const imagePerColor = 5;
-                    const startIdx = newColorIndex * imagePerColor;
-                    const firstImg = product.images?.[startIdx] || "";
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center cursor-pointer"
-                      >
-                        <img
-                          src={firstImg}
-                          alt={variant.color}
-                          className={`w-[60px] h-[60px] rounded object-cover border ${
-                            selectedColor === variant.color
-                              ? "border-blue-600"
-                              : "border-gray-300"
-                          }`}
-                          onClick={() => {
-                            setSelectedColor(variant.color);
-                            setSelectedImage(firstImg);
-                            setSelectedSize(null);
-                          }}
-                        />
-                      </div>
-                    );
-                  }
-                )}
+                {colorNames.map((color, i) => {
+                  const firstImg = product.images?.[i * 5]?.url || "";
+                  return (
+                    <img
+                      key={color}
+                      src={firstImg}
+                      alt={color}
+                      className={`w-[50px] h-[50px] object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setSelectedSize(null);
+                        setSelectedImage(firstImg);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -268,19 +253,17 @@ const DeltaiProduct = () => {
                   <span className="text-[#01225a] text-[15px] font-medium mr-2">
                     Size:
                   </span>
-                  {sizes.map((size: number) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3 py-1 border rounded text-[14px] font-sans cursor-pointer ${
-                        selectedSize === size
-                          ? "bg-blue-900 text-white border-blue-900"
-                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  <div className="flex gap-2 flex-wrap">
+                    {sizes.map((size, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-3 py-1 border rounded ${selectedSize === size ? "bg-blue-900 text-white" : "bg-white text-gray-800"}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               {/* Hiển thị stock chỉ khi đã chọn size */}
