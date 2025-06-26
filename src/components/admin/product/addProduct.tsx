@@ -31,10 +31,15 @@ const AddProduct = () => {
   const [loading, setLoading] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
   
-  {/** Lấy ra dnah mục sản phẩm */}
+  {/** Lấy ra danh mục sản phẩm */}
   const { data } = useList({
     resource: "/categories/admin"
   });
+  
+  const colorOption = [
+    {value: "black", label: "Black"},
+    {value: "white", label: "White"},
+  ]
 
   const categoryOption = data?.data.map((cat:any) => ({
     label: cat.name,
@@ -142,6 +147,19 @@ const AddProduct = () => {
       <Form 
         layout="vertical" 
         form={form} onFinish={onFinish}
+        onValuesChange={(changedValues, allValues) => {
+          if ("name" in changedValues) {
+            const rawName = changedValues.name || "";
+            const generatedSlug = rawName
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/[^a-z0-9 ]/g, "")
+              .trim()
+              .replace(/\s+/g, "-");
+            form.setFieldsValue({ slug: generatedSlug });
+          }
+        }}
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
         <Form.Item
@@ -275,7 +293,7 @@ const AddProduct = () => {
             >
               Save Product
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()}>
+            <Button htmlType="button" onClick={() => form.resetFields()} disabled={loading} style={{height: 40}}>
               Reset
             </Button>
           </div>

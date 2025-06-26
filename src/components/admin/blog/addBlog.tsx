@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddBlog:React.FC = () => {
+    const [form] = Form.useForm();
     const nav = useNavigate();
     const [content,setContent] = useState('');
     const [thumbnail, setThumbnail] = useState<any>(null);
@@ -61,8 +62,22 @@ const AddBlog:React.FC = () => {
                         </span>
                     </div>
                     <Form
+                        form={form}
                         onFinish={onFinish} 
                         layout='vertical' 
+                        onValuesChange={(changedValues, allValues) => {
+                            if ("title" in changedValues) {
+                                const rawTitle = changedValues.title || "";
+                                const generatedSlug = rawTitle
+                                    .toLowerCase()
+                                    .normalize("NFD")
+                                    .replace(/[\u0300-\u036f]/g, "")
+                                    .replace(/[^a-z0-9 ]/g, "")
+                                    .trim()
+                                    .replace(/\s+/g, "-");
+                                form.setFieldsValue({ slug: generatedSlug })
+                            }
+                        }}
                         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'>
                         <div className='w-full flex'>
                             <span className='max-w-[700px]'>

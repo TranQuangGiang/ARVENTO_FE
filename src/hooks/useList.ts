@@ -10,7 +10,13 @@ export const useList = ({resource}: useListParams) => {
     return useQuery({
         queryKey: [resource],
         queryFn: () => getList({resource})
-        
+    })
+};
+
+export const useListClient = ({resource}: useListParams) => {
+    return useQuery({
+        queryKey: [resource],
+        queryFn: () => getListClient({resource})
     })
 } 
 export const useListClient = ({resource}: useListParams) => {

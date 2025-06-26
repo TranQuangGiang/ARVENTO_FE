@@ -1,97 +1,60 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Switch, message, Input, Select, Table, Image } from "antd";
-import { useDeleteBanner, useBannersAdmin, useUpdateBannerStatus } from "../../../hooks/listbanner";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Button, Popconfirm, Input, Select, Table, Image, message } from "antd";
+import { useNavigate } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import type { ColumnsType } from "antd/es/table";
-import { Images } from "lucide-react";
+import { Palette } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 
 const { Option } = Select;
 
-const ListBanner = () => {
-  const location = useLocation();
+// Dữ liệu mẫu fix cứng
+const colorData = [
+  { _id: '1', name: 'Red'},
+  { _id: '2', name: 'Blue'},
+  { _id: '3', name: 'Green'},
+  { _id: '4', name: 'Yellow'},
+  { _id: '5', name: 'Purple'},
+];
+
+const ListColor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const { data: banners, refetch: refetchBanner, isLoading, isError, } = useBannersAdmin();
-  const updateStatus = useUpdateBannerStatus();
-  const deleteBanner = useDeleteBanner();
-  const [hasShownSuccess, setHasShownSuccess] = useState(false);
 
-  useEffect(() => {
-    const successMessage = location.state?.successMessage;
-    if (successMessage && !hasShownSuccess) {
-      message.success(successMessage);
-      setHasShownSuccess(true);
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location.state, navigate, hasShownSuccess]);
+  const [colors, setColors] = useState(colorData);
 
-  // Refetch khi có cờ shouldRefetch
-  useEffect(() => {
-    if (location.state?.shouldRefetch) {
-      refetchBanner();
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location.state, navigate, refetchBanner]);
+  const filteredColors = colors.filter((color) =>
+    color.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading banners</div>;
-
-  const filteredSlides = banners?.filter((slide: any) =>
-    slide.title.toLowerCase().includes(searchTerm.toLowerCase())
-  ) ?? [];
+  const handleDelete = (id: string) => {
+    setColors(prev => prev.filter(item => item._id !== id));
+    message.success('Successfully removed the color');
+  };
 
   const columns: ColumnsType<any> = [
-    {
-      title: 'Status',
-      dataIndex: 'is_active',
-      align: 'center',
-      render: (text: boolean, record: any) => (
-        <Switch
-          checked={record.is_active}
-          onChange={(checked) => handleToggleStatus(record._id, checked)}
-        />
-      ),
-    },
     {
       title: 'ID',
       dataIndex: '_id',
       render: (text: string) => <span>{text}</span>,
     },
     {
-      title: 'Title',
-      dataIndex: 'title',
-    },
-    {
-      title: 'Link',
-      dataIndex: 'link',
-    },
-    {
-      title: 'Image',
-      dataIndex: 'image_url',
-      render: (url: string, record: any) => (
-        <Image
-          src={url}
-          alt={record.title}
-          width={50}
-          height={50}
-          style={{ objectFit: 'cover', borderRadius: '50%', border: '2px solid #91d5ff' }}
-        />
-      ),
+      title: 'Name',
+      dataIndex: 'name',
     },
     {
       title: 'Action',
       dataIndex: '_id',
-      align: 'right',
+      align: 'center',
+      width: 180, // cho đều hơn
       render: (_: any, record: any) => (
-        <>
+        <div className="flex justify-center gap-2">
           <Button
             icon={<EditOutlined />}
-            onClick={() => navigate(`/admin/editbanner/${record._id}`)}
+            onClick={() => navigate(`/admin/editcolor/${record._id}`)}
             style={{ marginRight: 8 }}
           >
             Edit
@@ -109,27 +72,10 @@ const ListBanner = () => {
               Delete
             </Button>
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];
-
-  const handleToggleStatus = (id: string, checked: boolean) => {
-    updateStatus.mutate(
-      { id, isActive: checked },
-      {
-        onSuccess: () => message.success('Status update successful'),
-        onError: () => message.error('Update status failed')
-      }
-    );
-  };
-
-  const handleDelete = (id: string) => {
-    deleteBanner.mutate(id, {
-      onSuccess: () => message.success('Successfully removed the banner'),
-      onError: () => message.error('Removing banner failed')
-    });
-  };
 
   return (
     <AnimatePresence>
@@ -140,15 +86,15 @@ const ListBanner = () => {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <motion.div
-          initial={{ opacity: 0, y: 50}}
-          animate={{ opacity: 1, y: 0}}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <div className="pl-6 pr-6 bg-gray-50 min-h-screen">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow mt-10">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <Images className="pr-2" style={{width: 35}} /> Banner List
+                <Palette className="pr-2" style={{width: 35}} /> Color List
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-2 items-center">
@@ -177,20 +123,20 @@ const ListBanner = () => {
                   <Button
                     type="primary"
                     icon={<FiPlus />}
-                    onClick={() => navigate("/admin/addbanner")}
+                    onClick={() => navigate("/admin/addcolor")}
                   >
                     Add New
                   </Button>
                 </div>
               </div>
               <Table
-                dataSource={filteredSlides}
+                dataSource={filteredColors}
                 columns={columns}
                 rowKey="_id"
                 pagination={{
                   current: currentPage,
                   pageSize: itemsPerPage,
-                  total: filteredSlides.length,
+                  total: filteredColors.length,
                   onChange: setCurrentPage,
                   showSizeChanger: false
                 }}
@@ -204,4 +150,4 @@ const ListBanner = () => {
   );
 };
 
-export default ListBanner;
+export default ListColor;

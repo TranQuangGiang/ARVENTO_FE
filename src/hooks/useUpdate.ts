@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { message } from "antd";
-import { update, type categoryBlogForm } from "../providers/data/dataProviders";
+import { update, updateCoupon, type categoryBlogForm } from "../providers/data/dataProviders";
 
 
 
@@ -19,4 +19,17 @@ export const useUpdate = <T>({ resource, _id }: useListParams ) => {
             message.error(errMessage);
         }
     })
-}
+};
+
+export const useUpdateCoupon = <T>({ resource, _id }: useListParams ) => {
+    return useMutation({
+        mutationFn: (values: T) => updateCoupon({resource, _id, values }),
+        onSuccess: () => {
+            message.success("Cập nhập thành công ");
+        },
+        onError: (err:any) => {
+            const errMessage = err?.response?.data?.message || "Đã có lỗi xảy ra";
+            message.error(errMessage);
+        }
+    })
+};

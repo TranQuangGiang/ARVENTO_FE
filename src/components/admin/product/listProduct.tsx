@@ -154,7 +154,7 @@ const ProductList = () => {
           <div className="pl-6 pr-6 mt-0 bg-gray-50 min-h-screen">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 mt-10">
               <h2 className="text-[22px] font-bold text-gray-800 mb-5">
-                <AppstoreAddOutlined className="pr-2" /> Danh sách sản phẩm
+                <AppstoreAddOutlined className="pr-2" /> Products List
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">
