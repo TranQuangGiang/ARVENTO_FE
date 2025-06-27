@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Button, Image, message, Rate, Upload, Input } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Button, Image, message, Rate, Upload, Input, Popconfirm } from "antd";
+import { HeartFilled, HeartOutlined, UploadOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -191,6 +191,99 @@ const DeltaiProduct = () => {
   }
 };
 
+const handleDeleteReview = async (reviewId: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return message.error("Bạn chưa đăng nhập.");
+  try {
+    await axios.delete(`http://localhost:3000/api/reviews/${reviewId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Đã xóa đánh giá!");
+    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+  } catch (error) {
+    console.error("Lỗi khi xóa đánh giá:", error);
+    message.error("Xóa đánh giá thất bại!");
+  }
+};
+
+const [userId, setUserId] = useState<string | null>(null);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const decoded: any = jwtDecode(token);
+      setUserId(decoded?.id || null);
+    } catch (err) {
+      setUserId(null);
+    }
+  }
+}, []);
+
+// State
+const [isFavorite, setIsFavorite] = useState(false);
+
+// Kiểm tra sản phẩm đã được yêu thích hay chưa
+useEffect(() => {
+  if (!product?._id) return;
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const fetchFavoriteStatus = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/favorites/check/${product._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("❤️ Trạng thái yêu thích:", res.data?.data?.isFavorite);
+      setIsFavorite(res.data?.data?.isFavorited || false);
+    } catch (err) {
+      console.error("❌ Không kiểm tra được trạng thái yêu thích", err);
+    }
+  };
+
+  fetchFavoriteStatus();
+}, [product?._id]);
+
+
+
+
+// Xử lý thêm vào yêu thích
+const handleToggleFavorite = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return message.warning("Bạn cần đăng nhập để yêu thích sản phẩm.");
+  try {
+    if (isFavorite) {
+      await axios.delete(`http://localhost:3000/api/favorites/${product._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsFavorite(false);
+      message.success("Đã bỏ yêu thích sản phẩm!");
+    } else {
+      await axios.post(
+        `http://localhost:3000/api/favorites`,
+        { product_id: product._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsFavorite(true);
+      message.success("Đã thêm vào yêu thích!");
+    }
+  } catch (err) {
+    console.error("Lỗi khi cập nhật yêu thích:", err);
+    message.error("Thao tác không thành công!");
+  }
+};
+
+
+
 
   if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
 
@@ -355,6 +448,11 @@ const DeltaiProduct = () => {
                 >
                   ADD TO CART
                 </Button>
+                <Button
+    type="text"
+    icon={isFavorite ? <HeartFilled style={{ color: "red", fontSize: 24 }} /> : <HeartOutlined style={{ fontSize: 24 }} />}
+    onClick={handleToggleFavorite}
+  />
               </div>
 
               {/* Thông tin bảo hành/giao hàng */}
@@ -383,7 +481,6 @@ const DeltaiProduct = () => {
         </div>
       </div>
 
-      {/* Mô tả chi tiết */}
       <div className="content-product w-[70%] mx-auto">
         <div
           className="font-sans text-[16px] text-[#01225a] mb-2"
@@ -401,14 +498,25 @@ const DeltaiProduct = () => {
 ) : (
   reviews.map((r, idx) => (
     <div key={idx} className="mb-6 border-b pb-4">
-      <div className="flex justify-between items-center">
-        <span className="font-semibold text-[#01225a]">
-          {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-        </span>
-        <span className="text-sm text-gray-400">
-          {dayjs(r.created_at).format("DD/MM/YYYY")}
-        </span>
-      </div>
+     <div className="flex justify-between items-center">
+  <span className="font-semibold text-[#01225a]">
+    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+  </span>
+  <div className="flex gap-2 items-center">
+    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+  <Popconfirm
+    title="Bạn chắc chắn muốn xóa đánh giá này?"
+    onConfirm={() => handleDeleteReview(r._id)}
+    okText="Xóa"
+    cancelText="Hủy"
+  >
+    <Button size="small" danger>Xóa</Button>
+  </Popconfirm>
+)}
+  </div>
+</div>
+
       <Rate disabled defaultValue={r.rating} className="mt-1" />
       <p className="mt-2 text-gray-700">{r.comment}</p>
 
