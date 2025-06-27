@@ -19,9 +19,3 @@ export const useListClient = ({resource}: useListParams) => {
         queryFn: () => getListClient({resource})
     })
 } 
-export const useListClient = ({resource}: useListParams) => {
-    return useQuery({
-        queryKey: [resource],
-        queryFn: () => getListClient({resource})
-    })
-} 

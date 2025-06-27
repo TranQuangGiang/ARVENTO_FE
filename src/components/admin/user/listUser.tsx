@@ -1,11 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users } from 'lucide-react';
-import { Table } from 'antd';
-import { useOneData } from '../../../hooks/useOne';
+import { Button, Popconfirm, Table } from 'antd';
+import { useList } from '../../../hooks/useList';
+import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 
 const ListUser = () => {
-    const { data:users } = useOneData({
-        resource: `/auth/listUser`
+    const { data:users } = useList({
+        resource: `/users`
     });
     console.log(users);
     
@@ -26,10 +29,43 @@ const ListUser = () => {
             key: "email"
         },
         {
+            title: "Role",
+            dataIndex: "role",
+            key: "role"
+        },
+        {
             title: "Create At",
             dataIndex: "created_at",
-            key: "created_at"
+            key: "created_at",
+            render: (text: string) => dayjs(text).format('DD/MM/YYYY'),
         },
+        {
+            title: "Action",
+            key: "ation",
+            render: (_:any, record: any) => (
+                <>
+                    <Link to={`/admin/getUserOne/${record._id}`}>
+                        <Button
+                            icon={<EyeOutlined />}
+                            className="mr-1"
+                            onClick={() => console.log("View:", record)}
+                            type="default" style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
+                        />
+                    </Link>
+                    <Link to={`/admin/editUser/${record._id}`}>
+                        <Button icon={<EditOutlined />} className="mr-1" type="primary" />
+                    </Link>
+
+                    <Popconfirm
+                        title="Are you sure you want to delete this product?"
+                        okText="Delete"
+                        cancelText="Cancel"
+                    >
+                        <Button danger icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                </>
+            )
+        }
     ] 
     return (
         <AnimatePresence>
@@ -47,10 +83,16 @@ const ListUser = () => {
                 >
                     <div className='pl-6 pr-6 mt-0 bg-gray-50 min-h-screen'>
                         <div className='bg-white p-6 rounded-2xl border border-gray-200 mt-10'>
-                            <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                                <Users style={{width: 35}}  className="pr-2" /> Products List
-                            </h2>
-                            <Table dataSource={users} columns={columns} />
+                            <span className='w-full flex justify-between'>
+                                <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
+                                    <Users style={{width: 35}}  className="pr-2" /> Users List
+                                </h2>
+                                <Link to={`/admin/createUser`}>
+                                    <Button type='primary' icon={<PlusOutlined />} style={{width: 150, height: 40}}>Create User</Button>
+                                </Link>
+                            </span>
+                            
+                            <Table dataSource={users?.data?.docs || []} columns={columns} />
                         </div>
                     </div>
                 </motion.div>
