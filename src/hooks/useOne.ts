@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useOne } from "../providers/data/dataProviders";
+import { useUser } from "../providers/auth/authProviders";
 
 type useListParams = {
     resource: string ;
     _id?: string | number;
+}
+type useListUserMe = {
+    resource: string ;
 }
 
 export const useOneData = ({ resource, _id } : useListParams) => {
@@ -13,4 +17,11 @@ export const useOneData = ({ resource, _id } : useListParams) => {
         enabled: !!_id,
     });
 };
+
+export const useUserMe = ({ resource }:useListUserMe ) => {
+    return useQuery({
+        queryKey: [resource],
+        queryFn: () => useUser({ resource }),
+    });
+}
 

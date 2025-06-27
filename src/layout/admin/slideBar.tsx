@@ -67,7 +67,7 @@ const AdminSidebar = () => {
                     </li>
                     <li>
                         <Link
-                            to={`/admin/listVendors`}
+                            to={`/admin/listUsers`}
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
                                 location.pathname === '/admin/listVendors'
                                 ? 'bg-[#FEE2E2] text-red-500'
@@ -78,7 +78,7 @@ const AdminSidebar = () => {
                                 className="mr-[10px] group-hover:text-red-500 transition-all duration-300"
                                 size={23}
                             />
-                            Vendors
+                            Users
                         </Link>
                     </li>
                     <li ref={categoryRef}>
