@@ -40,6 +40,26 @@ type ResetPasswordParams = {
     resource: string,
     values: ResetPasswordForm,
 }
+export type updateRoleAdmin = {
+    role: string,
+}
+type UpdateRole = {
+    resource: string,
+    values: updateRoleAdmin,
+    _id?: string | number,
+}
+
+type useOneMe = {
+    resource: string,
+}
+
+export type updateUserClient = {
+    name: string,
+} 
+type UpdateName = {
+    resource: string,
+    values: updateUserClient,
+}
 axios.defaults.baseURL = "http://localhost:3000/api";
 
 const authProvider = {
@@ -60,7 +80,34 @@ const authProvider = {
         const { newPassword, token } = values; 
         const { data } = await axios.post(`${resource}`, { newPassword }, { params: {token} });
         return data;
+    },
+    updateUser: async ({ resource, values}: UpdateRole) => {
+        const token = localStorage.getItem("token")
+        const { data } = await axios.patch(`${resource}`, values, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    },
+    useUser: async ({ resource }: useOneMe) => {
+        const token = localStorage.getItem("token")
+        const { data } = await axios.get(`${resource}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
+    },
+    useUpdateUserCLient: async ({ resource, values }: UpdateName) => {
+        const token = localStorage.getItem("token")
+        const { data } = await axios.put(`${resource}`, values ,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return data;
     }
 }
-export const { register, login, forgotPassword, resetPassword } = authProvider;
+export const { register, login, forgotPassword, resetPassword, updateUser, useUser, useUpdateUserCLient } = authProvider;
 
