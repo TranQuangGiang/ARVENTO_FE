@@ -123,7 +123,7 @@ const HeaderClient = () => {
             <Link to={`/cart`}>
               <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
             </Link>
-          </Badge>
+
         </section>
         <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
         <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
