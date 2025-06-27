@@ -2,7 +2,6 @@ import './App.css'
 import { useRoutes } from 'react-router-dom'
 import LayoutClient from './layout/client'
 import ScrollToTop from './components/ScrollToTop'
-import Deltai from './components/client/Deltai'
 import Register from './components/client/auth/Register'
 import Login from './components/client/auth/Login'
 import Cart from './components/client/Cart'
@@ -26,7 +25,6 @@ import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import EditProduct from './components/admin/product/editProduct'
 
-import DeltaiProduct from './components/client/Deltai'
 import ListUser from './components/admin/user/listUser'
 import ListVariants from './components/admin/product/variants/listVariants'
 import UpdateVariants from './components/admin/product/variants/updateVariants'
@@ -47,6 +45,8 @@ import AddColor from './components/admin/color/addColor'
 import EditColor from './components/admin/color/editColer'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
+import ListReview from './components/admin/review/listReview'
+import UpdateReview from './components/admin/review/editReview'
 
 
 function App() {
@@ -96,6 +96,8 @@ function App() {
         {path: 'listcolor', element: <ListColor />},
         {path: 'addcolor', element: <AddColor />},
         {path: 'editcolor', element: <EditColor />},
+        {path: 'listreview', element: <ListReview />},
+        {path: 'editreview/:id', element: <UpdateReview />},
       ]
     }
   ])

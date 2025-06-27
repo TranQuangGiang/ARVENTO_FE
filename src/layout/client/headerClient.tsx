@@ -8,6 +8,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { AuthContexts } from '../../components/contexts/authContexts';
 import { Badge } from 'antd';
 import { useCart } from '../../components/contexts/cartContexts';
+import Login from '../../components/client/auth/Login';
+import Register from '../../components/client/auth/Register';
 
 
 const HeaderClient = () => {
@@ -23,7 +25,7 @@ const HeaderClient = () => {
     }
   }, [modalParam]);
 
-  // const { state: { cartItemCount } } = useCart();
+  const { state: { cartItemCount } } = useCart();
   return (
     <div className='fixed top-0 left-0 right-0 z-50 w-full bg-white h-[80px]'>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
@@ -117,14 +119,14 @@ const HeaderClient = () => {
               </div>
             )}
           </div>
-          {/* <Badge count={cartItemCount} offset={[-1, 1]} size="small">
+          <Badge count={cartItemCount} offset={[-1, 1]} size="small">
             <Link to={`/cart`}>
               <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
             </Link>
-          </Badge> */}
+          </Badge>
         </section>
-        {/* <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
-        <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} /> */}
+        <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
+        <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
         
       </div>
     </div>

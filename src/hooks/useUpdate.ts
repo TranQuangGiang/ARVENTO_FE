@@ -33,3 +33,19 @@ export const useUpdateCoupon = <T>({ resource, _id }: useListParams ) => {
         }
     })
 };
+
+export const useUpdateReview = <T>({ resource }: { resource: string }) => {
+  return useMutation({
+    mutationFn: ({ _id, values }: { _id: string | number; values: T }) => {
+      const url = `${resource}/${_id}`;
+      return update({ resource: url, values });
+    },
+    onSuccess: () => {
+      message.success("Cập nhật thành công");
+    },
+    onError: (err: any) => {
+      const errMessage = err?.response?.data?.message || "Đã có lỗi xảy ra";
+      message.error(errMessage);
+    }
+  });
+};
