@@ -44,8 +44,10 @@ import AddColor from './components/admin/color/addColor'
 import EditColor from './components/admin/color/editColer'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
+
 import ListReview from './components/admin/review/listReview'
 import UpdateReview from './components/admin/review/editReview'
+
 import GetUserOne from './components/admin/user/getOneUser'
 import CreateUser from './components/admin/user/createUser'
 import EditUser from './components/admin/user/editUser'

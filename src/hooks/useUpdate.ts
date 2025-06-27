@@ -39,6 +39,7 @@ export const useUpdateCoupon = <T>({ resource, _id }: useListParams ) => {
 };
 
 
+
 export const useUpdateReview = <T>({ resource }: { resource: string }) => {
   return useMutation({
     mutationFn: ({ _id, values }: { _id: string | number; values: T }) => {
@@ -54,6 +55,7 @@ export const useUpdateReview = <T>({ resource }: { resource: string }) => {
     }
   });
 };
+
 
 export const useUpdateRole = ({ resource, _id }: useListParams) => {
     return useMutation({
