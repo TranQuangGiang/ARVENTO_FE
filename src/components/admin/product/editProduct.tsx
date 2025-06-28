@@ -38,7 +38,7 @@ const EditProduct = () => {
       uid: `${index}`,
       name: `image_${index}.jpeg`,
       status: "done",
-      url: img.url, // ✅ đúng cấu trúc
+      url: img.url,
     }));
 
     form.setFieldsValue({
@@ -191,10 +191,6 @@ const EditProduct = () => {
           <InputNumber<number>
             min={0}
             style={{ width: "100%" }}
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-            }
-            parser={(value) => Number(value?.replace(/,/g, "") || "")}
           />
         </Form.Item>
         <Form.Item
@@ -206,10 +202,6 @@ const EditProduct = () => {
           <InputNumber<number>
             min={0}
             style={{ width: "100%" }}
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-            }
-            parser={(value) => Number(value?.replace(/,/g, "") || "")}
           />
         </Form.Item>
 
