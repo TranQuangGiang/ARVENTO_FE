@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useUserMe } from '../../../../../hooks/useOne'
 import { useSearchParams } from 'react-router-dom'
 import UpdateAccount from './updateAcconut'
+import { Link } from 'react-router-dom'
 
 const AccountInformation = () => {
     const [showModal, setShowModal] = useState<string | null>(null);
@@ -56,7 +57,10 @@ const AccountInformation = () => {
                 <div className='w-full relative h-60 rounded-[15px] bg-white mt-5'>
                     <span className='w-[97%] absolute ml-1 flex items-center justify-between z-20'>
                         <h4 className='pt-4 text-[17px] font-[Product Sans] font-bold ml-5'>Sổ địa chỉ</h4>
-                        <p className='text-[15px] text-blue-500 mt-3 cursor-pointer font-[Product Sans]'><PlusOutlined style={{width: 16}} className='mr-1' /> Thêm địa chỉ</p>
+                        <Link to={`/detailAuth/addAddresses`}>
+                            <p className='text-[15px] text-blue-500 mt-3 cursor-pointer font-[Product Sans]'><PlusOutlined style={{width: 16}} className='mr-1' /> Thêm địa chỉ</p>
+                        </Link>
+                        
                     </span>
                     <div className="relative w-full h-full flex items-center flex-col justify-center pt-3">
                         <div className="absolute w-[300px] h-[100px] rounded-full bg-blue-500 opacity-30 blur-2xl"></div>
