@@ -9,10 +9,13 @@ import { cartReducer, initialState } from "../reducers/carReducers";
 type CartContextType = {
     state: CartState;
     addToCart: (item: CartItem) => Promise<void>;
-    updateCart: (product_id: string, size: string, color: string, quantity: number) => Promise<void>;
-    removeFromCart: (product_id: string, size: string, color: string) => Promise<void>;
+    updateCart: (product_id: string, size: string, color: { name: string, hex: string}, quantity: number) => Promise<void>;
+    removeFromCart: (product_id: string, size: string, color: { name: string, hex: string}) => Promise<void>;
     clearCart: () => Promise<void>;
     fetchCart: () => Promise<void>;
+    applyVoucherToCart: (code: string) => Promise<void>;
+    removeVoucherFromCart: () => Promise<void>;
+    setSelectedVoucherCode: (code: string | null) => void; 
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -38,15 +41,21 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
     const fetchCart = async () => {
         try {
             const token = localStorage.getItem("token") || "";
+            if (!token){
+                dispatch({ type: "CLEAR_CART" });
+                return;
+            } 
             const userId = getUserIdFromToken();
             if (!userId) return;
-            const res = await axios.get(`/carts?user=${userId}`, {
+            const res = await axios.get(`/carts`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             const cartData: Cart = res.data.data;
             dispatch({ type: "SET_CART", payload: cartData });
+             // Tự động set lại mã giảm giá đã chọn nếu có
+            dispatch({ type: "SET_SELECTED_VOUCHER", payload: cartData.applied_coupon?.code || null });
         } catch (error) {
             console.error("Lỗi khi fetch cart:", error);
         }
@@ -58,7 +67,7 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
                 prevTokenRef.current = currentToken;
                 fetchCart();
             }
-        }, 1000);
+        }, 500);
         return () => clearInterval(interval)
     }, []);
     useEffect(() => {
@@ -84,7 +93,7 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
     const updateCart = async (
         product_id: string,
         size: string,
-        color: string,
+        color: { name: string; hex: string },
         quantity: number
         ) => {
         try {
@@ -114,7 +123,7 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
     const removeFromCart = async (
         product_id: string,
         size: string,
-        color: string
+        color: { name: string; hex: string }
         ) => {
         try {
             const token = localStorage.getItem("token") || "";
@@ -143,12 +152,10 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
         }
     };
 
-
-
     const clearCart = async () => {
         try {
             const token = localStorage.getItem("token") || "";
-            await axios.delete(`/api/cart`, {
+            await axios.delete(`/carts`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -160,9 +167,50 @@ export const CartProvider = ({ children }: {children: React.ReactNode}) => {
         }
     };
 
+    const applyVoucherToCart = async (code: string) => {
+        try {
+            const token = localStorage.getItem("token") || "";
+            await axios.post(
+                "/carts/coupons", // <-- bạn cần tạo route này ở BE
+                { coupon_code: code },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            await fetchCart(); 
+            message.success("Áp dụng mã giảm giá thành công");
+        } catch (error:any) {
+            const errorMessage = error.response?.data?.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn";
+            message.error(errorMessage);
+        }
+    };
+    const removeVoucherFromCart = async () => {
+        try {
+            const token = localStorage.getItem("token") || "";
+            await axios.delete(
+                "/carts/coupons", // <-- bạn cần tạo route này ở BE
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            await fetchCart(); 
+            message.success("Xóa mã giảm giá thành công");
+        }  catch (error) {
+            console.error("Lỗi khi áp dụng mã giảm giá:", error);
+            message.error("Mã giảm giá không hợp lệ hoặc đã hết hạn");
+        }
+    }
+    const setSelectedVoucherCode = (code: string | null) => {
+        dispatch({ type: "SET_SELECTED_VOUCHER", payload: code });
+    };
     return (
         <CartContext.Provider
-            value={{state, addToCart, updateCart, removeFromCart, clearCart, fetchCart}}
+            value={{state, addToCart, updateCart, removeFromCart, clearCart, fetchCart, applyVoucherToCart, removeVoucherFromCart, setSelectedVoucherCode}}
         >
             {children}
         </CartContext.Provider>

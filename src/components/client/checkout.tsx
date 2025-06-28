@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const FloatingInput = ({ label, name, value, onChange, type = "text", placeholder = "" }) => {
+const FloatingInput = ({ label, name, value, onChange, type = "text", placeholder = "" }:any) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -75,11 +75,11 @@ const Checkout = () => {
 
   const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const handleCustomerChange = (e) => {
+  const handleCustomerChange = (e:any) => {
     setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });
   };
 
-  const handleShippingChange = (e) => {
+  const handleShippingChange = (e:any) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
   };
 
