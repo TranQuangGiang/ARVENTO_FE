@@ -44,11 +44,17 @@ import AddColor from './components/admin/color/addColor'
 import EditColor from './components/admin/color/editColer'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
+
+import ListReview from './components/admin/review/listReview'
+import UpdateReview from './components/admin/review/editReview'
+
 import GetUserOne from './components/admin/user/getOneUser'
 import CreateUser from './components/admin/user/createUser'
 import EditUser from './components/admin/user/editUser'
 import UpdateAccount from './components/client/auth/DetailAuth/layoutAuth/updateAcconut'
 import AddAddresses from './components/client/auth/DetailAuth/layoutAuth/addAddresses'
+import ListFavorite from './components/admin/favorite/listFavorite'
+import FavoriteUsers from './components/admin/favorite/chitietfavorite'
 
 
 
@@ -104,6 +110,10 @@ function App() {
         {path: 'listcolor', element: <ListColor />},
         {path: 'addcolor', element: <AddColor />},
         {path: 'editcolor', element: <EditColor />},
+        {path: 'listreview', element: <ListReview />},
+        {path: 'editreview/:id', element: <UpdateReview />},
+        {path: 'listfavorite', element: <ListFavorite />},
+        {path: 'favorites/:id/users', element: <FavoriteUsers />},
       ]
     }
   ])
