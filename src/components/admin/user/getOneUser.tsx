@@ -1,17 +1,17 @@
 import {
-    Card,
-    Descriptions,
-    Avatar,
-    Tag,
-    Button,
-    Select,
-    message,
+  Card,
+  Descriptions,
+  Avatar,
+  Tag,
+  Button,
+  Select,
+  message,
 } from "antd";
 import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOneData } from "../../../hooks/useOne";
 import { motion } from "framer-motion";
-import { useUpdateRole } from "../../../hooks/useUpdate"; // hook PATCH role
+import { useUpdateRole } from "../../../hooks/useUpdate";
 import { useState } from "react";
 
 const UserDetail = () => {
@@ -26,6 +26,7 @@ const UserDetail = () => {
     const { mutateAsync: updateRoleUser } = useUpdateRole({
         resource: `/users/${id}/role`,
     });
+
     const user = userData?.data;
     const [updating, setUpdating] = useState(false);
 
@@ -46,6 +47,24 @@ const UserDetail = () => {
         }
     };
 
+    // Địa chỉ fix cứng (sẽ thay bằng fetch từ /addresses?userId=...)
+    const addresses = [
+        {
+            phone: "0912345678",
+            province: "Hà Nội",
+            district: "Ba Đình",
+            ward: "Phúc Xá",
+            detail: "Số 1 Đường Thanh Niên",
+        },
+        {
+            phone: "0909876543",
+            province: "TP.HCM",
+            district: "Quận 1",
+            ward: "Bến Nghé",
+            detail: "456 Nguyễn Huệ",
+        },
+    ];
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -59,7 +78,7 @@ const UserDetail = () => {
                 bodyStyle={{ padding: 30 }}
             >
                 <div className="flex items-start justify-between flex-wrap gap-6">
-                {/* Left */}
+                    {/* Left content */}
                     <div className="flex-1 min-w-[300px]">
                         <h2 className="text-2xl font-semibold mb-5">👤 User Detail</h2>
                         <Descriptions
@@ -87,18 +106,6 @@ const UserDetail = () => {
                                 </Select.Option>
                                 </Select>
                             </Descriptions.Item>
-                            <Descriptions.Item label="Province">
-                                {user?.address?.[0]?.province || "N/A"}
-                            </Descriptions.Item>
-                            <Descriptions.Item label="District (Quận/Huyện)">
-                                {user?.address?.[0]?.district || "N/A"}
-                            </Descriptions.Item>
-                            <Descriptions.Item label="Ward (Phường/Xã)">
-                                {user?.address?.[0]?.ward || "N/A"}
-                            </Descriptions.Item>
-                            <Descriptions.Item label="Detail Address">
-                                {user?.address?.[0]?.detail || "N/A"}
-                            </Descriptions.Item>
                             <Descriptions.Item label="Created At">
                                 {user?.created_at ? formatDate(user.created_at) : "N/A"}
                             </Descriptions.Item>
@@ -106,8 +113,32 @@ const UserDetail = () => {
                                 {user?.updated_at ? formatDate(user.updated_at) : "N/A"}
                             </Descriptions.Item>
                         </Descriptions>
+                        {/* Danh sách địa chỉ */}
+                        <div className="mt-10">
+                            <h2 className="text-xl font-semibold mb-4">📦 Addresses</h2>
+                            {addresses.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {addresses.map((addr, index) => (
+                                        <Card
+                                            key={index}
+                                            title={`Address ${index + 1}`}
+                                            className="rounded-lg shadow border"
+                                            size="small"
+                                        >
+                                            <p><strong>Phone:</strong> {addr.phone || "N/A"}</p>
+                                            <p><strong>Province:</strong> {addr.province || "N/A"}</p>
+                                            <p><strong>District:</strong> {addr.district || "N/A"}</p>
+                                            <p><strong>Ward:</strong> {addr.ward || "N/A"}</p>
+                                            <p><strong>Detail:</strong> {addr.detail || "N/A"}</p>
+                                        </Card>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-gray-500">No addresses found.</p>
+                            )}
+                        </div>
                     </div>
-                    {/* Right */}
+                    {/* Avatar + Back button */}
                     <div className="flex flex-col items-center justify-start gap-4">
                         <Avatar size={100} icon={<UserOutlined />} />
                         <Button
