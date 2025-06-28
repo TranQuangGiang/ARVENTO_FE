@@ -5,14 +5,14 @@ export type Product = {
   product_code: string;
 }
 
+
 export type CartItem = {
   _id?: string | number;
   userId: string;
   product_id: string | number;
   selected_variant: {
-    color: string;
+    color: { name: string; hex: string };
     size: string;
-    price: number;
   };
   quantity: number;
   unit_price: number;
@@ -27,6 +27,7 @@ export type Cart = {
   subtotal: number;
   total: number;
   applied_coupon?: {
+    code: string,
     discount_amount: number;
     discount_type: 'percentage' | 'fixed';
   };
@@ -37,6 +38,7 @@ export type Cart = {
 export type CartState = {
   cart: Cart | null;
   cartItemCount: number;
+  selectedVoucher: string | null;
 }
 
 export type CartAction = 
@@ -45,3 +47,4 @@ export type CartAction =
     | { type: "UPDATE_CART"; payload: CartItem }
     | { type: "REMOVE_FROM_CART"; payload: string | number }
     | { type: "CLEAR_CART" }
+    | { type: "SET_SELECTED_VOUCHER", payload: string | null}

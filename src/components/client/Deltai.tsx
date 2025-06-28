@@ -117,11 +117,8 @@ const DeltaiProduct = () => {
       product_id: product._id,
       product_name: product.name,
       selected_variant: {
-        color: selectedColor,
-        size: String(selectedSize),
-        price: unitPrice,
-        stock: variant.stock,
-        image: variant.image,
+        color: variant.color,
+        size: String(selectedSize)
       },
       quantity,
       unit_price: unitPrice,
@@ -130,7 +127,6 @@ const DeltaiProduct = () => {
     try {
       setLoading(true);
       await addToCart(cartItem);
-      message.success("Đã thêm sản phẩm vào giỏ hàng!");
     } catch (error) {
       console.error(error);
       message.error("Lỗi khi thêm vào giỏ hàng!");
@@ -140,56 +136,55 @@ const DeltaiProduct = () => {
   };
 
   const handleSubmitReview = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
-  let userInfo: any = null;
-  try {
-    userInfo = jwtDecode(token);
-  } catch (err) {
-    return message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
-  }
-  if (!userInfo?.id) return message.warning("Vui lòng đăng nhập để đánh giá.");
-  if (!userRating || !userComment.trim()) return message.warning("Vui lòng nhập đủ thông tin.");
-
-  const formData = new FormData();
-  formData.append("rating", userRating.toString());
-  formData.append("comment", userComment);
-  formData.append("product_id", product._id);
-
-  // ✅ LOG dữ liệu gửi đi
-  console.log("Đang gửi đánh giá:", {
-    rating: userRating,
-    comment: userComment,
-    product_id: product._id,
-    images: fileList.map(f => f.name || f.originFileObj?.name),
-  });
-
-  fileList.forEach((file) => {
-    if (file.originFileObj) {
-      formData.append("images", file.originFileObj);
+    const token = localStorage.getItem("token");
+    if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
+    let userInfo: any = null;
+    try {
+      userInfo = jwtDecode(token);
+    } catch (err) {
+      return message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
     }
-  });
+    if (!userInfo?.id) return message.warning("Vui lòng đăng nhập để đánh giá.");
+    if (!userRating || !userComment.trim()) return message.warning("Vui lòng nhập đủ thông tin.");
 
-  try {
-    await axios.post("http://localhost:3000/api/reviews", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
+    const formData = new FormData();
+    formData.append("rating", userRating.toString());
+    formData.append("comment", userComment);
+    formData.append("product_id", product._id);
+
+    console.log("Đang gửi đánh giá:", {
+      rating: userRating,
+      comment: userComment,
+      product_id: product._id,
+      images: fileList.map(f => f.name || f.originFileObj?.name),
     });
-    message.success("Đánh giá của bạn đã được gửi!");
-    setUserRating(0);
-    setUserComment("");
-    setFileList([]);
 
-    const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
-    const reviewData = res.data?.data?.reviews;
-    setReviews(Array.isArray(reviewData) ? reviewData : []);
-  } catch (error) {
-    console.error(error);
-    message.error("Lỗi khi gửi đánh giá!");
-  }
-};
+    fileList.forEach((file) => {
+      if (file.originFileObj) {
+        formData.append("images", file.originFileObj);
+      }
+    });
+
+    try {
+      await axios.post("http://localhost:3000/api/reviews", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      message.success("Đánh giá của bạn đã được gửi!");
+      setUserRating(0);
+      setUserComment("");
+      setFileList([]);
+
+      const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
+      const reviewData = res.data?.data?.reviews;
+      setReviews(Array.isArray(reviewData) ? reviewData : []);
+    } catch (error) {
+      console.error(error);
+      message.error("Lỗi khi gửi đánh giá!");
+    }
+  };
 
 const handleDeleteReview = async (reviewId: string) => {
   const token = localStorage.getItem("token");
@@ -408,7 +403,7 @@ const handleToggleFavorite = async () => {
                       <button
                         key={i}
                         onClick={() => setSelectedSize(size)}
-                        className={`px-3 py-1 border rounded ${selectedSize === size ? "bg-blue-900 text-white" : "bg-white text-gray-800"}`}
+                        className={`px-2.5 py-0.5 cursor-pointer border rounded ${selectedSize === size ? "bg-blue-900 text-white" : "bg-white text-gray-800"}`}
                       >
                         {size}
                       </button>
@@ -449,10 +444,10 @@ const handleToggleFavorite = async () => {
                   ADD TO CART
                 </Button>
                 <Button
-    type="text"
-    icon={isFavorite ? <HeartFilled style={{ color: "red", fontSize: 24 }} /> : <HeartOutlined style={{ fontSize: 24 }} />}
-    onClick={handleToggleFavorite}
-  />
+                  type="text"
+                  icon={isFavorite ? <HeartFilled style={{ color: "red", fontSize: 24 }} /> : <HeartOutlined style={{ fontSize: 24 }} />}
+                  onClick={handleToggleFavorite}
+                />
               </div>
 
               {/* Thông tin bảo hành/giao hàng */}
@@ -494,35 +489,35 @@ const handleToggleFavorite = async () => {
           <h3 className="text-xl font-bold text-[#01225a] mb-5">Đánh giá sản phẩm</h3>
 
           {reviews.length === 0 ? (
-  <p className="text-gray-600">Chưa có đánh giá nào.</p>
-) : (
-  reviews.map((r, idx) => (
-    <div key={idx} className="mb-6 border-b pb-4">
-     <div className="flex justify-between items-center">
-  <span className="font-semibold text-[#01225a]">
-    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-  </span>
-  <div className="flex gap-2 items-center">
-    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
-    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-  <Popconfirm
-    title="Bạn chắc chắn muốn xóa đánh giá này?"
-    onConfirm={() => handleDeleteReview(r._id)}
-    okText="Xóa"
-    cancelText="Hủy"
-  >
-    <Button size="small" danger>Xóa</Button>
-  </Popconfirm>
-)}
-  </div>
-</div>
+            <p className="text-gray-600">Chưa có đánh giá nào.</p>
+          ) : (
+            reviews.map((r, idx) => (
+              <div key={idx} className="mb-6 border-b pb-4">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-[#01225a]">
+                  {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+                </span>
+                <div className="flex gap-2 items-center">
+                  <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+                  {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                <Popconfirm
+                  title="Bạn chắc chắn muốn xóa đánh giá này?"
+                  onConfirm={() => handleDeleteReview(r._id)}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                >
+                  <Button size="small" danger>Xóa</Button>
+                </Popconfirm>
+              )}
+            </div>
+        </div>
 
       <Rate disabled defaultValue={r.rating} className="mt-1" />
       <p className="mt-2 text-gray-700">{r.comment}</p>
 
       {r.images?.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
-          {r.images.map((img, i) => (
+          {r.images.map((img:any, i:any) => (
             <img
               key={i}
               src={img}

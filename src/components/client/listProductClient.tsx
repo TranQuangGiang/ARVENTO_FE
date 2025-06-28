@@ -133,30 +133,32 @@ const ListProductClient = () => {
               {isFetchingCategory && <p>Loading...</p>}
               {!isFetchingCategory &&
                 categoryProducts.map((product:any) => (
-                  <div
-                    key={product._id}
-                    className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'
-                  >
-                    <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
-                      <img
-                        className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                        src={product.images?.[0]?.url || "/default.png"}
-                        alt={product.name}
-                      />
-                    </div>
-                    <div className='content w-[80%] mt-[0px]'>
-                      <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
-                      <div className='pt-1.5 flex items-center'>
-                        <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                          {formatPrice(product.original_price)}<sup>đ</sup>
-                        </p>
-                        <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                  <Link to={`/detailProductClient/${product._id}`}>
+                    <div
+                      key={product._id}
+                      className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'
+                    >
+                      <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                        <img
+                          className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                          src={product.images?.[0]?.url || "/default.png"}
+                          alt={product.name}
+                        />
+                      </div>
+                      <div className='content w-[80%] mt-[0px]'>
+                        <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
+                        <div className='pt-1.5 flex items-center'>
+                          <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                            {formatPrice(product.original_price)}<sup>đ</sup>
+                          </p>
+                          <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                        </div>
+                      </div>
+                      <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
+                        <p className='text-[11px]'>Select options</p>
                       </div>
                     </div>
-                    <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
-                      <p className='text-[11px]'>Select options</p>
-                    </div>
-                  </div>
+                  </Link>
                 ))}
             </div>
           </div>

@@ -3,6 +3,7 @@ import type { Cart, CartAction, CartItem, CartState } from "../types/cart";
 export const initialState: CartState = {
     cart: null,
     cartItemCount: 0,
+    selectedVoucher: null,
 };
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
@@ -22,7 +23,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
                 (item) => 
                     item.product_id === action.payload.product_id &&
                     item.selected_variant.size === action.payload.selected_variant.size && 
-                    item.selected_variant.color === action.payload.selected_variant.color
+                    item.selected_variant.color.name === action.payload.selected_variant.color.name
             );
             let updatedItems: CartItem[];
             
@@ -50,6 +51,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
             return {
                 cart: updatedCart,
                 cartItemCount: count,
+                selectedVoucher: state.selectedVoucher,
             }
         }
 
@@ -69,6 +71,7 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
             return {
                 cart: updatedCart,
                 cartItemCount: count,
+                selectedVoucher: state.selectedVoucher,
             };
         }
         case "REMOVE_FROM_CART": {
@@ -90,13 +93,19 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
             return {
                 cart: updatedCart,
                 cartItemCount: count,
+                selectedVoucher: state.selectedVoucher,
             };
         }
-         case "CLEAR_CART":
+        case "CLEAR_CART":
             return {
                 ...state,
                 cart: null,
                 cartItemCount: 0,
+            };
+        case "SET_SELECTED_VOUCHER":
+            return {
+                ...state,
+                selectedVoucher: action.payload,
             };
         default:
             return state;

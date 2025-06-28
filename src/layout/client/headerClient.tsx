@@ -70,7 +70,7 @@ const HeaderClient = () => {
         {/* Icons */}
         <section className='header-person flex gap-4'>
           <div className='group relative'>
-            <FontAwesomeIcon className='text-[18px] cursor-pointer' icon={faUser} />
+            <FontAwesomeIcon className='text-[19px] font-sans cursor-pointer' icon={faUser} />
             { user ? (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
                 [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
@@ -121,7 +121,7 @@ const HeaderClient = () => {
           </div>
           <Badge count={cartItemCount} offset={[-1, 1]} size="small">
             <Link to={`/cart`}>
-              <FontAwesomeIcon className='text-[18px] pl-[10px] cursor-pointer' icon={faCartShopping} />
+              <FontAwesomeIcon className='text-[19px] pl-[10px] cursor-pointer text-blue-600' icon={faCartShopping} />
             </Link>
           </Badge>
         </section>
