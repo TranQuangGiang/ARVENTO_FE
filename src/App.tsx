@@ -52,9 +52,9 @@ import GetUserOne from './components/admin/user/getOneUser'
 import CreateUser from './components/admin/user/createUser'
 import EditUser from './components/admin/user/editUser'
 import UpdateAccount from './components/client/auth/DetailAuth/layoutAuth/updateAcconut'
+import AddAddresses from './components/client/auth/DetailAuth/layoutAuth/addAddresses'
 import ListFavorite from './components/admin/favorite/listFavorite'
 import FavoriteUsers from './components/admin/favorite/chitietfavorite'
-
 
 
 
@@ -73,6 +73,7 @@ function App() {
         {path: 'accountInformation', element: <AccountInformation />},
         {path: 'discountCode', element: <DiscountCode />},
         {path: 'updateAccount', element: <UpdateAccount />},
+        {path: 'addAddresses', element: <AddAddresses />},
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
