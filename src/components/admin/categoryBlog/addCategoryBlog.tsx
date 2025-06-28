@@ -38,6 +38,7 @@ const AddCategoryBlog = () => {
                             label="Name"
                             name="name"
                             rules={[{ required: true }]}
+                            className="font-semibold"
                         >
                             <Input
                                 className="h-[45px] rounded-md border-gray-300 hover:border-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -48,6 +49,7 @@ const AddCategoryBlog = () => {
                             label="Slug"
                             name="slug"
                             rules={[{ required: true }]}
+                            className="font-semibold"
                         >
                             <Input
                                 className="h-[45px] rounded-md border-gray-300 hover:border-blue-500 focus:border-blue-500 transition-all duration-200"

@@ -2,7 +2,6 @@ import './App.css'
 import { useRoutes } from 'react-router-dom'
 import LayoutClient from './layout/client'
 import ScrollToTop from './components/ScrollToTop'
-import Deltai from './components/client/Deltai'
 import Register from './components/client/auth/Register'
 import Login from './components/client/auth/Login'
 import Cart from './components/client/Cart'
@@ -25,6 +24,10 @@ import ListBlog from './components/admin/blog/listBlog'
 import DetailBlog from './components/admin/blog/detailBlog'
 import ListProduct from './components/admin/product/listProduct'
 import EditProduct from './components/admin/product/editProduct'
+import ListUser from './components/admin/user/listUser'
+import ListVariants from './components/admin/product/variants/listVariants'
+import UpdateVariants from './components/admin/product/variants/updateVariants'
+import DeltaiProductAdmin from './components/admin/product/detailProduct'
 import AddProduct from './components/admin/product/addProduct'
 import ListCoupon from './components/admin/coupon/listCoupon'
 import AddCoupon from './components/admin/coupon/addCoupon'
@@ -42,12 +45,24 @@ import EditColor from './components/admin/color/editColer'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
 
+import ListReview from './components/admin/review/listReview'
+import UpdateReview from './components/admin/review/editReview'
+
+import GetUserOne from './components/admin/user/getOneUser'
+import CreateUser from './components/admin/user/createUser'
+import EditUser from './components/admin/user/editUser'
+import UpdateAccount from './components/client/auth/DetailAuth/layoutAuth/updateAcconut'
+import AddAddresses from './components/client/auth/DetailAuth/layoutAuth/addAddresses'
+import ListFavorite from './components/admin/favorite/listFavorite'
+import FavoriteUsers from './components/admin/favorite/chitietfavorite'
+
+
 
 function App() {
   const routes = useRoutes([
     {path: '/', element: < LayoutClient />, children: [
       {path: '', element: <ListProductClient />},
-      {path: 'detailProduct/:id', element: <DeltaiProduct />},
+      {path: 'detailProductClient/:id', element: <DeltaiProduct />},
       {path: 'cart', element: <Cart/>},
       {path: 'register', element: <Register/>},
       {path: 'login', element: <Login/>},
@@ -56,7 +71,9 @@ function App() {
         {path: 'homeAuth', element: <HomeAuth />},
         {path: 'orderHistory', element: <OrderHistory />},
         {path: 'accountInformation', element: <AccountInformation />},
-        {path: 'discountCode', element: <DiscountCode />}
+        {path: 'discountCode', element: <DiscountCode />},
+        {path: 'updateAccount', element: <UpdateAccount />},
+        {path: 'addAddresses', element: <AddAddresses />},
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
@@ -77,17 +94,26 @@ function App() {
         {path: 'addCategoryBlog', element: <AddCategoryBlog />},
         {path: 'listCategoryBlog', element: <ListCategoryBlog />},
         {path: 'editCategoryBlog/:id', element: <EditCategoryBlog />},
-        {path: 'editproduct', element: <EditProduct />},
         {path: 'listProduct', element: <ListProduct />},
         {path: 'addProduct', element: <AddProduct />},
         {path: 'editProduct/:id', element: <EditProduct />},
-        // {path: 'detailProduct/:id', element: <DetailProduct />}
+        {path: 'detailProductAdmin/:id', element: <DeltaiProductAdmin />},
+        {path: 'listVariants/:id', element: <ListVariants />},
+        {path: 'editVariants/:productId/:id', element: <UpdateVariants />},
+        {path: 'listUsers', element: <ListUser />},
+        {path: 'getUserOne/:id', element: <GetUserOne/>},
+        {path: 'editUser/:id', element: <EditUser/>},
+        {path: 'createUser', element: <CreateUser />},
         {path: 'listcoupon', element: <ListCoupon />},
         {path: 'addCoupon', element: <AddCoupon />},
         {path: 'editcoupon/:id', element: <EditCoupon />},
         {path: 'listcolor', element: <ListColor />},
         {path: 'addcolor', element: <AddColor />},
         {path: 'editcolor', element: <EditColor />},
+        {path: 'listreview', element: <ListReview />},
+        {path: 'editreview/:id', element: <UpdateReview />},
+        {path: 'listfavorite', element: <ListFavorite />},
+        {path: 'favorites/:id/users', element: <FavoriteUsers />},
       ]
     }
   ])

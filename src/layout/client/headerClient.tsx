@@ -2,13 +2,14 @@
 import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import BannerClient from './banner';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import Login from '../../components/client/auth/Login';
-import Register from '../../components/client/auth/Register';
+import { Link, useSearchParams } from 'react-router-dom';
+// import Login from '../../components/client/auth/Login';
+// import Register from '../../components/client/auth/Register';
 import { AuthContexts } from '../../components/contexts/authContexts';
 import { Badge } from 'antd';
 import { useCart } from '../../components/contexts/cartContexts';
+import Login from '../../components/client/auth/Login';
+import Register from '../../components/client/auth/Register';
 
 
 const HeaderClient = () => {

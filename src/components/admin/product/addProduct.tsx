@@ -7,14 +7,10 @@ import {
   message,
   InputNumber,
   Select,
-  Checkbox,
   Card,
-  Divider,
 } from "antd";
 import {
   UploadOutlined,
-  PlusOutlined,
-  MinusCircleOutlined,
   OrderedListOutlined,
 } from "@ant-design/icons";
 
@@ -24,16 +20,16 @@ import { useList } from "../../../hooks/useList";
 import { useCreate } from "../../../hooks/useCreate";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-const { TextArea } = Input;
-const SIZE_OPTIONS = [38, 39, 40, 41, 42, 43];
+const ATTRIBUTE_TYPES = ["color", "size"];
 
 const AddProduct = () => {
   const [form] = Form.useForm();
   const [content, setContent] = useState('');
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
   
   {/** Lấy ra danh mục sản phẩm */}
   const { data } = useList({
@@ -53,10 +49,9 @@ const AddProduct = () => {
   
   {/** Thêm mới sản phẩm */}
 
-  const { mutate } = useCreate<FormData>({
+  const { mutate:product } = useCreate<FormData>({
     resource: "/products"
   })
-
   const onFinish = async (values: any) => {
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
@@ -79,45 +74,59 @@ const AddProduct = () => {
     //images
     values.images.forEach((file: any, index: number) => {
       if (file.originFileObj) {
-        formData.append('images', file.originFileObj, file.name || `image_${index}.jpg`);
+        formData.append('images', file.originFileObj, file.name || `image_${index}`);
       }
     });
 
-    // xử lý variant
-    const parsedVariants = (values.variants || []).flatMap((variant: any, index: number) => {
-      const sizes = variant.sizes || [];
-      const stockBySize = variant.stockBySize || {};
-      const fileList = variant.image;
-      const imageFile = Array.isArray(fileList) ? fileList[0]?.originFileObj : null;
-      
-      if (!imageFile) {
-        message.error(`Vui lòng upload ảnh cho biến thể ${index + 1}`);
-        return [];
-      }
-      console.log(imageFile);
-     
-
-      return sizes.map((size: string | number) => ({
-        color: variant.color,
-        size: String(size),
-        stock: Number(stockBySize[size] || 0),
-        image: imageFile
-      }));
-    });
-    parsedVariants.forEach((variant: any, index: number) => {
-      if (variant.image) {
-        formData.append('variantImages', variant.image, `variant_${index}.jpg`);
+    const optionsToSend: any = {};
+    ATTRIBUTE_TYPES.forEach((attr) => {
+      const value = values.attributes?.[attr];
+      if (value && Array.isArray(value)) {
+        if (attr === "color") {
+          optionsToSend[attr] = value.map((val: string) =>
+            attr === "color"
+              ? { name: val.trim(), hex: "#CCCCCC" }
+              : val.trim()
+          );;
+        } else {
+          optionsToSend[attr] = value;
+        }
       }
     });
-    const variantsToSend = parsedVariants.map(({ image, ...rest }:any) => rest);
-    formData.append('variants', JSON.stringify(variantsToSend));
+    formData.append("options", JSON.stringify(optionsToSend));
     setLoading(true);
-    mutate(formData, {
-      onSuccess: () => {
-        nav('/admin/listProduct', { state: { shouldRefetch: true } });
+    product(formData, {
+      onSuccess: async (res:any) => {
+        const productId = res?.data._id || res?.data?.data?._id;
+        console.log("productId dùng để sinh biến thể:", productId);
+        if (!productId) {
+          message.error("Không lấy được productId");
+          setLoading(false);
+          return;
+        }
+        const token = localStorage.getItem("token") || "";
+        try {
+          await axios.post(`http://localhost:3000/api/variants/${productId}/variants/generate`, {
+              options: optionsToSend,
+              overwrite: true,
+            }, 
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              }
+            }
+          )
+          nav('/admin/listProduct', { state: { shouldRefetch: true } });
+        } catch (error) {
+          console.error("Lỗi sinh biến thể:", error);
+          message.error("Tạo sản phẩm thành công nhưng sinh biến thể thất bại");
+          setLoading(false);
+        }
       },
       onError: () => {
         setLoading(false);
+        message.error("Tạo sản phẩm thất bại");
       }
     });
   };
@@ -156,6 +165,7 @@ const AddProduct = () => {
         <Form.Item
           label="Product Name"
           name="name"
+          className="font-semibold"
           rules={[{ required: true, message: "Please enter the product name" }]}
         >
           <Input />
@@ -164,6 +174,7 @@ const AddProduct = () => {
         <Form.Item
           label="Product Code"
           name="product_code"
+          className="font-semibold"
           rules={[{ required: true, message: "Please enter the product code" }]}
         >
           <Input />
@@ -172,12 +183,13 @@ const AddProduct = () => {
         <Form.Item
           label="Slug"
           name="slug"
+          className="font-semibold"
           rules={[{ required: true, message: "Please enter the slug" }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="Description" name="description">
+        <Form.Item className="font-semibold" label="Description" name="description" rules={[{required: true}]}>
           <CKEditor
             editor={ClassicEditor as any}
             data={content}
@@ -194,6 +206,7 @@ const AddProduct = () => {
         <Form.Item
           label="Category"
           name="category_id"
+          className="font-semibold"
           rules={[{ required: true, message: "Please select a category" }]}
         >
           <Select placeholder="Select a category" options={categoryOption}></Select>
@@ -202,6 +215,7 @@ const AddProduct = () => {
         <Form.Item
           label="Original_Price (VND)"
           name="original_price"
+          className="font-semibold"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
@@ -210,17 +224,19 @@ const AddProduct = () => {
         <Form.Item
           label="Sale_Price (VND)"
           name="sale_price"
+          className="font-semibold"
           rules={[{ required: true, message: "Please enter the price" }]}
         >
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item label="Tags" name="tags">
+        <Form.Item label="Tags" name="tags" className="font-semibold">
           <Select mode="tags" style={{ width: "100%", height: 40 }} placeholder="Enter tags" />
         </Form.Item>
 
         <Form.Item
           label="Product Images"
+          className="font-semibold"
           name="images"
           valuePropName="fileList"
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
@@ -236,125 +252,44 @@ const AddProduct = () => {
             </div>
           </Upload>
         </Form.Item>
-
-        <Form.List name="variants">
-          {(fields, { add, remove }) => (
-            <>
-              <h4 className="font-medium text-base mb-2">Product Variants</h4>
-              <div className="space-y-4">
-                {fields.map(({ key, name, ...restField }) => (
-                  <Card
-                    key={key}
-                    title={`Variant ${key + 1}`}
-                    extra={
-                      <Button
-                        type="text"
-                        danger
-                        icon={<MinusCircleOutlined />}
-                        onClick={() => remove(name)}
-                      />
-                    }
-                    className="shadow-sm border"
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Form.Item
-                        {...restField}
-                        name={[name, "color"]}
-                        label="Color"
-                        rules={[{ required: true, message: "Enter color" }]}
-                      >
-                        <Select options={colorOption} placeholder="color"></Select>
-                      </Form.Item>
-
-                      <Form.Item
-                        label="Variant Images"
-                        name={[name, "image"]}
-                        rules={[{ required: true, message: "Please upload variant images" }]}
-                        valuePropName="fileList"
-                        getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                      >
-                        <Upload 
-                          beforeUpload={() => false} 
-                          listType="picture-card" 
-                          maxCount={1} 
-                          
-                        >
-                          <div>
-                            <UploadOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </div>
-                        </Upload>
-                      </Form.Item>
-
-                      <Form.Item
-                        {...restField}
-                        name={[name, "sizes"]}
-                        label="Available Sizes"
-                        rules={[{ required: true, message: "Select at least one size" }]}
-                      >
-                        <Checkbox.Group options={SIZE_OPTIONS} />
-                      </Form.Item>
-                    </div>
-
-                    <Form.Item
-                      shouldUpdate={(prev, curr) =>
-                        prev.variants !== curr.variants
-                      }
-                      noStyle
-                    >
-                      {() => {
-                        const currentSizes =
-                          form.getFieldValue(["variants", name, "sizes"]) || [];
-                        return currentSizes.length > 0 ? (
-                          <>
-                            <Divider className=" mt-4 mb-2 " orientation="left">
-                              Stock by Size
-                            </Divider>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                              {currentSizes.map((size: string | number) => (
-                                <Form.Item
-                                  key={size}
-                                  label={`Size ${size}`}
-                                  name={[name, "stockBySize", size]}
-                                  rules={[{ required: true, message: "Enter stock" }]}
-                                >
-                                  <InputNumber
-                                    min={0}
-                                    style={{ width: "100%" }}
-                                    placeholder="Stock"
-                                  />
-                                </Form.Item>
-                              ))}
-                            </div>
-                          </>
-                        ) : null;
-                      }}
-                    </Form.Item>
-                  </Card>
-                ))}
-              </div>
-
-              <Form.Item className="mt-4">
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  icon={<PlusOutlined />}
-                  block
-                >
-                  Add Variant
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
-
+        <Form.Item label="Chọn thuộc tính" className="font-semibold">
+          <Select
+            mode="multiple"
+            placeholder="Chọn thuộc tính"
+            value={selectedAttributes}
+            onChange={(values) => setSelectedAttributes(values)}
+            options={ATTRIBUTE_TYPES.map(type => ({
+              label: type.charAt(0).toUpperCase() + type.slice(1),
+              value: type,
+            }))}
+          />
+        </Form.Item>
+        {ATTRIBUTE_TYPES.filter(attr => selectedAttributes.includes(attr)).map((type, index) => (
+          <Card
+            key={type}
+            title={`Thuộc tính ${index + 1}: ${type === "color" ? "Color" : "Size"}`}
+            className="shadow-sm border mt-4"
+          > 
+            <Form.Item
+              name={["attributes", type]}
+              label={`Values ${type === "color" ? "Color" : "Size"}`}
+              rules={[{ required: true, message: `Hãy nhập giá trị cho ${type}` }]}
+            >
+              <Select
+                mode="tags"
+                style={{ width: "100%" }}
+                placeholder={type === "color" ? "VD: Đỏ, Xanh, Trắng" : "VD: 38, 39, 40"}
+              />
+            </Form.Item>
+          </Card>
+        ))}
         <Form.Item>
-          <div className="flex justify-end space-x-3 mb-6">
+          <div className="flex justify-end space-x-3 mb-6 mt-6">
             <Button 
               type="primary"  
               htmlType="submit"
               loading={loading}  
-              style={{height: 40}}
+              style={{height: 40, width: 200}}
             >
               Save Product
             </Button>

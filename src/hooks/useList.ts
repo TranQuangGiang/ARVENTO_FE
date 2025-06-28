@@ -18,4 +18,5 @@ export const useListClient = ({resource}: useListParams) => {
         queryKey: [resource],
         queryFn: () => getListClient({resource})
     })
-} 
+
+};

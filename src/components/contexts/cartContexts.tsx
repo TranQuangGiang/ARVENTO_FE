@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useReducer, useRef } from "react";
 import type { Cart, CartItem, CartState } from "../types/cart"
-import { cartReducer, initialState } from "../reducers/cartReducers";
+
 import axios from "axios";
 import { message } from "antd";
 import { jwtDecode } from "jwt-decode";
+import { cartReducer, initialState } from "../reducers/carReducers";
 
 type CartContextType = {
     state: CartState;

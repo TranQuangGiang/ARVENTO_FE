@@ -22,12 +22,13 @@ type useUpdateParams< T = any > = {
     values: T,
 }
 axios.defaults.baseURL = "http://localhost:3000/api";
-const token = localStorage.getItem("token") || "";
-console.log(token);
+
 
 const dataProvider = {
     getList: async({resource}: useListParams) => {
-         if (!token) throw new Error('Token not found');
+        const token = localStorage.getItem("token");
+        console.log(token);
+        if (!token) throw new Error('Token not found');
         const { data } = await axios.get(`${resource}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -36,6 +37,7 @@ const dataProvider = {
         return data;
     },
     create: async <T>({resource, values}: useParams<T>) => {
+        const token = localStorage.getItem("token");
         const isFormData = values instanceof FormData;
         const { data } = await axios.post(`${resource}`, values, {
             headers: {
@@ -46,6 +48,7 @@ const dataProvider = {
         return data;
     },
     deleteOne: async ({resource, _id}: useOneParams) => {
+        const token = localStorage.getItem("token");
         const { data } = await axios.delete(`${resource}/${_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -54,6 +57,7 @@ const dataProvider = {
         return data;
     },
     useOne: async ({resource, _id}: useOneParams) => {
+        const token = localStorage.getItem("token");
         if (!_id) return;
         const { data } = await axios.get(`${resource}/${_id}`, {
             headers: {
@@ -63,6 +67,7 @@ const dataProvider = {
         return data;
     },
     update: async <T>({resource, _id, values}: useUpdateParams<T>) => {
+        const token = localStorage.getItem("token");
         const isFormData = values instanceof FormData;
         if (!_id) return;
         const { data } = await axios.put(`${resource}/${_id}`, values, {
@@ -73,7 +78,8 @@ const dataProvider = {
         });
         return data;
     },
-     updateCoupon: async <T>({resource, _id, values}: useUpdateParams<T>) => {
+    updateCoupon: async <T>({resource, _id, values}: useUpdateParams<T>) => {
+        const token = localStorage.getItem("token");
         const isFormData = values instanceof FormData;
         if (!_id) return;
         const { data } = await axios.patch(`${resource}/${_id}`, values, {
@@ -85,9 +91,8 @@ const dataProvider = {
         return data;
     },
     getListClient: async ({ resource }: useListParams) => {
-    const { data } = await axios.get(`${resource}`);
-    return data;
+        const { data } = await axios.get(`${resource}`);
+        return data;
     }
-
 }
-export const { create, getList, deleteOne, update, useOne, updateCoupon, getListClient } = dataProvider;  
+export const { create, getList, deleteOne, update, useOne, getListClient, updateCoupon } = dataProvider;  

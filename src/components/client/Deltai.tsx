@@ -1,76 +1,96 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Button, Image, message } from "antd";
+import { Button, Image, message, Rate, Upload, Input, Popconfirm } from "antd";
+import { HeartFilled, HeartOutlined, UploadOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
-import { motion, AnimatePresence, color } from 'framer-motion';
-import { useCart } from "../contexts/cartContexts";
+import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from "jwt-decode";
+import { useCart } from "../contexts/cartContexts";
+import axios from "axios";
+import type { UploadProps } from "antd";
+import dayjs from "dayjs";
 
 const DeltaiProduct = () => {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [variants, setVariants] = useState<any[]>([]);
+  const [userRating, setUserRating] = useState<number>(0);
+  const [userComment, setUserComment] = useState<string>("");
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const { addToCart } = useCart();
   const { id } = useParams();
   const { data: productDetail } = useOneData({ resource: '/products', _id: id });
   const product = productDetail?.data;
 
-  // Khi product load xong, chọn màu đầu tiên và ảnh đầu tiên tương ứng
+  const uploadProps: UploadProps = {
+    beforeUpload: () => false,
+    fileList,
+    onChange: ({ fileList }) => setFileList(fileList),
+  };
+
   useEffect(() => {
-    if (!product) return;
-
-    // Giả sử product.variants có trường image, size, color, stock
-    const variants = product.variants as Array<{
-      color: string;
-      size: number;
-      image: string;
-      stock: number;
-    }>;
-
-    // Lấy unique từng màu
-    const colorVariants = [...new Map(variants.map((v) => [v.color, v])).values()];
-
-    if (colorVariants.length > 0) {
-      const firstColor = colorVariants[0].color;
-
-      // Tìm ảnh đầu tiên của màu đó: nếu mỗi màu có 5 ảnh trong product.images
-      const uniqueColors: string[] = Array.from(new Set(variants.map((v) => v.color)));
-      const colorIndex = uniqueColors.indexOf(firstColor);
-      const imagesPerColor = 5; // giả sử mỗi màu có 5 ảnh liên tiếp
-      const startIndex = colorIndex * imagesPerColor;
-      const firstImage = product.images?.[startIndex] || "";
-
-      setSelectedColor(firstColor);
-      setSelectedImage(firstImage);
-      setSelectedSize(null);
-    }
+    const fetchVariants = async () => {
+      if (!product?._id) return;
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get(`http://localhost:3000/api/variants/products/${id}/variants`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setVariants(res.data?.data?.data || []);
+      } catch (error) {
+        console.error("Lỗi khi lấy variants:", error);
+        setVariants([]);
+      }
+    };
+    fetchVariants();
   }, [product]);
 
-  if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
+  useEffect(() => {
+    if (!product || variants.length === 0) return;
+    const firstColor = variants[0]?.color?.name;
+    setSelectedColor(firstColor);
+    setSelectedSize(null);
+    const colorIndex = Array.from(new Set(variants.map(v => v.color.name))).indexOf(firstColor);
+    const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+    setSelectedImage(filteredImages[0]?.url || "");
+  }, [product, variants]);
 
-  // Lọc các biến thể theo màu đã chọn để lấy danh sách size
-  const variants = product.variants || [];
-  const sizes = variants
-    .filter((v: any) => v.color === selectedColor)
-    .map((v: any) => v.size);
+  useEffect(() => {
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
+      console.log("REVIEW RESPONSE", res.data);
+      const reviewData = res.data?.data?.reviews || [];
 
-  // Lọc 5 ảnh tương ứng với màu đã chọn
-  const uniqueColors: string[] = Array.from(new Set(variants.map((v: any) => v.color)));
-  const colorIndex = uniqueColors.indexOf(selectedColor);
-  const imagesPerColor = 5;
-  const startIndex = colorIndex * imagesPerColor;
-  const filteredImages = product.images?.slice(startIndex, startIndex + imagesPerColor) || [];
+      // Chỉ hiển thị các review đã được duyệt và không bị ẩn
+      const filtered = reviewData.filter((r: any) => r.approved === true && r.hidden === false);
+      setReviews(filtered);
+    } catch (err) {
+      console.error("Lỗi khi tải đánh giá:", err);
+      setReviews([]);
+    }
+  };
+  if (product?._id) {
+    fetchReviews();
+  }
+}, [product]);
 
-  // Tồn kho: theo màu + size đã chọn
-  const currentStock =
-    variants.find((v: any) => v.size === selectedSize && v.color === selectedColor)?.stock ?? 0;
 
-  // Hàm format giá
+  const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
+  const sizes = variants.filter(v => v.color.name === selectedColor).map(v => v.size);
+  const colorIndex = colorNames.indexOf(selectedColor);
+  const filteredImages = product?.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
+  const currentStock = variants.find(v => v.color.name === selectedColor && v.size === selectedSize)?.stock || 0;
+
   const formatPrice = (price: any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
       return Number(price.$numberDecimal).toLocaleString();
@@ -81,34 +101,19 @@ const DeltaiProduct = () => {
     return 'Liên hệ';
   };
 
-  // xử lý cart
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedSize || !product || quantity <= 0) return;
-
     const token = localStorage.getItem("token");
     const userInfo: any = token ? jwtDecode(token) : null;
-
     const userId = userInfo?.id;
-    console.log(userInfo);
-    
-    if (!userId) {
-      message.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
-      return;
-    }
-
-    const variant = product.variants.find(
-      (v: any) => v.color === selectedColor && v.size === selectedSize
-    );
-
+    if (!userId) return message.error("Bạn cần đăng nhập để thêm vào giỏ hàng.");
+    const variant = variants.find((v: any) => v.color.name === selectedColor && v.size === selectedSize);
     if (!variant) return;
-
-    const unitPrice =
-      typeof product.sale_price === "object"
-        ? Number(product.sale_price?.$numberDecimal || 0)
-        : product.sale_price;
-
+    const unitPrice = typeof product.sale_price === "object"
+      ? Number(product.sale_price?.$numberDecimal || 0)
+      : product.sale_price;
     const cartItem = {
-      userId: userId,
+      userId,
       product_id: product._id,
       product_name: product.name,
       selected_variant: {
@@ -118,31 +123,181 @@ const DeltaiProduct = () => {
         stock: variant.stock,
         image: variant.image,
       },
-      quantity: quantity,
+      quantity,
       unit_price: unitPrice,
       total_price: unitPrice * quantity,
     };
-
     try {
-      await addToCart(cartItem); 
-      setLoading(false);
+      setLoading(true);
+      await addToCart(cartItem);
+      message.success("Đã thêm sản phẩm vào giỏ hàng!");
     } catch (error) {
-      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      console.error(error);
       message.error("Lỗi khi thêm vào giỏ hàng!");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleSubmitReview = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
+  let userInfo: any = null;
+  try {
+    userInfo = jwtDecode(token);
+  } catch (err) {
+    return message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
+  }
+  if (!userInfo?.id) return message.warning("Vui lòng đăng nhập để đánh giá.");
+  if (!userRating || !userComment.trim()) return message.warning("Vui lòng nhập đủ thông tin.");
+
+  const formData = new FormData();
+  formData.append("rating", userRating.toString());
+  formData.append("comment", userComment);
+  formData.append("product_id", product._id);
+
+  // ✅ LOG dữ liệu gửi đi
+  console.log("Đang gửi đánh giá:", {
+    rating: userRating,
+    comment: userComment,
+    product_id: product._id,
+    images: fileList.map(f => f.name || f.originFileObj?.name),
+  });
+
+  fileList.forEach((file) => {
+    if (file.originFileObj) {
+      formData.append("images", file.originFileObj);
+    }
+  });
+
+  try {
+    await axios.post("http://localhost:3000/api/reviews", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Đánh giá của bạn đã được gửi!");
+    setUserRating(0);
+    setUserComment("");
+    setFileList([]);
+
+    const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
+    const reviewData = res.data?.data?.reviews;
+    setReviews(Array.isArray(reviewData) ? reviewData : []);
+  } catch (error) {
+    console.error(error);
+    message.error("Lỗi khi gửi đánh giá!");
+  }
+};
+
+const handleDeleteReview = async (reviewId: string) => {
+  const token = localStorage.getItem("token");
+  if (!token) return message.error("Bạn chưa đăng nhập.");
+  try {
+    await axios.delete(`http://localhost:3000/api/reviews/${reviewId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    message.success("Đã xóa đánh giá!");
+    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+  } catch (error) {
+    console.error("Lỗi khi xóa đánh giá:", error);
+    message.error("Xóa đánh giá thất bại!");
+  }
+};
+
+const [userId, setUserId] = useState<string | null>(null);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const decoded: any = jwtDecode(token);
+      setUserId(decoded?.id || null);
+    } catch (err) {
+      setUserId(null);
+    }
+  }
+}, []);
+
+// State
+const [isFavorite, setIsFavorite] = useState(false);
+
+// Kiểm tra sản phẩm đã được yêu thích hay chưa
+useEffect(() => {
+  if (!product?._id) return;
+
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const fetchFavoriteStatus = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/favorites/check/${product._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("❤️ Trạng thái yêu thích:", res.data?.data?.isFavorite);
+      setIsFavorite(res.data?.data?.isFavorited || false);
+    } catch (err) {
+      console.error("❌ Không kiểm tra được trạng thái yêu thích", err);
+    }
+  };
+
+  fetchFavoriteStatus();
+}, [product?._id]);
+
+
+
+
+// Xử lý thêm vào yêu thích
+const handleToggleFavorite = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return message.warning("Bạn cần đăng nhập để yêu thích sản phẩm.");
+  try {
+    if (isFavorite) {
+      await axios.delete(`http://localhost:3000/api/favorites/${product._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsFavorite(false);
+      message.success("Đã bỏ yêu thích sản phẩm!");
+    } else {
+      await axios.post(
+        `http://localhost:3000/api/favorites`,
+        { product_id: product._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIsFavorite(true);
+      message.success("Đã thêm vào yêu thích!");
+    }
+  } catch (err) {
+    console.error("Lỗi khi cập nhật yêu thích:", err);
+    message.error("Thao tác không thành công!");
+  }
+};
+
+
+
+
+  if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
 
   return (
     <div className="w-full">
       {/* Banner */}
-      <div className="w-full h-60 md:h-[200px] relative">
+      <div className="w-full h-64  relative">
         <img
           src="/images/banerDeltai.jpg"
           alt="Contact Banner"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-tto-transparent flex items-center justify-center">
-          <h2 className="text-center text-xl md:text-2xl lg:text-[30px] font-bold text-white px-4">
+          <h2 className="text-center  text-xl md:text-2xl lg:text-[30px] font-bold text-white px-4">
             {product.name}
           </h2>
         </div>
@@ -174,23 +329,18 @@ const DeltaiProduct = () => {
                 </div>
              
             </AnimatePresence>
-            <div className="flex space-x-2 mt-4 justify-center md:justify-start flex-wrap">
-              {filteredImages.map((img: string, i: number) => (
+            <div className="flex space-x-2 mt-4 flex-wrap justify-center">
+              {filteredImages.map((img: any, i: number) => (
                 <img
                   key={i}
-                  src={img}
+                  src={img.url}
                   alt={`thumb-${i}`}
-                  className={`w-14 h-14 sm:w-20 sm:h-20 object-cover cursor-pointer border ${
-                    selectedImage === img
-                      ? "border-blue-600 opacity-100"
-                      : "border-gray-300 opacity-50"
-                  }`}
-                  onClick={() => setSelectedImage(img)}
+                  className={`w-14 h-14 object-cover cursor-pointer border ${selectedImage === img.url ? "border-blue-600" : "border-gray-300"}`}
+                  onClick={() => setSelectedImage(img.url)}
                 />
               ))}
             </div>
           </div>
-
           {/* Thông tin chi tiết */}
           <div className="w-full flex flex-col">
             <h4 className="text-lg md:text-[22px] font-bold text-[#01225a] mb-2">
@@ -227,37 +377,22 @@ const DeltaiProduct = () => {
               </span>
               <div className="flex flex-wrap gap-4">
                 {/* Hiển thị 1 ảnh đại diện cho mỗi màu */}
-                {[...new Map(product.variants.map((v: any) => [v.color, v])).values()].map(
-                  (variant: any, index: number) => {
-                    const newColor = variant.color;
-                    const newColorIndex = uniqueColors.indexOf(newColor);
-                    // Ảnh đầu tiên của màu này:
-                    const imagePerColor = 5;
-                    const startIdx = newColorIndex * imagePerColor;
-                    const firstImg = product.images?.[startIdx] || "";
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center cursor-pointer"
-                      >
-                        <img
-                          src={firstImg}
-                          alt={variant.color}
-                          className={`w-[60px] h-[60px] rounded object-cover border ${
-                            selectedColor === variant.color
-                              ? "border-blue-600"
-                              : "border-gray-300"
-                          }`}
-                          onClick={() => {
-                            setSelectedColor(variant.color);
-                            setSelectedImage(firstImg);
-                            setSelectedSize(null);
-                          }}
-                        />
-                      </div>
-                    );
-                  }
-                )}
+                {colorNames.map((color, i) => {
+                  const firstImg = product.images?.[i * 5]?.url || "";
+                  return (
+                    <img
+                      key={color}
+                      src={firstImg}
+                      alt={color}
+                      className={`w-[50px] h-[50px] object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setSelectedSize(null);
+                        setSelectedImage(firstImg);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -268,19 +403,17 @@ const DeltaiProduct = () => {
                   <span className="text-[#01225a] text-[15px] font-medium mr-2">
                     Size:
                   </span>
-                  {sizes.map((size: number) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3 py-1 border rounded text-[14px] font-sans cursor-pointer ${
-                        selectedSize === size
-                          ? "bg-blue-900 text-white border-blue-900"
-                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  <div className="flex gap-2 flex-wrap">
+                    {sizes.map((size, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-3 py-1 border rounded ${selectedSize === size ? "bg-blue-900 text-white" : "bg-white text-gray-800"}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               {/* Hiển thị stock chỉ khi đã chọn size */}
@@ -315,6 +448,11 @@ const DeltaiProduct = () => {
                 >
                   ADD TO CART
                 </Button>
+                <Button
+    type="text"
+    icon={isFavorite ? <HeartFilled style={{ color: "red", fontSize: 24 }} /> : <HeartOutlined style={{ fontSize: 24 }} />}
+    onClick={handleToggleFavorite}
+  />
               </div>
 
               {/* Thông tin bảo hành/giao hàng */}
@@ -343,12 +481,88 @@ const DeltaiProduct = () => {
         </div>
       </div>
 
-      {/* Mô tả chi tiết */}
       <div className="content-product w-[70%] mx-auto">
         <div
           className="font-sans text-[16px] text-[#01225a] mb-2"
           dangerouslySetInnerHTML={{ __html: product.description }}
         />
+      </div>
+      <div className="content-product w-[70%] mx-auto">
+
+        {/* Review Section */}
+        <div className="mt-10 border-t pt-8">
+          <h3 className="text-xl font-bold text-[#01225a] mb-5">Đánh giá sản phẩm</h3>
+
+          {reviews.length === 0 ? (
+  <p className="text-gray-600">Chưa có đánh giá nào.</p>
+) : (
+  reviews.map((r, idx) => (
+    <div key={idx} className="mb-6 border-b pb-4">
+     <div className="flex justify-between items-center">
+  <span className="font-semibold text-[#01225a]">
+    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+  </span>
+  <div className="flex gap-2 items-center">
+    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+  <Popconfirm
+    title="Bạn chắc chắn muốn xóa đánh giá này?"
+    onConfirm={() => handleDeleteReview(r._id)}
+    okText="Xóa"
+    cancelText="Hủy"
+  >
+    <Button size="small" danger>Xóa</Button>
+  </Popconfirm>
+)}
+  </div>
+</div>
+
+      <Rate disabled defaultValue={r.rating} className="mt-1" />
+      <p className="mt-2 text-gray-700">{r.comment}</p>
+
+      {r.images?.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {r.images.map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              className="w-16 h-16 rounded border object-cover"
+              alt={`review-img-${i}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Nếu có phản hồi từ admin */}
+      {r.reply && (
+        <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
+          <strong>Phản hồi từ Admin:</strong> {r.reply}
+        </div>
+      )}
+    </div>
+  ))
+)}
+
+
+          <div className="mt-8 p-5 bg-gray-50 rounded-md">
+            <h4 className="text-lg font-semibold text-[#01225a] mb-3">Viết đánh giá</h4>
+            <div className="mb-3">
+              <label className="block text-sm mb-1">Đánh giá của bạn:</label>
+              <Rate onChange={setUserRating} value={userRating} />
+            </div>
+            <div className="mb-3">
+              <label className="block text-sm mb-1">Nhận xét:</label>
+              <Input.TextArea rows={4} value={userComment} onChange={(e) => setUserComment(e.target.value)} />
+            </div>
+            <div className="mb-3">
+              <label className="block text-sm mb-1">Hình ảnh:</label>
+              <Upload {...uploadProps} listType="picture-card" multiple>
+                <Button icon={<UploadOutlined />}>Tải ảnh</Button>
+              </Upload>
+            </div>
+            <Button type="primary" onClick={handleSubmitReview} style={{ background: "#01225a", borderColor: "#01225a" }}>Gửi đánh giá</Button>
+          </div>
+        </div>
       </div>
     </div>
   );
