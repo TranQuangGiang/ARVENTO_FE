@@ -1,6 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/cartContexts";
+import { useList } from "../../hooks/useList";
 
-const FloatingInput = ({ label, name, value, onChange, type = "text", placeholder = "" }:any) => {
+interface FloatingInputProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  placeholder?: string;
+}
+
+const FloatingInput = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  placeholder = "",
+}: FloatingInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -30,9 +49,16 @@ const FloatingInput = ({ label, name, value, onChange, type = "text", placeholde
 };
 
 const Checkout = () => {
+  const navigate = useNavigate();
+  const { state: { cart } } = useCart();
+
+  const { data: userData } = useList({
+    resource: "/users/me",
+  });
+
   const [customerInfo, setCustomerInfo] = useState({
-    name: "Nguyễn Như Đức",
-    phone: "0368437311",
+    name: "",
+    phone: "",
     email: "",
   });
 
@@ -46,68 +72,89 @@ const Checkout = () => {
     note: "",
   });
 
-  const products = [
-    {
-      id: 1,
-      name: "Giày Vans Old Skool Classic",
-      price: 1200000,
-      originalPrice: 1500000,
-      quantity: 1,
-      image: "https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg",
-    },
-    {
-      id: 2,
-      name: "Áo Hoodie Unisex Basic",
-      price: 450000,
-      originalPrice: 600000,
-      quantity: 2,
-      image: "https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg",
-    },
-    {
-      id: 3,
-      name: "Balo Simple Carry K2",
-      price: 850000,
-      originalPrice: 990000,
-      quantity: 1,
-      image: "https://drake.vn/image/catalog/H%C3%ACnh%20content/hinh-anh-giay-vans/hinh-anh-giay-vans-17.jpg",
-    },
-  ];
+  useEffect(() => {
+    if (userData?.data) {
+      const user = userData.data;
+      setCustomerInfo({
+        name: user.name || "",
+        phone: "",
+        email: user.email || "",
+      });
+    }
+  }, [userData]);
 
-  const total = products.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const products = cart?.items || [];
+  const subtotal = cart?.subtotal || 0;
+  const discount = cart?.applied_coupon?.discount_amount || 0;
+  const total = cart ? cart.total : subtotal;
 
-  const handleCustomerChange = (e:any) => {
+  const handleCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });
   };
 
-  const handleShippingChange = (e:any) => {
+  const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleContinue = () => {
+    const { recipient, phone, city, district, ward, address } = shippingInfo;
+    if (!recipient || !phone || !city || !district || !ward || !address) {
+      alert("Vui lòng điền đầy đủ thông tin nhận hàng!");
+      return;
+    }
+
+    navigate("/thanhtoan", {
+      state: {
+        customerInfo,
+        shippingInfo,
+        cart,
+        subtotal,
+        discount,
+        total,
+      },
+    });
   };
 
   return (
     <div className="w-full bg-gray-100">
       <div className="max-w-3xl mx-auto p-4 space-y-4 text-sm">
-         <div className="flex">
-          <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">1. THÔNG TIN</div>
-          <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">2. THANH TOÁN</div>
+        <div className="flex">
+          <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">
+            1. THÔNG TIN
+          </div>
+          <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">
+            2. THANH TOÁN
+          </div>
         </div>
+
         <div className="space-y-4 bg-white p-4 rounded-xl shadow-sm">
           {products.map((product, index) => (
-            <div key={product.id}>
+            <div key={product._id}>
               <div className="flex space-x-3">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.selected_variant?.image?.url || "/no-image.png"}
+                  alt={product.product?.name}
                   className="w-16 h-16 object-cover rounded-lg"
                 />
                 <div className="flex-1">
-                  <h3 className="font-medium">{product.name}</h3>
-                  <div className="flex items-center space-x-2">
+                  <h3 className="font-medium">{product.product?.name}</h3>
+                  {product.selected_variant?.size && (
+                    <p className="text-gray-600 text-xs">Size: {product.selected_variant.size}</p>
+                  )}
+                  {product.selected_variant?.color && (
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span>Màu: {product.selected_variant.color.name}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-2 mt-1">
                     <span className="text-red-500 font-semibold">
-                      {product.price.toLocaleString()}₫
+                      {product.unit_price.toLocaleString()}₫
                     </span>
-                    <span className="line-through text-gray-400 text-xs">
-                      {product.originalPrice.toLocaleString()}₫
-                    </span>
+                    {product.original_price && (
+                      <span className="line-through text-gray-400 text-xs">
+                        {product.original_price.toLocaleString()}₫
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="text-right font-medium text-sm">x {product.quantity}</div>
@@ -220,10 +267,25 @@ const Checkout = () => {
 
         <div className="flex justify-between font-semibold text-base pt-3">
           <h3 className="text-base font-medium text-gray-600">TỔNG TIỀN TẠM TÍNH:</h3>
+          <span className="text-red-500">{subtotal.toLocaleString()}₫</span>
+        </div>
+
+        {cart?.applied_coupon && (
+          <div className="flex justify-between font-semibold text-base pt-1 text-green-600">
+            <h3>Giảm giá ({cart.applied_coupon.code}):</h3>
+            <span>-{discount.toLocaleString()}₫</span>
+          </div>
+        )}
+
+        <div className="flex justify-between font-semibold text-lg pt-1">
+          <h3>TỔNG CỘNG:</h3>
           <span className="text-red-500">{total.toLocaleString()}₫</span>
         </div>
 
-        <button className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900 mt-2">
+        <button
+          className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900 mt-2"
+          onClick={handleContinue}
+        >
           Tiếp tục
         </button>
       </div>

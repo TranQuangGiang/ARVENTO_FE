@@ -55,6 +55,8 @@ import UpdateAccount from './components/client/auth/DetailAuth/layoutAuth/update
 import AddAddresses from './components/client/auth/DetailAuth/layoutAuth/addAddresses'
 import ListFavorite from './components/admin/favorite/listFavorite'
 import FavoriteUsers from './components/admin/favorite/chitietfavorite'
+import ListOrder from './components/admin/order/listOrder'
+import DetailOrder from './components/admin/order/detailOrder'
 
 
 
@@ -114,6 +116,8 @@ function App() {
         {path: 'editreview/:id', element: <UpdateReview />},
         {path: 'listfavorite', element: <ListFavorite />},
         {path: 'favorites/:id/users', element: <FavoriteUsers />},
+        {path: 'listorder', element: <ListOrder />},
+        {path: 'orderDetail/:id', element: <DetailOrder />},
       ]
     }
   ])
