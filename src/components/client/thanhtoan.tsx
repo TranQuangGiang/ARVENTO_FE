@@ -1,119 +1,223 @@
 import React, { useState } from "react";
-import { Modal, Button } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Modal, Button, message } from "antd";
+import { useList } from "../../hooks/useList";
+import { useCart } from "../contexts/cartContexts"; // ✅ Dùng context
 
 const Thanhtoan = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { customerInfo, shippingInfo, cart, subtotal } = location.state || {};
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTempMethod, setSelectedTempMethod] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
 
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
-  const [selectedTempCoupon, setSelectedTempCoupon] = useState("");
-  const [selectedCoupon, setSelectedCoupon] = useState("");
   const [manualCoupon, setManualCoupon] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const shippingInfo = [
-    { label: "Khách hàng", value: "Nguyễn Như Đức" },
-    { label: "Số điện thoại", value: "0368437311" },
-    { label: "Nhận hàng tại", value: "fgfg, Thị trấn Chúc Sơn, Huyện Chương Mỹ, Hà Nội" },
-    { label: "Người nhận", value: "K - 0976567765" },
-  ];
+  const { data: vouchers } = useList({
+    resource: "/coupons/admin/coupons",
+  });
+
+  const {
+    state: { cart: cartContext },
+    setSelectedVoucherCode,
+    applyVoucherToCart,
+    removeVoucherFromCart,
+    clearCart,
+  } = useCart();
 
   const paymentMethods = [
     { id: "cod", label: "Thanh toán khi nhận hàng", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png" },
-    { id: "qr", label: "Chuyển khoản ngân hàng qua mã QR", icon: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
-    { id: "vnpay", label: "VNPAY", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/VNPAY_logo.svg/512px-VNPAY_logo.svg.png" },
-    { id: "onepay", label: "Qua thẻ Visa/Master/JCB/Napas", icon: "https://seeklogo.com/images/O/onepay-logo-030f1cfa20seeklogo.com.png" },
+    { id: "vnpay", label: "VNPAY", icon: "https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png" },
     { id: "momo", label: "Ví MoMo", icon: "https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" },
   ];
-
- const coupons = [
-  {
-    id: "coupon1",
-    label: "GIAM10CHO500K - Giảm 10% cho đơn hàng từ 500.000đ",
-    icon: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
-  },
-  {
-    id: "coupon2",
-    label: "FREESHIPTOANQUOC - Miễn phí vận chuyển toàn quốc cho đơn từ 300.000đ",
-    icon: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
-  },
-  {
-    id: "coupon3",
-    label: "VNPAY200 - Giảm thêm 200.000đ khi thanh toán qua VNPAY (áp dụng đơn trên 1.000.000đ)",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/VNPAY_logo.svg/512px-VNPAY_logo.svg.png",
-  },
-  {
-    id: "coupon4",
-    label: "NEWUSER50K - Tặng ngay 50.000đ cho khách hàng mới (đơn tối thiểu 300.000đ)",
-    icon: "https://cdn-icons-png.flaticon.com/512/846/846449.png",
-  },
-  {
-    id: "coupon5",
-    label: "FLASHSALE20 - Giảm 20% tối đa 150.000đ trong khung giờ Flash Sale",
-    icon: "https://cdn-icons-png.flaticon.com/512/992/992700.png",
-  },
-];
 
   const handleConfirmMethod = () => {
     setSelectedMethod(selectedTempMethod);
     setIsModalOpen(false);
   };
 
-  const handleConfirmCoupon = () => {
-    setSelectedCoupon(selectedTempCoupon);
+  const handleConfirmCoupon = (selectedCoupon) => {
+    if (cartContext?.applied_coupon?.code === selectedCoupon.code) {
+      setSelectedVoucherCode(null);
+      removeVoucherFromCart();
+    } else {
+      setSelectedVoucherCode(selectedCoupon.code);
+      applyVoucherToCart(selectedCoupon.code);
+    }
     setIsCouponModalOpen(false);
   };
 
+  const handleManualCoupon = () => {
+    if (manualCoupon === cartContext?.applied_coupon?.code) {
+      setSelectedVoucherCode(null);
+      removeVoucherFromCart();
+    } else {
+      setSelectedVoucherCode(manualCoupon);
+      applyVoucherToCart(manualCoupon);
+    }
+  };
+
+  const handlePayment = async () => {
+  if (!selectedMethod) {
+    message.error("Vui lòng chọn phương thức thanh toán");
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      message.error("Bạn chưa đăng nhập hoặc token hết hạn");
+      setIsLoading(false);
+      return;
+    }
+
+    const orderItems = cart.items.map((item) => ({
+      product: item.product._id,
+      price: item.unit_price,
+      quantity: item.quantity,
+    }));
+
+    const orderRes = await fetch("http://localhost:3000/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        items: orderItems,
+        total: cartContext?.total,
+        address: {
+          recipient: shippingInfo?.recipient,
+          phone: shippingInfo?.phone,
+          city: shippingInfo?.city,
+          district: shippingInfo?.district,
+          ward: shippingInfo?.ward,
+          address: shippingInfo?.address,
+          note: shippingInfo?.note || "",
+        },
+        note: shippingInfo?.note || "",
+      }),
+    });
+    const orderData = await orderRes.json();
+    if (!orderRes.ok) throw new Error(orderData.message || "Tạo đơn hàng thất bại");
+
+    let paymentEndpoint = "cod";
+    if (["vnpay", "momo"].includes(selectedMethod)) {
+      paymentEndpoint = "banking";
+    }
+    const paymentRes = await fetch(`http://localhost:3000/api/payments/${paymentEndpoint}`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    order: orderData.data._id,
+    amount: cartContext?.total,
+  }),
+});
+
+    const paymentData = await paymentRes.json();
+if (!paymentRes.ok) throw new Error(paymentData.message || "Tạo thanh toán thất bại");
+
+if (paymentData.data?.paymentUrl) {
+  window.location.href = paymentData.data.paymentUrl;
+} else {
+  message.success("Đặt hàng và thanh toán thành công");
+  clearCart();
+  navigate('/');
+}
+
+  } catch (error) {
+    message.error(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);
-  const currentCoupon = coupons.find((c) => c.id === selectedCoupon);
 
   return (
     <div className="w-full bg-gray-50 py-6">
       <div className="max-w-3xl mx-auto space-y-6 text-sm">
-
         <div className="flex">
           <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">1. THÔNG TIN</div>
           <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">2. THANH TOÁN</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow space-y-4">
+          <h3 className="font-medium">Danh sách sản phẩm</h3>
+          {cart?.items?.map((product, index) => (
+            <div key={product._id}>
+              <div className="flex space-x-3">
+                <img
+                  src={product.selected_variant?.image?.url || "/no-image.png"}
+                  alt={product.product?.name}
+                  className="w-16 h-16 object-cover rounded-lg"
+                />
+                <div className="flex-1">
+                  <h3 className="font-medium">{product.product?.name}</h3>
+                  {product.selected_variant?.size && <p className="text-gray-600 text-xs">Size: {product.selected_variant.size}</p>}
+                  {product.selected_variant?.color && <p className="text-gray-600 text-xs">Màu: {product.selected_variant.color.name}</p>}
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className="text-red-500 font-semibold">{product.unit_price.toLocaleString()}₫</span>
+                    {product.original_price && (
+                      <span className="line-through text-gray-400 text-xs">{product.original_price.toLocaleString()}₫</span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right font-medium text-sm">x {product.quantity}</div>
+              </div>
+              {index !== cart.items.length - 1 && <hr className="my-3 border-gray-200" />}
+            </div>
+          ))}
+        </div>
+
+        <h3 className="text-base font-medium text-gray-600">THÔNG TIN NHẬN HÀNG</h3>
+        <div className="bg-white p-4 rounded-xl shadow space-y-2">
+          <div className="flex justify-between"><strong>Khách hàng:</strong><span>{customerInfo?.name}</span></div>
+          <div className="flex justify-between"><strong>Email:</strong><span>{customerInfo?.email}</span></div>
+          <div className="flex justify-between"><strong>SĐT người nhận:</strong><span>{shippingInfo?.phone}</span></div>
+          <div className="flex justify-between"><strong>Người nhận:</strong><span>{shippingInfo?.recipient}</span></div>
+          <div className="flex justify-between"><strong>Địa chỉ:</strong><span>{shippingInfo?.address}, {shippingInfo?.ward}, {shippingInfo?.district}, {shippingInfo?.city}</span></div>
+          <div className="flex justify-between"><strong>Ghi chú:</strong><span>{shippingInfo?.note}</span></div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl shadow space-y-4">
           <h3 className="font-medium">Chọn mã giảm giá (chỉ áp dụng 1 lần)</h3>
           <div className="flex items-center space-x-3">
-            <input 
-              type="text" 
-              placeholder="Nhập mã giảm giá..." 
-              value={manualCoupon} 
-              onChange={(e) => setManualCoupon(e.target.value)} 
+            <input
+              type="text"
+              placeholder="Nhập mã giảm giá..."
+              value={manualCoupon}
+              onChange={(e) => setManualCoupon(e.target.value)}
               className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none"
             />
-            <button className="bg-gray-200 px-4 py-2 rounded">Áp dụng</button>
+            <button
+              className="bg-gray-200 px-4 py-2 rounded"
+              onClick={handleManualCoupon}
+            >
+              Áp dụng
+            </button>
           </div>
-          <div 
-            className="flex items-center space-x-3 cursor-pointer pt-2"
-            onClick={() => setIsCouponModalOpen(true)}
-          >
+          <div className="flex items-center space-x-3 cursor-pointer pt-2" onClick={() => setIsCouponModalOpen(true)}>
             <img src="https://cdn-icons-png.flaticon.com/512/4315/4315609.png" alt="coupon" className="w-8 h-8" />
             <span className="text-black">
-              {currentCoupon ? currentCoupon.label : "Chọn mã giảm giá từ danh sách"}
+              {cartContext?.applied_coupon ? `${cartContext.applied_coupon.code}` : "Chọn mã giảm giá từ danh sách"}
             </span>
-          </div>
-
-          <div className="space-y-3 text-sm pt-4">
-            <div className="flex justify-between"><span>Số lượng sản phẩm</span><span>01</span></div>
-            <div className="flex justify-between"><span>Tổng tiền hàng</span><span>1.590.000đ</span></div>
-            <div className="flex justify-between"><span>Phí vận chuyển</span><span>Miễn phí</span></div>
-            <div className="flex justify-between text-red-500"><span>Giảm giá trực tiếp</span><span>-1.113.000đ</span></div>
-            <div className="flex justify-between font-semibold pt-2"><span>Tổng tiền</span><span className="text-red-500">467.000đ</span></div>
-            <p className="text-gray-400 text-xs">Đã gồm VAT và được làm tròn</p>
           </div>
         </div>
 
-        <h3 className="text-base font-medium text-gray-600">THÔNG TIN THANH TOÁN</h3>
-        <div className="bg-white p-4 rounded-xl shadow space-y-2">
-          <div 
-            className="flex items-center space-x-3 cursor-pointer"
-            onClick={() => setIsModalOpen(true)}
-          >
+        <div className="bg-white p-4 rounded-xl shadow space-y-4">
+          <h3 className="font-medium">THÔNG TIN THANH TOÁN</h3>
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setIsModalOpen(true)}>
             {currentMethod ? (
               <>
                 <img src={currentMethod.icon} alt={currentMethod.label} className="w-8 h-8" />
@@ -128,27 +232,28 @@ const Thanhtoan = () => {
           </div>
         </div>
 
-        <h3 className="text-base font-medium text-gray-600">THÔNG TIN NHẬN HÀNG</h3>
-        <div className="bg-white p-4 rounded-xl shadow space-y-5">
-          <div className="space-y-3 text-sm">
-            {shippingInfo.map((item, index) => (
-              <div key={index} className="flex justify-between">
-                <span className="text-gray-500">{item.label}:</span>
-                <span className="text-right">{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
           <div className="flex justify-between font-semibold text-base">
-            <span>Tổng tiền tạm tính:</span>
-            <span className="text-red-500">467.000đ</span>
+            <span>Tạm tính:</span>
+            <span className="text-red-500">{subtotal?.toLocaleString()}₫</span>
           </div>
-          <button className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900">
-            Thanh toán
+          {cartContext?.applied_coupon && (
+            <div className="flex justify-between font-semibold text-base text-green-600">
+              <span>Giảm giá:</span>
+              <span>-{Number(cartContext.applied_coupon.discount_amount).toLocaleString()}₫</span>
+            </div>
+          )}
+          <div className="flex justify-between font-semibold text-lg">
+            <span>Tổng cộng:</span>
+            <span className="text-red-500">{cartContext?.total?.toLocaleString()}₫</span>
+          </div>
+          <button
+            className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900 disabled:opacity-60"
+            onClick={handlePayment}
+            disabled={!selectedMethod || isLoading}
+          >
+            {isLoading ? "Đang xử lý..." : "Thanh toán"}
           </button>
-          <p className="text-center text-xs text-blue-600 cursor-pointer hover:underline">Kiểm tra danh sách sản phẩm (1)</p>
         </div>
       </div>
 
@@ -166,9 +271,7 @@ const Thanhtoan = () => {
             <div
               key={method.id}
               onClick={() => setSelectedTempMethod(method.id)}
-              className={`flex items-center space-x-3 p-2 border rounded cursor-pointer hover:border-blue-500 ${
-                selectedTempMethod === method.id ? "border-blue-500" : "border-gray-200"
-              }`}
+              className={`flex items-center space-x-3 p-2 border rounded cursor-pointer hover:border-blue-500 ${selectedTempMethod === method.id ? "border-blue-500" : "border-gray-200"}`}
             >
               <img src={method.icon} alt={method.label} className="w-8 h-8" />
               <span>{method.label}</span>
@@ -181,22 +284,17 @@ const Thanhtoan = () => {
         title="Chọn mã giảm giá"
         open={isCouponModalOpen}
         onCancel={() => setIsCouponModalOpen(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setIsCouponModalOpen(false)}>Hủy</Button>,
-          <Button key="confirm" type="primary" onClick={handleConfirmCoupon} disabled={!selectedTempCoupon}>Xác nhận</Button>,
-        ]}
+        footer={null}
       >
         <div className="space-y-3">
-          {coupons.map((coupon) => (
+          {vouchers?.data?.coupons?.map((coupon) => (
             <div
-              key={coupon.id}
-              onClick={() => setSelectedTempCoupon(coupon.id)}
-              className={`flex items-center space-x-3 p-2 border rounded cursor-pointer hover:border-blue-500 ${
-                selectedTempCoupon === coupon.id ? "border-blue-500" : "border-gray-200"
-              }`}
+              key={coupon._id}
+              onClick={() => handleConfirmCoupon(coupon)}
+              className="flex items-center space-x-3 p-2 border rounded cursor-pointer hover:border-blue-500"
             >
-              <img src={coupon.icon} alt={coupon.label} className="w-8 h-8" />
-              <span>{coupon.label}</span>
+              <img src={coupon.image || "https://cdn-icons-png.flaticon.com/512/4315/4315609.png"} alt={coupon.code} className="w-8 h-8" />
+              <span>{coupon.code} - {coupon.description}</span>
             </div>
           ))}
         </div>
