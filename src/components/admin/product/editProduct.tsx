@@ -7,6 +7,7 @@ import {
   message,
   InputNumber,
   Select,
+  Tabs,
 } from "antd";
 import {
   UploadOutlined,
@@ -136,111 +137,119 @@ const EditProduct = () => {
         }}
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
-        <Form.Item
-          label="Product Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter the product name" }]}
-        >
-          <Input />
-        </Form.Item>
+        <Tabs defaultActiveKey="1">
+          {/* Tab 1 thông tin sản phẩm */}
+          <Tabs.TabPane tab="Product Information" key="1">
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 gap-6" 
+              >
+                <Form.Item
+                  label="Product Name"
+                  name="name"
+                  rules={[{ required: true, message: "Please enter the product name" }]}
+                >
+                  <Input />
+                </Form.Item>
 
-        <Form.Item
-          label="Product Code"
-          name="product_code"
-          rules={[{ required: true, message: "Please enter the product code" }]}
-        >
-          <Input />
-        </Form.Item>
+                <Form.Item
+                  label="Product Code"
+                  name="product_code"
+                  rules={[{ required: true, message: "Please enter the product code" }]}
+                >
+                  <Input />
+                </Form.Item>
 
-        <Form.Item
-          label="Slug"
-          name="slug"
-          rules={[{ required: true, message: "Please enter the slug" }]}
-        >
-          <Input />
-        </Form.Item>
+                <Form.Item
+                  label="Slug"
+                  name="slug"
+                  rules={[{ required: true, message: "Please enter the slug" }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  label="Category"
+                  name="category_id"
+                  rules={[{ required: true, message: "Please select a category" }]}
+                >
+                  <Select style={{height: 40}} options={categoryOption}></Select>
+                </Form.Item>
 
-        <Form.Item label="Description" name="description">
-          <CKEditor
-            editor={ClassicEditor as any}
-            data={content}
-            onChange={(_, editor) => {
-              const data = editor.getData();
-              setContent(data);
-              form.setFieldsValue({ description: data });
-            }}
-          >
-            
-          </CKEditor>
-        </Form.Item>
+                <Form.Item
+                  label="Original_Price (VND)"
+                  name="original_price"
+                  className="font-semibold"
+                  rules={[{ required: true, message: "Please enter the price" }]}
+                >
+                  <InputNumber<number>
+                    min={0}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Sale_Price (VND)"
+                  name="sale_price"
+                  className="font-semibold"
+                  rules={[{ required: true, message: "Please enter the price" }]}
+                >
+                  <InputNumber<number>
+                    min={0}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
 
-        <Form.Item
-          label="Category"
-          name="category_id"
-          rules={[{ required: true, message: "Please select a category" }]}
-        >
-          <Select style={{height: 40}} options={categoryOption}></Select>
-        </Form.Item>
-
-        <Form.Item
-          label="Original_Price (VND)"
-          name="original_price"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the price" }]}
-        >
-          <InputNumber<number>
-            min={0}
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
-        <Form.Item
-          label="Sale_Price (VND)"
-          name="sale_price"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the price" }]}
-        >
-          <InputNumber<number>
-            min={0}
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
-
-        <Form.Item label="Tags" name="tags">
-          <Select mode="tags" style={{ width: "100%", height: 40 }} placeholder="Enter tags" />
-        </Form.Item>
-
-        <Form.Item
-          label="Product Images"
-          name="images"
-          valuePropName="fileList"
-          getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-          rules={[{ required: true, message: "Please upload product images" }]}
-        >
-          <Upload 
-            beforeUpload={() => false} 
-            listType="picture-card" 
-            multiple>
-            <div>
-              <UploadOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
-            </div>
-          </Upload>
-        </Form.Item>
-        <Form.Item>
-          <div className="flex justify-end space-x-3 mb-6">
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              style={{height: 40}}
-              loading={loading}
+                <Form.Item label="Tags" name="tags">
+                  <Select mode="tags" style={{ width: 1150, height: 40 }} placeholder="Enter tags" />
+                </Form.Item>
+              </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Description and images" key="2">
+            <Form.Item label="Description" name="description">
+              <CKEditor
+                editor={ClassicEditor as any}
+                data={content}
+                onChange={(_, editor) => {
+                  const data = editor.getData();
+                  setContent(data);
+                  form.setFieldsValue({ description: data });
+                }}
+              >
+                
+              </CKEditor>
+            </Form.Item>
+            <Form.Item
+              label="Product Images"
+              name="images"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+              rules={[{ required: true, message: "Please upload product images" }]}
             >
-              Update Product
-            </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
-              Reset
-            </Button>
-          </div>
-        </Form.Item>
+              <Upload 
+                beforeUpload={() => false} 
+                listType="picture-card" 
+                multiple>
+                <div>
+                  <UploadOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
+            </Form.Item>
+          </Tabs.TabPane>
+        </Tabs>
+        <Form.Item>
+            <div className="flex justify-end space-x-3 mb-6 mt-10">
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                style={{height: 40}}
+                loading={loading}
+              >
+                Update Product
+              </Button>
+              <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
+                Reset
+              </Button>
+            </div>
+          </Form.Item> 
       </Form>
     </div>
   );

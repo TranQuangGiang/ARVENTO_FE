@@ -1,25 +1,15 @@
 import React, { useState } from "react";
 import {
-  Form,
-  Input,
-  Button,
-  Upload,
-  message,
-  InputNumber,
-  Select,
-  Card,
+  Form, Input, Button, Upload, message, InputNumber, Select, Card, Tabs
 } from "antd";
 import {
-  UploadOutlined,
-  OrderedListOutlined,
+  UploadOutlined, OrderedListOutlined, SaveOutlined, ReloadOutlined
 } from "@ant-design/icons";
-
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useList } from "../../../hooks/useList";
 import { useCreate } from "../../../hooks/useCreate";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const ATTRIBUTE_TYPES = ["color", "size"];
@@ -30,48 +20,31 @@ const AddProduct = () => {
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
-  
-  {/** Lấy ra danh mục sản phẩm */}
-  const { data } = useList({
-    resource: "/categories/admin"
-  });
-  
-  const colorOption = [
-    {value: "black", label: "Black"},
-    {value: "white", label: "White"},
-  ]
 
-  const categoryOption = data?.data.map((cat:any) => ({
+  const { data } = useList({ resource: "/categories/admin" });
+
+  const categoryOption = data?.data.map((cat: any) => ({
     label: cat.name,
     value: cat._id,
   }));
-  console.log(categoryOption);
-  
-  {/** Thêm mới sản phẩm */}
 
-  const { mutate:product } = useCreate<FormData>({
-    resource: "/products"
-  })
+  const { mutate: product } = useCreate<FormData>({ resource: "/products" });
+
   const onFinish = async (values: any) => {
     if (!values.images || values.images.length === 0) {
       message.error("Please upload at least one image.");
       return;
     }
     const formData = new FormData();
-    formData.append('name', String(values.name));
-    formData.append('product_code', String(values.product_code));
-    formData.append('slug', String(values.slug));
+    formData.append('name', values.name);
+    formData.append('product_code', values.product_code);
+    formData.append('slug', values.slug);
     formData.append('description', content);
-    formData.append('category_id', String(values.category_id));
-    formData.append('original_price', String(values.original_price));
-    formData.append('sale_price', String(values.sale_price));
-  
-    (values.tags || []).forEach((tag: string) => {
-      formData.append('tags[]', tag);
-    });
+    formData.append('category_id', values.category_id);
+    formData.append('original_price', values.original_price);
+    formData.append('sale_price', values.sale_price);
+    (values.tags || []).forEach((tag: string) => formData.append('tags[]', tag));
 
-
-    //images
     values.images.forEach((file: any, index: number) => {
       if (file.originFileObj) {
         formData.append('images', file.originFileObj, file.name || `image_${index}`);
@@ -79,26 +52,20 @@ const AddProduct = () => {
     });
 
     const optionsToSend: any = {};
-    ATTRIBUTE_TYPES.forEach((attr) => {
+    ATTRIBUTE_TYPES.forEach(attr => {
       const value = values.attributes?.[attr];
       if (value && Array.isArray(value)) {
-        if (attr === "color") {
-          optionsToSend[attr] = value.map((val: string) =>
-            attr === "color"
-              ? { name: val.trim(), hex: "#CCCCCC" }
-              : val.trim()
-          );;
-        } else {
-          optionsToSend[attr] = value;
-        }
+        optionsToSend[attr] = attr === "color"
+          ? value.map((val: string) => ({ name: val.trim(), hex: "#CCCCCC" }))
+          : value;
       }
     });
+
     formData.append("options", JSON.stringify(optionsToSend));
     setLoading(true);
     product(formData, {
-      onSuccess: async (res:any) => {
+      onSuccess: async (res: any) => {
         const productId = res?.data._id || res?.data?.data?._id;
-        console.log("productId dùng để sinh biến thể:", productId);
         if (!productId) {
           message.error("Không lấy được productId");
           setLoading(false);
@@ -106,17 +73,11 @@ const AddProduct = () => {
         }
         const token = localStorage.getItem("token") || "";
         try {
-          await axios.post(`http://localhost:3000/api/variants/${productId}/variants/generate`, {
-              options: optionsToSend,
-              overwrite: true,
-            }, 
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-              }
-            }
-          )
+          await axios.post(
+            `http://localhost:3000/api/variants/${productId}/variants/generate`,
+            { options: optionsToSend, overwrite: true },
+            { headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` } }
+          );
           nav('/admin/listProduct', { state: { shouldRefetch: true } });
         } catch (error) {
           console.error("Lỗi sinh biến thể:", error);
@@ -132,21 +93,23 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="ml-10 mr-10 mt-[30px] shadow-md bg-white rounded-xl mb-[40px]">
-      <div className="w-[96%] mx-auto flex justify-between pt-8">
-        <span>
-          <h3 className="text-2xl font-semibold mb-1">ADD NEW PRODUCT</h3>
-          <p className="text-sm text-gray-500 mb-6">Fill in the product details</p>
-        </span>
-        <span>
-          <Link to={`/admin/listProduct`}>
-            <Button className='pr-[20px] text-[16px] font-sans' style={{height: 40, width: 150}} type='primary'><OrderedListOutlined />LIST PRODUCT</Button>
-          </Link>
-        </span>
+    <div className="ml-6 mr-6 mt-6 mb-10 bg-white rounded-xl shadow-md p-6">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-2xl font-bold">🛍️ Thêm sản phẩm mới</h2>
+          <p className="text-gray-500">Nhập thông tin chi tiết để đăng bán sản phẩm</p>
+        </div>
+        <Link to="/admin/listProduct">
+          <Button type="default" icon={<OrderedListOutlined />} style={{ height: 40 }}>
+            Danh sách sản phẩm
+          </Button>
+        </Link>
       </div>
-      <Form 
-        layout="vertical" 
-        form={form} onFinish={onFinish}
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
         onValuesChange={(changedValues, allValues) => {
           if ("name" in changedValues) {
             const rawName = changedValues.name || "";
@@ -160,140 +123,121 @@ const AddProduct = () => {
             form.setFieldsValue({ slug: generatedSlug });
           }
         }}
-        style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
-        <Form.Item
-          label="Product Name"
-          name="name"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the product name" }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Product Code"
-          name="product_code"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the product code" }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Slug"
-          name="slug"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the slug" }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item className="font-semibold" label="Description" name="description" rules={[{required: true}]}>
-          <CKEditor
-            editor={ClassicEditor as any}
-            data={content}
-            onChange={(_, editor) => {
-              const data = editor.getData();
-              setContent(data);
-              form.setFieldsValue({ description: data });
-            }}
-          >
-            
-          </CKEditor>
-        </Form.Item>
-
-        <Form.Item
-          label="Category"
-          name="category_id"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please select a category" }]}
-        >
-          <Select placeholder="Select a category" options={categoryOption}></Select>
-        </Form.Item>
-
-        <Form.Item
-          label="Original_Price (VND)"
-          name="original_price"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the price" }]}
-        >
-          <InputNumber min={0} style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          label="Sale_Price (VND)"
-          name="sale_price"
-          className="font-semibold"
-          rules={[{ required: true, message: "Please enter the price" }]}
-        >
-          <InputNumber min={0} style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item label="Tags" name="tags" className="font-semibold">
-          <Select mode="tags" style={{ width: "100%", height: 40 }} placeholder="Enter tags" />
-        </Form.Item>
-
-        <Form.Item
-          label="Product Images"
-          className="font-semibold"
-          name="images"
-          valuePropName="fileList"
-          getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-          rules={[{ required: true, message: "Please upload product images" }]}
-        >
-          <Upload 
-            beforeUpload={() => false} 
-            listType="picture-card" 
-            multiple>
-            <div>
-              <UploadOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
+        <Tabs defaultActiveKey="1">
+          {/* Tab 1: Thông tin */}
+          <Tabs.TabPane tab="Product Information" key="1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
+                <Input className="h-[40px]" />
+              </Form.Item>
+              <Form.Item name="product_code" label="Mã sản phẩm" rules={[{ required: true }]}>
+                <Input className="h-[40px]"  />
+              </Form.Item>
+              <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+                <Input className="h-[40px]"  />
+              </Form.Item>
+              <Form.Item name="category_id" label="Danh mục" rules={[{ required: true }]}>
+                <Select style={{height: 40}} className="h-[40px]"  placeholder="Chọn danh mục" options={categoryOption} />
+              </Form.Item>
+              <Form.Item name="original_price" label="Giá gốc (VND)" rules={[{ required: true }]}>
+                <InputNumber style={{width: 560}} min={0} className="w-[full] h-[40px]" />
+              </Form.Item>
+              <Form.Item name="sale_price" label="Giá khuyến mãi (VND)" rules={[{ required: true }]}>
+                <InputNumber style={{width: 560}} min={0} className="w-full h-[40px]" />
+              </Form.Item>
+              <Form.Item
+                name="tags" 
+                label="Tags"
+              >
+                <Select style={{height: 40, width: 1150, display: "flex", alignItems: "center"}} mode="tags" className="placeholder:flex placeholder:items-center" placeholder="VD: sneaker, thời trang" />
+              </Form.Item>
             </div>
-          </Upload>
-        </Form.Item>
-        <Form.Item label="Chọn thuộc tính" className="font-semibold">
-          <Select
-            mode="multiple"
-            placeholder="Chọn thuộc tính"
-            value={selectedAttributes}
-            onChange={(values) => setSelectedAttributes(values)}
-            options={ATTRIBUTE_TYPES.map(type => ({
-              label: type.charAt(0).toUpperCase() + type.slice(1),
-              value: type,
-            }))}
-          />
-        </Form.Item>
-        {ATTRIBUTE_TYPES.filter(attr => selectedAttributes.includes(attr)).map((type, index) => (
-          <Card
-            key={type}
-            title={`Thuộc tính ${index + 1}: ${type === "color" ? "Color" : "Size"}`}
-            className="shadow-sm border mt-4"
-          > 
-            <Form.Item
-              name={["attributes", type]}
-              label={`Values ${type === "color" ? "Color" : "Size"}`}
-              rules={[{ required: true, message: `Hãy nhập giá trị cho ${type}` }]}
-            >
-              <Select
-                mode="tags"
-                style={{ width: "100%" }}
-                placeholder={type === "color" ? "VD: Đỏ, Xanh, Trắng" : "VD: 38, 39, 40"}
+          </Tabs.TabPane>
+
+          {/* Tab 2: Mô tả & Hình ảnh */}
+          <Tabs.TabPane tab="Description and images" key="2">
+            <Form.Item name="description" label="Mô tả sản phẩm" rules={[{ required: true }]}>
+              <CKEditor
+                editor={ClassicEditor as any}
+                data={content}
+                onChange={(_, editor) => {
+                  const data = editor.getData();
+                  setContent(data);
+                  form.setFieldsValue({ description: data });
+                }}
               />
             </Form.Item>
-          </Card>
-        ))}
+            <Form.Item
+              name="images"
+              label="Ảnh sản phẩm"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+              rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
+            >
+              <Upload beforeUpload={() => false} listType="picture-card" multiple>
+                <div>
+                  <UploadOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
+            </Form.Item>
+          </Tabs.TabPane>
+
+          {/* Tab 3: Thuộc tính */}
+          <Tabs.TabPane tab="Properties" key="3">
+            <Form.Item label="Chọn thuộc tính">
+              <Select
+                mode="multiple"
+                size="large"
+                placeholder="Chọn thuộc tính"
+                value={selectedAttributes}
+                onChange={(values) => setSelectedAttributes(values)}
+                options={ATTRIBUTE_TYPES.map(type => ({
+                  label: type.charAt(0).toUpperCase() + type.slice(1),
+                  value: type,
+                }))}
+              />
+            </Form.Item>
+            {ATTRIBUTE_TYPES.filter(attr => selectedAttributes.includes(attr)).map((type, index) => (
+              <Card
+                key={type}
+                title={`Thuộc tính ${index + 1}: ${type === "color" ? "Màu sắc" : "Size"}`}
+                className="shadow-sm border mt-4"
+              >
+                <Form.Item
+                  name={["attributes", type]}
+                  label={`Giá trị ${type === "color" ? "màu sắc" : "kích thước"}`}
+                  rules={[{ required: true, message: `Nhập giá trị cho ${type}` }]}
+                >
+                  <Select className="w-full" mode="tags" placeholder={type === "color" ? "VD: Đỏ, Xanh" : "VD: 38, 39, 40"} />
+                </Form.Item>
+              </Card>
+            ))}
+          </Tabs.TabPane>
+        </Tabs>
+
         <Form.Item>
-          <div className="flex justify-end space-x-3 mb-6 mt-6">
-            <Button 
-              type="primary"  
+          <div className="flex justify-end space-x-3 mt-10">
+            <Button
+              type="primary"
+              icon={<SaveOutlined />}
               htmlType="submit"
-              loading={loading}  
-              style={{height: 40, width: 200}}
+              loading={loading}
+              style={{height: 40}}
+              className="h-[40px] w-[180px]"
             >
               Save Product
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()} disabled={loading} style={{height: 40}}>
+            <Button
+              icon={<ReloadOutlined />}
+              htmlType="button"
+              onClick={() => form.resetFields()}
+              disabled={loading}
+              style={{height: 40}}
+              className="h-[40px]"
+              danger
+            >
               Reset
             </Button>
           </div>

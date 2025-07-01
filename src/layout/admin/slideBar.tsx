@@ -24,7 +24,8 @@ const AdminSidebar = () => {
     const cartRef = useRef(null);
     const commentRef = useRef(null);
     const location = useLocation();
-    const isPathIn = (paths: string[]) => paths.includes(location.pathname);
+    const isPathMatch = (paths: string[]) =>
+    paths.some(path => location.pathname.startsWith(path));
     
     const [openCategory, setOpenCategory] = useState(false);
     const [openProducts, setOpenProducts] = useState(false);
@@ -69,7 +70,7 @@ const AdminSidebar = () => {
                         <Link
                             to={`/admin/listUsers`}
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                location.pathname === '/admin/listVendors'
+                               isPathMatch(['/admin/listUsers', "/admin/getUserOne", "/admin/editUser"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
                             }`}
@@ -85,7 +86,7 @@ const AdminSidebar = () => {
                         <button
                             onClick={() => setOpenCategory(!openCategory)}
                             className={`flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathIn(["/admin/listcategory", "/admin/addcategory"])
+                                isPathMatch(["/admin/listcategory", "/admin/addcategory", "/admin/editCategory"])
                                 ? "bg-[#FEE2E2] text-red-500"
                                 : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
                             }`}
@@ -93,7 +94,7 @@ const AdminSidebar = () => {
                             <span className="flex items-center">
                                 <ChartBarStacked
                                     className={`mr-[15px] transition-all duration-300 ${
-                                        isPathIn(["/admin/listcategory", "/admin/addcategory"])
+                                        isPathMatch(["/admin/listcategory", "/admin/addcategory", "/admin/editcategory/:id"])
                                         ? "text-red-500"
                                         : "group-hover:text-red-500"
                                     }`}
@@ -127,7 +128,7 @@ const AdminSidebar = () => {
                         <button
                             onClick={() => setOpenProducts(!openProducts)}
                             className={`flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathIn(["/admin/listProduct", "/admin/addProduct"])
+                                isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct/", "/admin/detailProductAdmin"])
                                 ? "bg-[#FEE2E2] text-red-500"
                                 : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
                             }`}
@@ -135,7 +136,7 @@ const AdminSidebar = () => {
                             <span className="flex items-center">
                                 <Package 
                                     className={`mr-[15px] transition-all duration-300 ${
-                                        isPathIn(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct/:id"])
+                                        isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct", "/admin/detailProductAdmin"])
                                         ? "text-red-500"
                                         : "group-hover:text-red-500"
                                     }`}
@@ -181,11 +182,15 @@ const AdminSidebar = () => {
                     <li ref={cartRef}>
                         <button
                             onClick={() => setOpenCart(!openCart)}
-                            className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]"
+                            className={`flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
+                                isPathMatch(["/admin/listorder", "/admin/orderDetail"])
+                                ? "bg-[#FEE2E2] text-red-500"
+                                : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
+                            }`}
                         >
                             <span className="flex items-center">
                                 <ShoppingBag className="mr-[15px] group-hover:text-red-500 transition-all duration-300" />
-                                Cart
+                                Order
                             </span>
                             <span>{openCart ? <ChevronUp /> : <ChevronDown />}</span>
                         </button>
@@ -194,7 +199,7 @@ const AdminSidebar = () => {
                                 <li>
                                 <Link
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/orders"
+                                    to="/admin/listorder"
                                 >
                                     Order List
                                 </Link>
@@ -205,7 +210,11 @@ const AdminSidebar = () => {
                     <li ref={commentRef}>
                         <button
                         onClick={() => setOpenComment(!openComment)}
-                        className="flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]"
+                        className={`flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
+                                isPathMatch(["/admin/listreview", "/admin/editreview"])
+                                ? "bg-[#FEE2E2] text-red-500"
+                                : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
+                            }`}
                     >
                         <span className="flex items-center">
                             <MessageCircleHeart className="mr-[15px] group-hover:text-red-500 transition-all duration-300" />
@@ -218,7 +227,7 @@ const AdminSidebar = () => {
                                 <li>
                                     <Link
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                        to="/admin/comments"
+                                        to="/admin/listreview"
                                     >
                                         Comment List
                                     </Link>
@@ -229,8 +238,19 @@ const AdminSidebar = () => {
                     <li>
                         <Link
                             to="/admin/listcoupon"
-                            className="flex items-center group gap-2 p-3.5 text-[#1E293B] font-semibold hover:text-red-500 hover:bg-[#FEE2E2] rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px]">
-                            <Tickets className="text-[#555] mr-[10px] group-hover:text-red-500 transition-all duration-300" />
+                            className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
+                                isPathMatch(["/admin/listcoupon", "/admin/editCoupon", "/admin/addCoupon"])
+                                ? 'bg-[#FEE2E2] text-red-500'
+                                : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
+                            }`}       
+                        >
+                            <Tickets 
+                                className={`mr-[15px] transition-all duration-300 ${
+                                    isPathMatch(["/admin/listcoupon", "/admin/editCoupon", "/admin/addCoupon"])
+                                    ? "text-red-500"
+                                    : "group-hover:text-red-500"
+                                }`}
+                            />
                             Coupon Code
                         </Link>
                     </li>
@@ -238,7 +258,7 @@ const AdminSidebar = () => {
                         <Link
                             to="/admin/listbanner"
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathIn(["/admin/listbanner", "/admin/addbanner", "/admin/editbanner/:id"])
+                                isPathMatch(["/admin/listbanner", "/admin/addbanner", "/admin/editbanner"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
                             }`}    
@@ -266,7 +286,7 @@ const AdminSidebar = () => {
                         <Link
                             to="/admin/listCategoryBlog"
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathIn(["/admin/listCategoryBlog", "/admin/addCategoryBlog", "admin/editCategoryBlog/:id"])
+                                isPathMatch(["/admin/listCategoryBlog", "/admin/addCategoryBlog", "admin/editCategoryBlog"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
                             }`}
@@ -279,7 +299,7 @@ const AdminSidebar = () => {
                         <Link
                             to="/admin/listBlog"
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathIn(["/admin/listlistBlog", "/admin/addBlog"])
+                                isPathMatch(["/admin/listBlog", "/admin/addBlog", "/admin/editBlog"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
                             }`}

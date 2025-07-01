@@ -1,43 +1,47 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Select, InputNumber, DatePicker, Checkbox, Switch, Col, Row } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Select,
+  InputNumber,
+  DatePicker,
+  Checkbox,
+  Switch,
+  Card,
+} from "antd";
 import { useList } from "../../../hooks/useList";
 import { useCreate } from "../../../hooks/useCreate";
+import { Link, useNavigate } from "react-router-dom";
+import { OrderedListOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
 const AddCoupon = () => {
   const [form] = Form.useForm();
-  const [discountType, setDiscountType] = useState('percentage');
+  const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [discountType, setDiscountType] = useState("percentage");
 
-  const { data: categoryData } = useList({
-    resource: "/categories/admin"
-  });
-
+  const { data: categoryData } = useList({ resource: "/categories/admin" });
   const categoryOption = categoryData?.data.map((cat: any) => ({
     label: cat.name,
     value: cat._id,
   }));
-  console.log("Categories:", categoryOption);
 
-  const { data: userData } = useList({
-    resource: "/users"
-  });
+  const { data: userData } = useList({ resource: "/users" });
+  const userOption =
+    userData?.data?.docs?.map((user: any) => ({
+      label: user.email,
+      value: user._id,
+    })) || [];
 
-  const userOption = userData?.data?.docs?.map((user: any) => ({
-    label: user.email,
-    value: user._id,
-  })) || [];
-  console.log("Users:", userOption);
-
-  const { data: productData } = useList({
-    resource: "/products"
-  });
-
-  const productOption = productData?.data?.docs?.map((product: any) => ({
-    label: product.name,
-    value: product._id,
-  })) || [];
-  console.log("Products:", productOption);
+  const { data: productData } = useList({ resource: "/products" });
+  const productOption =
+    productData?.data?.docs?.map((product: any) => ({
+      label: product.name,
+      value: product._id,
+    })) || [];
 
   const { mutate } = useCreate({
     resource: "/coupons/admin/coupons",
@@ -66,174 +70,233 @@ const AddCoupon = () => {
       isActive: values.isActive || false,
     };
 
-    console.log("Submitted payload:", payload);
-
     mutate(payload, {
-      onSuccess: (data) => {
-        console.log("Coupon created successfully:", data);
+      onSuccess: () => {
         form.resetFields();
+        setLoading(true);
+        nav('/admin/listcoupon');
       },
-      onError: (error) => {
-        console.error("Error creating coupon:", error);
-      }
+      onError: (err) => console.error(err),
     });
   };
 
   return (
-    <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
-      <h3 className="text-2xl font-semibold mb-1">ADD NEW COUPON</h3>
-      <p className="text-sm text-gray-500 mb-6">Create a new discount coupon for customers</p>
-      <hr className="border-t border-gray-300 mb-6 -mt-3" />
+    <div className="min-h-screen ml-6 mr-6 mt-10 px-6 bg-gray-50">
+      <Card className="max-w-6xl mx-auto shadow-xl rounded-xl">
+        <div className="mb-8 flex items-center justify-between">
+          <span>
+            <h2 className="text-3xl font-bold text-gray-800 mb-1">Add New Coupon</h2>
+            <p className="text-gray-500 text-sm">
+              Fill out the form to create a discount coupon for your customers.
+            </p>
+           
+          </span>
+          <Link to="/admin/listcoupon">
+            <Button type="primary"  icon={<OrderedListOutlined />} style={{ height: 40 }}>
+              Danh sách khuyến mãi 
+            </Button>
+          </Link>
+        </div>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        className="space-y-4"
-      >
-        <Form.Item
-          label="Coupon Code"
-          name="code"
-          rules={[{ required: true, message: "Please enter the coupon code" }]}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          <Input placeholder="Enter coupon code (e.g. SALE10)" />
-        </Form.Item>
+          <Form.Item
+            label="Coupon Code"
+            name="code"
+            rules={[{ required: true, message: "Enter coupon code" }]}
+          >
+            <Input style={{height: 40, width: 1100}} placeholder="e.g., SALE10" className="text-[15px]" />
+          </Form.Item>
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Discount Type"
-              name="discountType"
-              rules={[{ required: true, message: "Please select discount type" }]}
-            >
-              <Select
-                placeholder="Select discount type"
-                onChange={(value) => setDiscountType(value)}
-              >
-                <Select.Option value="percentage">Percentage (%)</Select.Option>
-                <Select.Option value="fixed_amount">Fixed Amount</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2">
             <Form.Item
               label="Discount Value"
               name="discountValue"
-              rules={[{ required: true, message: "Please enter discount value" }]}
+              rules={[{ required: true }]}
             >
               <InputNumber
+                style={{ width: "100%", height: 40 }}
                 min={0}
-                placeholder="Enter discount value"
-                className="w-full"
-                addonAfter={discountType === 'percentage' ? "%" : "VND"}
+                size="large"
+                className="h-[40px]"
+                addonAfter={discountType === "percentage" ? "%" : "VND"}
               />
             </Form.Item>
-          </Col>
-        </Row>
 
-        <Form.Item label="Description" name="description">
-          <Input.TextArea placeholder="Enter description (max 500 characters)" maxLength={500} rows={3} />
-        </Form.Item>
-
-        {/* Usage limits */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label="Usage Limit" name="usageLimit">
-              <InputNumber min={1} placeholder="Usage limit" className="w-full" />
+            <Form.Item
+              label="Discount Type"
+              name="discountType"
+              rules={[{ required: true }]}
+            >
+              <Select
+                onChange={(val) => setDiscountType(val)}
+                options={[
+                  { label: "Percentage (%)", value: "percentage" },
+                  { label: "Fixed Amount", value: "fixed_amount" },
+                ]}
+                className="text-[15px]"
+                style={{ height: 40 }}
+                placeholder="Select type"
+              />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Limit per User" name="perUserLimit">
-              <InputNumber min={1} placeholder="Limit per user" className="w-full" />
-            </Form.Item>
-          </Col>
-        </Row>
+          </div>
 
-        {/* Start & Expiry date */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label="Start Date" name="startDate">
-              <DatePicker className="w-full" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Expiry Date" name="expiryDate">
-              <DatePicker className="w-full" />
-            </Form.Item>
-          </Col>
-        </Row>
+          <Form.Item label="Description" name="description" className="md:col-span-2">
+            <Input.TextArea placeholder="Short description..." rows={3} />
+          </Form.Item>
 
-        {/* Spend limits */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label="Minimum Spend" name="minSpend">
-              <InputNumber min={0} placeholder="Minimum spend" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Maximum Spend" name="maxSpend">
-              <InputNumber min={0} placeholder="Maximum spend" />
-            </Form.Item>
-          </Col>
-        </Row>
+          <Form.Item label="Usage Limit" name="usageLimit">
+            <InputNumber 
+              style={{
+                width: "100%",
+                height: 40
+              }} className="w-full" min={1} size="large" />
+          </Form.Item>
 
-        {/* Products & Categories */}
-        <Form.Item label="Applicable Products" name="products">
-          <Select mode="multiple" options={productOption} placeholder="Select products" />
-        </Form.Item>
+          <Form.Item label="Limit per User" name="perUserLimit">
+            <InputNumber 
+              style={{
+                width: "100%",
+                height: 40
+              }} className="w-full" min={1} size="large" />
+          </Form.Item>
 
-        <Form.Item label="Excluded Products" name="excludedProducts">
-          <Select mode="multiple" options={productOption} placeholder="Select excluded products" />
-        </Form.Item>
+          <Form.Item label="Start Date" name="startDate">
+            <DatePicker className="w-full" size="large" />
+          </Form.Item>
 
-        <Form.Item label="Applicable Categories" name="categories">
-          <Select mode="multiple" options={categoryOption} placeholder="Select categories" />
-        </Form.Item>
+          <Form.Item label="Expiry Date" name="expiryDate">
+            <DatePicker className="w-full" size="large" />
+          </Form.Item>
 
-        <Form.Item label="Excluded Categories" name="excludedCategories">
-          <Select mode="multiple" options={categoryOption} placeholder="Select excluded categories" />
-        </Form.Item>
+          <Form.Item label="Minimum Spend" name="minSpend">
+            <InputNumber 
+              style={{
+                width: "100%",
+                height: 40
+              }} className="w-full text-[15px]" min={0}  
+            />
+          </Form.Item>
 
-        <Form.Item label="User Restrictions" name="userRestrictions">
-          <Select mode="multiple" options={userOption} placeholder="Select users" />
-        </Form.Item>
+          <Form.Item label="Maximum Spend" name="maxSpend">
+            <InputNumber 
+              style={{
+                width: "100%",
+                height: 40
+              }}
+              className="w-full text-[15px]" min={0} 
+            />
+          </Form.Item>
 
-        {/* Switches */}
-        <Row gutter={16}>
-          <Col span={6}>
+          <Form.Item
+            label="Applicable Products"
+            name="products"
+            className="md:col-span-2"
+          >
+            <Select
+              mode="multiple"
+              options={productOption}
+              placeholder="Select applicable products"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Excluded Products"
+            name="excludedProducts"
+            className="md:col-span-2"
+          >
+            <Select
+              mode="multiple"
+              options={productOption}
+              placeholder="Select excluded products"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Applicable Categories"
+            name="categories"
+            className="md:col-span-2"
+          >
+            <Select
+              mode="multiple"
+              options={categoryOption}
+              placeholder="Select categories"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Excluded Categories"
+            name="excludedCategories"
+            className="md:col-span-2"
+          >
+            <Select
+              mode="multiple"
+              options={categoryOption}
+              placeholder="Select excluded categories"
+              size="large"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="User Restrictions"
+            name="userRestrictions"
+            className="md:col-span-2"
+          >
+            <Select
+              mode="multiple"
+              options={userOption}
+              placeholder="Limit coupon to specific users"
+              size="large"
+            />
+          </Form.Item>
+
+          <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
             <Form.Item name="allowFreeShipping" valuePropName="checked">
               <Checkbox>Allow Free Shipping</Checkbox>
             </Form.Item>
-          </Col>
-          <Col span={6}>
             <Form.Item name="excludeSaleItems" valuePropName="checked">
               <Checkbox>Exclude Sale Items</Checkbox>
             </Form.Item>
-          </Col>
-          <Col span={6}>
             <Form.Item name="individualUse" valuePropName="checked">
               <Checkbox>Individual Use Only</Checkbox>
             </Form.Item>
-          </Col>
-          <Col span={6}>
             <Form.Item label="Active" name="isActive" valuePropName="checked">
               <Switch />
             </Form.Item>
-          </Col>
-        </Row>
+          </div>
 
-        {/* Buttons */}
-        <Form.Item>
-          <div className="flex justify-end space-x-3">
-            <Button type="primary" htmlType="submit">
-              Create Coupon
+          <Form.Item className="md:col-span-2 text-right">
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              className="rounded-xl mr-3"
+              icon={<SaveOutlined />}
+              loading={loading}
+              style={{height: 40}}
+            >
+              Save Coupon
             </Button>
-            <Button htmlType="button" onClick={() => form.resetFields()}>
+            <Button 
+              onClick={() => form.resetFields()} 
+              htmlType="submit"
+              className="rounded-xl"
+              size="middle"
+              danger
+              style={{height: 40}}
+              icon={<ReloadOutlined />}
+            >
               Reset
             </Button>
-          </div>
-        </Form.Item>
-      </Form>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 };
