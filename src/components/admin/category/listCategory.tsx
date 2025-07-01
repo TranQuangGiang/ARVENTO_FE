@@ -66,13 +66,14 @@ const ListCategory = () => {
       key: "actions",
       render: (_: any, record: any) => (
         <div className="flex space-x-2">
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={() => (window.location.href = `/admin/editCategory/${record._id}`)}
-          >
-            Edit
-          </Button>
+          <Link to={`/admin/editCategory/${record._id}`}>
+            <Button
+              type="default"
+              icon={<EditOutlined />}
+            >
+              Edit
+            </Button>
+          </Link>
           <Popconfirm
             title="Are you sure to delete?"
             okText="Yes"

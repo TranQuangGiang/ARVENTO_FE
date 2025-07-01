@@ -114,11 +114,12 @@ const DeltaiProduct = () => {
       : product.sale_price;
     const cartItem = {
       userId,
+      product: product._id,
       product_id: product._id,
       product_name: product.name,
       selected_variant: {
         color: variant.color,
-        size: String(selectedSize)
+        size: String(selectedSize),
       },
       quantity,
       unit_price: unitPrice,
@@ -379,7 +380,7 @@ const handleToggleFavorite = async () => {
                       key={color}
                       src={firstImg}
                       alt={color}
-                      className={`w-[50px] h-[50px] object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
+                      className={`w-[50px] h-[50px] cursor-pointer object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
                       onClick={() => {
                         setSelectedColor(color);
                         setSelectedSize(null);

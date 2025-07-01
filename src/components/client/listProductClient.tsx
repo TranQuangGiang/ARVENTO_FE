@@ -16,6 +16,8 @@ const ListProductClient = () => {
   });
 
   const products = allProductData?.data?.docs || [];
+  console.log(products);
+  
   const categoryProducts = categoryProductData?.data?.docs || [];
 
   const formatPrice = (price:any) => {

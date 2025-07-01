@@ -114,8 +114,8 @@ const ListOrder = () => {
                 <div className="flex justify-between flex-wrap gap-4">
                   <div>
                     <p className="text-gray-500 mb-1">Order ID: <strong>{order._id}</strong></p>
-                    <p className="font-bold text-lg mb-2">Products in order:</p>
-                    {order.items?.map((item) => {
+                    <p className="font-bold text-lg mb-2 mt-2">Products in order:</p>
+                    {order.items?.map((item:any) => {
                       const itemTotal = item.quantity * item.price;
                       return (
                         <div key={item.product._id} className="flex items-center gap-3 mb-2">
@@ -154,28 +154,27 @@ const ListOrder = () => {
                       dropdownStyle={{ padding: 0 }}
                     >
                      {getSelectableStatuses(order.status).map((option) => (
-  <Option key={option.value} value={option.value} disabled={option.disabled}>
-    <span
-      style={{
-        color: statusColors[option.value], // ✅ luôn dùng màu trạng thái
-        fontWeight: option.disabled ? 500 : 500,
-        opacity: option.disabled && option.value !== order.status ? 0.5 : 1, // ✅ nếu là trạng thái hiện tại thì giữ opacity = 1
-      }}
-    >
-      {option.value.charAt(0).toUpperCase() + option.value.slice(1)}
-    </span>
-  </Option>
-))}
-
+                    <Option key={option.value} value={option.value} disabled={option.disabled}>
+                      <span
+                        style={{
+                          color: statusColors[option.value], // ✅ luôn dùng màu trạng thái
+                          fontWeight: option.disabled ? 500 : 500,
+                          opacity: option.disabled && option.value !== order.status ? 0.5 : 1, // ✅ nếu là trạng thái hiện tại thì giữ opacity = 1
+                        }}
+                      >
+                        {option.value.charAt(0).toUpperCase() + option.value.slice(1)}
+                      </span>
+                    </Option>
+                  ))}
                     </Select>
 
-                    <p className="text-gray-600 text-base">
+                    <p className="text-gray-600 text-base mt-2">
                       <CalendarOutlined /> Order date: {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                     <p className="font-bold text-red-600 text-lg">
                       <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
                     </p>
-                    <Link to={`/admin/orderDetail/${order._id}`}>
+                    <Link className="mt-2.5" to={`/admin/orderDetail/${order._id}`}>
                       <Button type="primary" size="large">View order details</Button>
                     </Link>
                   </div>

@@ -13,6 +13,7 @@ import { useOneData } from "../../../hooks/useOne";
 import { motion } from "framer-motion";
 import { useUpdateRole } from "../../../hooks/useUpdate";
 import { useState } from "react";
+import { MapPinned } from "lucide-react";
 
 const UserDetail = () => {
     const { id } = useParams();
@@ -115,7 +116,7 @@ const UserDetail = () => {
                         </Descriptions>
                         {/* Danh sách địa chỉ */}
                         <div className="mt-10">
-                            <h2 className="text-xl font-semibold mb-4">📦 Addresses</h2>
+                            <h2 className="text-xl font-semibold mb-4 flex"><MapPinned className="mt-0.5 mr-2 ml-1" style={{width: 23}} /> Addresses</h2>
                             {addresses.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {addresses.map((addr, index) => (

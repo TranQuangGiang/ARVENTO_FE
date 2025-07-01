@@ -13,6 +13,7 @@ export type CartItem = {
   selected_variant: {
     color: { name: string; hex: string };
     size: string;
+    image: { url: string}
   };
   quantity: number;
   unit_price: number;
