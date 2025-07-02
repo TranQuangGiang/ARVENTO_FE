@@ -144,12 +144,15 @@ const Thanhtoan = () => {
       navigate('/');
     }
 
-      } catch (error:any) {
-        message.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-  };
+
+  } catch (error:any) {
+    message.error(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+     
+
 
 
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);

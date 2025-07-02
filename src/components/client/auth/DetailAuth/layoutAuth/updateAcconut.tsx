@@ -2,7 +2,7 @@ import { Button, Form, Input } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useUserMe } from '../../../../../hooks/useOne';
-import { useUpdate, useUpdateUser } from '../../../../../hooks/useUpdate';
+import { useUpdateUser } from '../../../../../hooks/useUpdate';
 
 const UpdateAccount = ({ isOpen, onClose }: any) => {
     const [showModal, setShowModal] = useState<"updateAccount" | null>("updateAccount");
@@ -14,7 +14,7 @@ const UpdateAccount = ({ isOpen, onClose }: any) => {
         }
     };
 
-    const { data:user } = useUserMe({
+    const { data:user, refetch } = useUserMe({
         resource: `/users/me`
     })
     useEffect(() => {
@@ -41,6 +41,7 @@ const UpdateAccount = ({ isOpen, onClose }: any) => {
         }, {
             onSuccess: () => {
                 onClose();
+                refetch();
             }
         });
     }

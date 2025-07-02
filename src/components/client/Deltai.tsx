@@ -120,6 +120,7 @@ const DeltaiProduct = () => {
       selected_variant: {
         color: variant.color,
         size: String(selectedSize),
+        image: selectedImage
       },
       quantity,
       unit_price: unitPrice,
