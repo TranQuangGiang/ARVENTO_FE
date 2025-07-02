@@ -16,13 +16,11 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCreate } from "../../../../../hooks/useCreate";
-import { useList } from "../../../../../hooks/useList";
-
+import { useCreate } from "../../hooks/useCreate";
 
 const { Title } = Typography;
 
-const AddAddresses = ({ isOpen, onClose }: any) => {
+const AddAddressesClient = ({ isOpen, onClose }: any) => {
     const [showModal, setShowModal] = useState<"addAddress" | null>("addAddress");
     const [form] = Form.useForm();
     const [ selected,setSelected ] = useState('');
@@ -35,24 +33,12 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
         }
     };
 
-    const { data, refetch } = useList({
-        resource: `/addresses/me`
-    }); 
-
-
-    console.log(data);
-    
     const { mutate } = useCreate({
         resource: `/addresses/me`
     }) 
 
     const handleFinish = (values: any) => {
-        mutate(values, {
-            onSuccess: () => {
-                refetch();
-                form.resetFields()
-            }
-        });
+        mutate(values);
         onClose();
     };
 
@@ -216,4 +202,4 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
     );
 };
 
-export default AddAddresses;
+export default AddAddressesClient;

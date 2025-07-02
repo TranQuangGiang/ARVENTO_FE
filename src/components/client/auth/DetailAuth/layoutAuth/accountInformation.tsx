@@ -7,6 +7,8 @@ import UpdateAccount from './updateAcconut';
 import { useList } from '../../../../../hooks/useList';
 import axios from 'axios';
 import { useDelete } from '../../../../../hooks/useDelete';
+import AddAddresses from './addAddresses';
+import UpdateAddresses from './updateAddresses';
 
 const AccountInformation = () => {
     const [showModal, setShowModal] = useState<string | null>(null);
@@ -34,6 +36,11 @@ const AccountInformation = () => {
         deleAddresses(id);
     }
 
+
+    let editId: string | null = null;
+    if (showModal && showModal.startsWith("editAddresses/")) {
+        editId = showModal.split("/")[1];
+    }
     return (
         <div className='w-full'>
             <div className='w-full rounded-[15px] bg-white p-6'>
@@ -76,11 +83,11 @@ const AccountInformation = () => {
                 <div className="w-[100%] bg-white mt-8 rounded-[15px]">
                     <div className="flex justify-between items-center mb-4">
                         <h4 className="text-[17px] font-bold font-[Product Sans]">Sổ địa chỉ</h4>
-                        <Link to={`/detailAuth/addAddresses`}>
-                            <p className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
+                        
+                            <Button onClick={() =>  setShowModal("addAddresses")} className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
                                 <PlusOutlined className="mr-1" /> Thêm địa chỉ
-                            </p>
-                        </Link>
+                            </Button>
+                        
                     </div>
 
                     {sortedAddresses.length > 0 ? (
@@ -132,9 +139,7 @@ const AccountInformation = () => {
                                 )}
 
                                 <div className="flex gap-2 mt-3">
-                                    <Link to={`/detailAuth/editAddresses/${address._id}`}>
-                                        <Button size="small" type='primary' icon={<EditOutlined />} />
-                                    </Link>
+                                    <Button size="small" type='primary' onClick={() => setShowModal(`editAddresses/${address._id}`)} icon={<EditOutlined />} />
                                     <Popconfirm title="Bạn chắc chứ" okText="Ok" cancelText="Canel" onConfirm={() => delAddresses(address._id)}>
                                         <Button
                                             size="small"
@@ -160,7 +165,15 @@ const AccountInformation = () => {
                     )}
                 </div>
             </div>
-
+            {editId && (
+                <UpdateAddresses
+                    isOpen={!!editId}
+                    addressId={editId}
+                    onClose={() => setShowModal(null)}
+                    onRefetch={refetch}
+                />
+            )}
+            <AddAddresses isOpen={showModal === "addAddresses"} onClose={() => setShowModal(null)} />
             <UpdateAccount isOpen={showModal === "updateAccount"} onClose={() => setShowModal(null)} />
         </div>
     );

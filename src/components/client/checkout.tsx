@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../contexts/cartContexts";
 import { useList } from "../../hooks/useList";
+import AddAddressesClient from "./addAddresses";
+import { Button, message } from "antd";
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckOutlined, PlusOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 interface FloatingInputProps {
   label: string;
@@ -10,6 +15,7 @@ interface FloatingInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   placeholder?: string;
+  readOnly?: boolean;
 }
 
 const FloatingInput = ({
@@ -19,9 +25,10 @@ const FloatingInput = ({
   onChange,
   type = "text",
   placeholder = "",
+  readOnly = false,
 }: FloatingInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
-
+  
   return (
     <div className="relative w-full pt-5">
       <label
@@ -49,9 +56,18 @@ const FloatingInput = ({
 };
 
 const Checkout = () => {
+  const [showModal, setShowModal] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+
+  const modalParam = searchParams.get("modal");
+  useEffect(() => {
+    if (modalParam) {
+      setShowModal(modalParam);
+    }
+  }, [modalParam]);
+
   const navigate = useNavigate();
   const { state: { cart } } = useCart();
-
   const { data: userData } = useList({
     resource: "/users/me",
   });
@@ -63,12 +79,9 @@ const Checkout = () => {
   });
 
   const [shippingInfo, setShippingInfo] = useState({
+    id: "",
     recipient: "",
-    phone: "",
-    city: "",
-    district: "",
-    ward: "",
-    address: "",
+    fullAddress: "",
     note: "",
   });
 
@@ -77,7 +90,7 @@ const Checkout = () => {
       const user = userData.data;
       setCustomerInfo({
         name: user.name || "",
-        phone: "",
+        phone: address?.data.phone,
         email: user.email || "",
       });
     }
@@ -99,8 +112,8 @@ const Checkout = () => {
   };
 
   const handleContinue = () => {
-    const { recipient, phone, city, district, ward, address } = shippingInfo;
-    if (!recipient || !phone || !city || !district || !ward || !address) {
+    const { fullAddress } = shippingInfo;
+    if (!fullAddress) {
       alert("Vui lòng điền đầy đủ thông tin nhận hàng!");
       return;
     }
@@ -116,6 +129,45 @@ const Checkout = () => {
       },
     });
   };
+
+  const { data:address, refetch:isReFetchDefault } = useList({
+    resource: `/addresses/me/default`,
+  });
+  console.log(address);
+  
+  const { data:addressData, refetch:isRefeatchAddres  } = useList({
+    resource: `/addresses/me`
+  });
+  const addresses:any = addressData?.data?.docs || [];
+  const sortedAddresses = [...addresses].sort((a, b) => b.isDefault - a.isDefault);
+  console.log(addresses);
+  console.log(sortedAddresses);
+  
+  
+  
+
+  useEffect(() => {
+    if (!address?.data || Object.keys(address.data).length === 0) {
+      setShowModal("addAddress");
+      isReFetchDefault();
+      isRefeatchAddres();
+    }
+    else {
+      setShippingInfo(prev => ({
+        ...prev,
+        fullAddress: address.data.fullAddress || "",
+        note: address.data.note || "",
+        id: address.data._id,
+      }));
+
+      setCustomerInfo((prev) => ({
+        ...prev,
+        phone: address?.data.phone || "",
+      }));
+    
+      setShowModal(null);
+    }
+  }, [address]);
 
   return (
     <div className="w-full bg-gray-100">
@@ -152,11 +204,7 @@ const Checkout = () => {
                     <span className="text-red-500 font-semibold">
                       {product.unit_price.toLocaleString()}₫
                     </span>
-                    {product?.unit_price && (
-                      <span className="line-through text-gray-400 text-xs">
-                        {product?.unit_price.toLocaleString()}₫
-                      </span>
-                    )}
+                    
                   </div>
                 </div>
                 <div className="text-right font-medium text-sm">x {product.quantity}</div>
@@ -180,7 +228,7 @@ const Checkout = () => {
               <FloatingInput
                 label="Số điện thoại"
                 name="phone"
-                value={customerInfo.phone}
+                value={address?.data.phone}
                 onChange={handleCustomerChange}
                 placeholder="Số điện thoại"
               />
@@ -199,62 +247,142 @@ const Checkout = () => {
         </div>
 
         <h3 className="text-base font-medium text-gray-600">THÔNG TIN NHẬN HÀNG</h3>
-        <div className="p-4 rounded-xl space-y-4 bg-white shadow-sm">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="space-y-3">
-              <FloatingInput
-                label="Tên người nhận"
-                name="recipient"
-                value={shippingInfo.recipient}
-                onChange={handleShippingChange}
-                placeholder="Tên người nhận"
-              />
-              <FloatingInput
-                label="Tỉnh / Thành phố"
-                name="city"
-                value={shippingInfo.city}
-                onChange={handleShippingChange}
-                placeholder="Tỉnh / Thành phố"
-              />
-              <FloatingInput
-                label="Phường / Xã"
-                name="ward"
-                value={shippingInfo.ward}
-                onChange={handleShippingChange}
-                placeholder="Phường / Xã"
-              />
-              <FloatingInput
-                label="Ghi chú khác (nếu có)"
-                name="note"
-                value={shippingInfo.note}
-                onChange={handleShippingChange}
-                placeholder="Ghi chú khác (nếu có)"
-              />
-            </div>
-            <div className="space-y-3">
-              <FloatingInput
-                label="SĐT người nhận"
-                name="phone"
-                value={shippingInfo.phone}
-                onChange={handleShippingChange}
-                placeholder="SĐT người nhận"
-              />
-              <FloatingInput
-                label="Quận / Huyện"
-                name="district"
-                value={shippingInfo.district}
-                onChange={handleShippingChange}
-                placeholder="Quận / Huyện"
-              />
-              <FloatingInput
-                label="Địa chỉ"
-                name="address"
-                value={shippingInfo.address}
-                onChange={handleShippingChange}
-                placeholder="Địa chỉ"
-              />
-            </div>
+        <div className="p-4 rounded-xl space-y-2 mb-2.5 bg-white shadow-sm">
+          <FloatingInput
+            label="Người nhận"
+            name="recipient"
+            value={shippingInfo.recipient}
+            onChange={handleShippingChange}
+            placeholder="Tên người nhận"
+          />
+          <div className="relative">
+            <FloatingInput
+              label="Địa chỉ giao hàng mặc định"
+              name="fullAddress"
+              value={address?.data.fullAddress}
+              onChange={handleShippingChange}
+              placeholder="Địa chỉ giao hàng"
+              readOnly 
+            />
+            <Button
+              type="link"
+              className="!absolute top-5 right-0 text-blue-700 text-sm"
+              icon={<PlusOutlined />}
+              onClick={() => setShowModal("selectAddress")}
+            >
+              Chọn địa chỉ khác
+            </Button>
           </div>
+          {showModal === "selectAddress" && (
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 space-y-4"
+                >
+                  <h3 className="text-xl font-semibold text-center text-gray-800">
+                    📍 Chọn địa chỉ giao hàng
+                  </h3>
+
+                  <div className="max-h-[600px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-gray-300 pr-1">
+                    {sortedAddresses.map((addr: any) => (
+                      <div
+                        key={addr._id}
+                        onClick={() => {
+                          setShippingInfo((prev) => ({
+                            ...prev,
+                            fullAddress: addr.fullAddress,
+                            note: addr.note || "",
+                            id: addr._id,
+                            recipient: addr.recipient || "",
+                          }));
+                          setCustomerInfo((prev) => ({
+                            ...prev,
+                            phone: addr.phone || "",
+                          }));
+                          setShowModal(null);
+                        }}
+                        className={`border-2 rounded-xl p-4 bg-blue-50 flex justify-between items-start gap-4 cursor-pointer transition-all duration-200 ${
+                          shippingInfo.id === addr._id ? "border-blue-600" : "border-blue-200 hover:border-blue-400"
+                        }`}
+                      >
+                        <div className="flex-1  text-sm">
+                          <div className="font-semibold text-black">{addr.label || addr.recipient}</div>
+                          <div className="text-gray-700">{addr.fullAddress}</div>
+                          <div className="text-gray-700">SĐT: {addr.phone}</div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1">
+                          {addr.isDefault ? (
+                            <span className="text-blue-600 text-xs font-medium flex items-center">
+                              <CheckOutlined className="mr-1" />
+                              Địa chỉ mặc định
+                            </span>
+                          ) : (
+                            <Button
+                              size="small"
+                              type="default"
+                              className="text-blue-600 border-blue-600 hover:text-white hover:bg-blue-600"
+                              onClick={async () => {
+                              try {
+                                const token = localStorage.getItem("token");
+                                await axios.patch(
+                                  `http://localhost:3000/api/addresses/${addr._id}/set-default`,
+                                  {},
+                                  {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`,
+                                    },
+                                  }
+                                );
+                                message.success("Đã đặt làm địa chỉ mặc định", 1);
+                                await isReFetchDefault();
+                                await isRefeatchAddres();
+                              } catch (error) {
+                                message.error("Có lỗi xảy ra khi đặt mặc định");
+                              }
+                            }}
+                          >
+                            Đặt làm mặc định
+                          </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between pt-2">
+                    <Button onClick={() => setShowModal(null)} className="bg-gray-200 hover:bg-gray-300">
+                      Đóng
+                    </Button>
+                    <Button
+                      type="primary"
+                      className="bg-blue-600 text-white hover:bg-blue-700"
+                      onClick={() => setShowModal("addAddress")}
+                    >
+                      + Thêm địa chỉ
+                    </Button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+          )}
+
+          <FloatingInput
+            label="Ghi chú đơn hàng (nếu có)"
+            name="note"
+            value={shippingInfo.note}
+            onChange={handleShippingChange}
+            placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."
+          />
         </div>
 
         <div className="flex items-center space-x-2 text-sm">
@@ -273,7 +401,7 @@ const Checkout = () => {
           </div>
 
           {cart?.applied_coupon && (
-            <div className="flex justify-between font-semibold pt-1 text-green-600">
+            <div className="flex justify-between font-semibold pl-3 pr-3 text-green-600">
               <h3 className="text-[14px] font-sans">Giảm giá ({cart.applied_coupon.code}):</h3>
               <span>-{discount.toLocaleString()}₫</span>
             </div>
@@ -293,6 +421,7 @@ const Checkout = () => {
           Tiếp tục
         </button>
       </div>
+      <AddAddressesClient isOpen={showModal === "addAddress"} onClose={() => setShowModal(null)} />
     </div>
   );
 };
