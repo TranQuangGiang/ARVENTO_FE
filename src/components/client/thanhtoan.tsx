@@ -7,7 +7,7 @@ import { useCart } from "../contexts/cartContexts"; // ✅ Dùng context
 const Thanhtoan = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { customerInfo, shippingInfo, cart, subtotal } = location.state || {};
+  const { customerInfo, shippingInfo } = location.state || {};
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTempMethod, setSelectedTempMethod] = useState("");
@@ -27,8 +27,9 @@ const Thanhtoan = () => {
     applyVoucherToCart,
     removeVoucherFromCart,
     clearCart,
+    fetchCart: refetch,
   } = useCart();
-  console.log(cart);
+  console.log(cartContext);
   
 
   const paymentMethods = [
@@ -42,25 +43,27 @@ const Thanhtoan = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmCoupon = (selectedCoupon:any) => {
+  const handleConfirmCoupon = async (selectedCoupon:any) => {
     if (cartContext?.applied_coupon?.code === selectedCoupon.code) {
       setSelectedVoucherCode(null);
-      removeVoucherFromCart();
+      await removeVoucherFromCart();
     } else {
       setSelectedVoucherCode(selectedCoupon.code);
-      applyVoucherToCart(selectedCoupon.code);
+      await applyVoucherToCart(selectedCoupon.code);
     }
+    await refetch();
     setIsCouponModalOpen(false);
   };
 
-  const handleManualCoupon = () => {
+  const handleManualCoupon = async () => {
     if (manualCoupon === cartContext?.applied_coupon?.code) {
       setSelectedVoucherCode(null);
-      removeVoucherFromCart();
+      await removeVoucherFromCart();
     } else {
       setSelectedVoucherCode(manualCoupon);
-      applyVoucherToCart(manualCoupon);
+      await applyVoucherToCart(manualCoupon);
     }
+    await refetch();
   };
 
   const handlePayment = async () => {
@@ -79,7 +82,7 @@ const Thanhtoan = () => {
       return;
     }
 
-    const orderItems = cart.items.map((item:any) => ({
+    const orderItems = cartContext?.items.map((item:any) => ({
       product: item.product._id,
       selected_variant: item.selected_variant,
       price: item.unit_price,
@@ -98,18 +101,19 @@ const Thanhtoan = () => {
       body: JSON.stringify({
         items: orderItems,
         total: cartContext?.total,
+        subtotal: cartContext?.subtotal,
+        discount_amount: cartContext?.subtotal && cartContext?.total
+          ? Number(cartContext.subtotal) - Number(cartContext.total)
+          : 0,
         address: {
           recipient: shippingInfo?.recipient,
-          phone: shippingInfo?.phone,
-          city: shippingInfo?.city,
-          district: shippingInfo?.district,
-          ward: shippingInfo?.ward,
-          address: shippingInfo?.address,
+          address: shippingInfo?.fullAddress,
           note: shippingInfo?.note || "",
         },
-        subtotal: 3333333,
-        shipping_address: "Thôn Bột Xuyên, Bột Xuyên, Mỹ Đức, Hà Nội",
+        shipping_address: shippingInfo?.id,
         note: shippingInfo?.note || "",
+        payment_method: selectedMethod,
+        coupon: cartContext?.applied_coupon?.code || null
       }),
     });
     const orderData = await orderRes.json();
@@ -138,9 +142,10 @@ const Thanhtoan = () => {
     if (paymentData.data?.paymentUrl) {
       window.location.href = paymentData.data.paymentUrl;
       console.log("paymentUrl", paymentData.data?.paymentUrl);
+      await clearCart();
     } else {
       message.success("Đặt hàng và thanh toán thành công");
-      clearCart();
+      await clearCart();
       navigate('/');
     }
 
@@ -167,7 +172,7 @@ const Thanhtoan = () => {
 
         <div className="bg-white p-4 rounded-xl shadow space-y-4">
           <h3 className="font-medium">Danh sách sản phẩm</h3>
-          {cart?.items?.map((product:any, index:any) => (
+          {cartContext?.items?.map((product:any, index:any) => (
             <div key={product._id}>
               <div className="flex space-x-3">
                 <img
@@ -188,7 +193,7 @@ const Thanhtoan = () => {
                 </div>
                 <div className="text-right font-medium text-sm">x {product.quantity}</div>
               </div>
-              {index !== cart.items.length - 1 && <hr className="my-3 border-gray-200" />}
+              {index !== cartContext.items.length - 1 && <hr className="my-3 border-gray-200" />}
             </div>
           ))}
         </div>
@@ -197,9 +202,9 @@ const Thanhtoan = () => {
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
           <div className="flex justify-between"><strong>Khách hàng:</strong><span>{customerInfo?.name}</span></div>
           <div className="flex justify-between"><strong>Email:</strong><span>{customerInfo?.email}</span></div>
-          <div className="flex justify-between"><strong>SĐT người nhận:</strong><span>{shippingInfo?.phone}</span></div>
+          <div className="flex justify-between"><strong>SĐT người nhận:</strong><span>{customerInfo?.phone}</span></div>
           <div className="flex justify-between"><strong>Người nhận:</strong><span>{shippingInfo?.recipient}</span></div>
-          <div className="flex justify-between"><strong>Địa chỉ:</strong><span>{shippingInfo?.address}, {shippingInfo?.ward}, {shippingInfo?.district}, {shippingInfo?.city}</span></div>
+          <div className="flex justify-between"><strong>Địa chỉ:</strong><span>{shippingInfo?.fullAddress}</span></div>
           <div className="flex justify-between"><strong>Ghi chú:</strong><span>{shippingInfo?.note}</span></div>
         </div>
 
@@ -248,12 +253,14 @@ const Thanhtoan = () => {
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
           <div className="flex justify-between font-semibold text-base">
             <span>Tạm tính:</span>
-            <span className="text-red-500">{subtotal?.toLocaleString()}₫</span>
+            <span className="text-red-500">{cartContext?.subtotal?.toLocaleString()}₫</span>
           </div>
-          {cartContext?.applied_coupon && (
+          {cartContext?.applied_coupon && cartContext.subtotal && cartContext.total && (
             <div className="flex justify-between font-semibold text-base text-green-600">
               <span>Giảm giá:</span>
-              <span>-{Number(cartContext.applied_coupon.discount_amount).toLocaleString()}₫</span>
+              <span>
+                -{(Number(cartContext.subtotal) - Number(cartContext.total)).toLocaleString()}₫
+              </span>
             </div>
           )}
           <div className="flex justify-between font-semibold text-lg">

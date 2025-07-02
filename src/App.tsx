@@ -58,6 +58,7 @@ import FavoriteUsers from './components/admin/favorite/chitietfavorite'
 import ListOrder from './components/admin/order/listOrder'
 import DetailOrder from './components/admin/order/detailOrder'
 import UpdateAddresses from './components/client/auth/DetailAuth/layoutAuth/updateAddresses'
+import AddAddressesClient from './components/client/addAddresses'
 
 
 
@@ -81,6 +82,7 @@ function App() {
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
+      {path: 'addAddress', element: <AddAddressesClient />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
