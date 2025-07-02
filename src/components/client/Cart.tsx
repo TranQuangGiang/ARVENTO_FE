@@ -16,7 +16,8 @@ const Cart = () => {
     setSelectedVoucherCode,
     applyVoucherToCart,
   } = useCart();
-
+  console.log(cart);
+  
   const navigate = useNavigate();
   const [showVouchers, setShowVouchers] = useState(false);
 

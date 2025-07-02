@@ -1,4 +1,4 @@
-import { FileText, House, LogOut, Mail, MapPin, Receipt, ScrollText, Settings, ShoppingBag, Tickets } from 'lucide-react'
+import { FileText, Heart, House, LogOut, Mail, MapPin, Receipt, RotateCcw, ScrollText, Settings, ShoppingBag, Tickets } from 'lucide-react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useUserMe } from '../../../../hooks/useOne'
 import { useEffect } from 'react'
@@ -158,6 +158,15 @@ const DetailAuth = () => {
                             </Link>
                         </li>
 
+                        <li className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                location.pathname === "/detailAuth/WishlistClient"
+                                ? "bg-blue-200 text-blue-900"
+                                : "hover:bg-blue-200 hover:text-blue-900"
+                            }`}>
+                            <Heart className="mr-2.5" style={{ width: 20 }} />
+                            Sản phẩm yêu thích
+                        </li>
+
                         <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                             <Mail className="mr-2.5" style={{ width: 20 }} />
                             Góp ý - Phản hồi - Hỗ trợ
@@ -167,6 +176,12 @@ const DetailAuth = () => {
                             <LogOut className="mr-2.5" style={{ width: 20 }} />
                             Đăng xuất
                         </li>
+                        <Link to={`/`}>
+                            <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
+                                <RotateCcw className="mr-2.5" style={{ width: 20 }} />
+                                Quay lại website
+                            </li>
+                        </Link>
                     </ul>
                 </nav>
 

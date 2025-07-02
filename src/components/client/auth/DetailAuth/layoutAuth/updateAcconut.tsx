@@ -58,12 +58,12 @@ const UpdateAccount = ({ isOpen, onClose }: any) => {
                     key="overlay"
                 >
                     <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            transition={{ duration: 0.25 }}
-                            className="bg-white rounded-2xl shadow-xl w-full max-w-3xl h-[470px] p-6"
-                            key="modal"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl h-[470px] p-6"
+                        key="modal"
                     >
                         {showModal === "updateAccount" && (
                             <>
