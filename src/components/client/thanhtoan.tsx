@@ -28,10 +28,12 @@ const Thanhtoan = () => {
     removeVoucherFromCart,
     clearCart,
   } = useCart();
+  console.log(cart);
+  
 
   const paymentMethods = [
     { id: "cod", label: "Thanh toán khi nhận hàng", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png" },
-    { id: "vnpay", label: "VNPAY", icon: "https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png" },
+    { id: "zalopay", label: "Zalo Pay", icon: "https://seeklogo.com/images/Z/zalopay-logo-643ADC36A4-seeklogo.com.png" },
     { id: "momo", label: "Ví MoMo", icon: "https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" },
   ];
 
@@ -79,8 +81,12 @@ const Thanhtoan = () => {
 
     const orderItems = cart.items.map((item:any) => ({
       product: item.product._id,
+      selected_variant: item.selected_variant,
       price: item.unit_price,
       quantity: item.quantity,
+      unit_price: item.unit_price,
+      total_price: item.total_price,
+      
     }));
 
     const orderRes = await fetch("http://localhost:3000/api/orders", {
@@ -101,6 +107,8 @@ const Thanhtoan = () => {
           address: shippingInfo?.address,
           note: shippingInfo?.note || "",
         },
+        subtotal: 3333333,
+        shipping_address: "Thôn Bột Xuyên, Bột Xuyên, Mỹ Đức, Hà Nội",
         note: shippingInfo?.note || "",
       }),
     });
@@ -108,31 +116,34 @@ const Thanhtoan = () => {
     if (!orderRes.ok) throw new Error(orderData.message || "Tạo đơn hàng thất bại");
 
     let paymentEndpoint = "cod";
-    if (["vnpay", "momo"].includes(selectedMethod)) {
-      paymentEndpoint = "banking";
+    if (["zalopay", "momo"].includes(selectedMethod)) {
+      paymentEndpoint = selectedMethod;
     }
     const paymentRes = await fetch(`http://localhost:3000/api/payments/${paymentEndpoint}`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-  body: JSON.stringify({
-    order: orderData.data._id,
-    amount: cartContext?.total,
-  }),
-});
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        order: orderData.data._id,
+        amount: cartContext?.total,
+        note: shippingInfo?.note || "Test zalopay payments",
+      }),
+    });
 
     const paymentData = await paymentRes.json();
-if (!paymentRes.ok) throw new Error(paymentData.message || "Tạo thanh toán thất bại");
+    if (!paymentRes.ok) throw new Error(paymentData.message || "Tạo thanh toán thất bại");
 
-if (paymentData.data?.paymentUrl) {
-  window.location.href = paymentData.data.paymentUrl;
-} else {
-  message.success("Đặt hàng và thanh toán thành công");
-  clearCart();
-  navigate('/');
-}
+    if (paymentData.data?.paymentUrl) {
+      window.location.href = paymentData.data.paymentUrl;
+      console.log("paymentUrl", paymentData.data?.paymentUrl);
+    } else {
+      message.success("Đặt hàng và thanh toán thành công");
+      clearCart();
+      navigate('/');
+    }
+
 
   } catch (error:any) {
     message.error(error.message);
@@ -140,6 +151,8 @@ if (paymentData.data?.paymentUrl) {
     setIsLoading(false);
   }
 };
+     
+
 
 
   const currentMethod = paymentMethods.find((m) => m.id === selectedMethod);
@@ -248,7 +261,7 @@ if (paymentData.data?.paymentUrl) {
             <span className="text-red-500">{cartContext?.total?.toLocaleString()}₫</span>
           </div>
           <button
-            className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900 disabled:opacity-60"
+            className="w-full bg-blue-950 mt-4 mb-8 text-white py-2 cursor-pointer rounded text-base hover:bg-blue-900 disabled:opacity-60"
             onClick={handlePayment}
             disabled={!selectedMethod || isLoading}
           >

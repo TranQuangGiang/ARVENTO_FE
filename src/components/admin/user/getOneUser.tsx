@@ -13,6 +13,7 @@ import { useOneData } from "../../../hooks/useOne";
 import { motion } from "framer-motion";
 import { useUpdateRole } from "../../../hooks/useUpdate";
 import { useState } from "react";
+import { MapPinned } from "lucide-react";
 
 const UserDetail = () => {
     const { id } = useParams();

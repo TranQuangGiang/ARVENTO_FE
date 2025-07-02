@@ -83,30 +83,32 @@ const ListCoupon: React.FC = () => {
       render: (text: string) => text || "-",
     },
     {
-  title: "Active",
-  dataIndex: "isActive",
-  key: "isActive",
-  render: (isActive: boolean, record: Coupon) => (
-    <Switch
-      checked={isActive}
-      loading={isToggling}
-      onChange={() => toggleCouponStatus(record._id)}
-    />
-  ),
-},
+      title: "Active",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (isActive: boolean, record: Coupon) => (
+        <Switch
+          checked={isActive}
+          loading={isToggling}
+          onChange={() => toggleCouponStatus(record._id)}
+        />
+      ),
+    },
 
     {
       title: "Actions",
       key: "actions",
       render: (_: any, record: Coupon) => (
         <div className="flex space-x-2">
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={() => (window.location.href = `/admin/editCoupon/${record._id}`)}
-          >
-            Edit
-          </Button>
+          <Link to={`/admin/editCoupon/${record._id}`}>
+            <Button
+              type="default"
+              icon={<EditOutlined />}
+            >
+              Edit
+            </Button>
+          </Link>
+         
           <Popconfirm
             title="Are you sure to delete?"
             okText="Yes"

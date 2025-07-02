@@ -14,6 +14,7 @@ export type CartItem = {
     color: { name: string; hex: string };
     size: string;
     image: { url: string, alt: string };
+
   };
   quantity: number;
   unit_price: number;

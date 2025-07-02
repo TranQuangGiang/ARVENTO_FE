@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Popconfirm } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/cartContexts';
@@ -18,6 +18,7 @@ const Cart = () => {
   } = useCart();
 
   const navigate = useNavigate();
+  const [showVouchers, setShowVouchers] = useState(false);
 
   useEffect(() => {
     fetchCart();
@@ -105,7 +106,7 @@ const Cart = () => {
                           item.quantity - 1
                         )
                       }
-                      className="px-2 py-0.5 border rounded-md hover:bg-gray-100"
+                      className="px-2.5 py-0.5 border rounded-md hover:bg-gray-100"
                     >
                       -
                     </button>
@@ -169,39 +170,51 @@ const Cart = () => {
           </div>
 
           <div className="mt-6">
-            <h4 className="text-[16px] font-semibold font-sans mb-2">🎁 Chọn mã giảm giá</h4>
-            <div className="space-y-2">
-              {vouchers?.data?.coupons?.map((voucher: any) => {
-                const isSelected = cart?.applied_coupon?.code === voucher.code;
+            <button
+              type="button"
+              onClick={() => setShowVouchers(!showVouchers)}
+              className="text-[16px] font-semibold font-sans mb-2 flex items-center gap-2 text-left cursor-pointer"
+            >
+              🎁 Chọn mã giảm giá
+              <span className="text-sm text-blue-500">
+                {showVouchers ? "(Ẩn mã)" : "(Hiện mã)"}
+              </span>
+            </button>
 
-                return (
-                  <div
-                    key={voucher._id}
-                    onClick={() => {
-                      if (isSelected) {
-                        setSelectedVoucherCode(null);
-                        removeVoucherFromCart();
-                      } else {
-                        setSelectedVoucherCode(voucher);
-                        applyVoucherToCart(voucher.code);
-                      }
-                    }}
-                    className={`relative border p-3 rounded-md cursor-pointer transition-all hover:border-blue-500 ${
-                      isSelected ? "border-blue-600 bg-blue-50" : "border-gray-300"
-                    }`}
-                  >
-                    <p className="text-sm font-semibold text-blue-600">{voucher.code}</p>
-                    <p className="text-sm text-gray-700">{voucher.description}</p>
+            {showVouchers && (
+              <div className="space-y-2 mt-2">
+                {vouchers?.data?.coupons?.map((voucher: any) => {
+                  const isSelected = cart?.applied_coupon?.code === voucher.code;
 
-                    {isSelected && (
-                      <div className="absolute w-5 flex items-center justify-center bg-blue-600 h-5 rounded-[50%] top-2 right-2 text-green-600 text-xl">
-                        <Check style={{ color: "#fff", width: 16 }} />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  return (
+                    <div
+                      key={voucher._id}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedVoucherCode(null);
+                          removeVoucherFromCart();
+                        } else {
+                          setSelectedVoucherCode(voucher);
+                          applyVoucherToCart(voucher.code);
+                        }
+                      }}
+                      className={`relative border p-3 rounded-md cursor-pointer transition-all hover:border-blue-500 ${
+                        isSelected ? "border-blue-600 bg-blue-50" : "border-gray-300"
+                      }`}
+                    >
+                      <p className="text-sm font-semibold text-blue-600">{voucher.code}</p>
+                      <p className="text-sm text-gray-700">{voucher.description}</p>
+
+                      {isSelected && (
+                        <div className="absolute w-5 flex items-center justify-center bg-blue-600 h-5 rounded-[50%] top-2 right-2 text-green-600 text-xl">
+                          <Check style={{ color: "#fff", width: 16 }} />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {cart?.applied_coupon && (

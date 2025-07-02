@@ -101,25 +101,75 @@ const DetailAuth = () => {
             <div className='w-[90%] mx-auto mt-5 flex'>
                 <nav className='slideBar w-1/4 min-h-screen bg-white rounded-[15px]'>
                     <ul className='[&_li]:cursor-pointer pt-4 flex flex-col'>
-                        <Link to={`/detailAuth/homeAuth`}>
-                            <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><House className='mr-2.5' style={{ width: 20 }} /> Tổng quan</li>
-                        </Link>
-                        <Link to={`/detailAuth/orderHistory`}>
-                            <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><ScrollText className='mr-2.5' style={{ width: 20 }} /> Lịch sử mua hàng</li>
-                        </Link>
-                        <Link to={`/detailAuth/accountInformation`}>
-                            <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><Settings className='mr-2.5' style={{ width: 20 }} />Thông tin tài khoản</li>
-                        </Link>
-                        
-                        <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><FileText className='mr-2.5' style={{ width: 20 }} /> Chính sách bảo hành</li>
-                        <Link to={`/detailAuth/discountCode`}>
-                            <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><Tickets className='mr-2.5' style={{ width: 20 }} /> Khuyến mãi của tôi</li>
-                        </Link>
-                        
-                        <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><Mail className='mr-2.5' style={{ width: 20 }} /> Góp ý - Phản hồi - Hỗ trợ</li>
-                        <li className=' px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center'><LogOut className='mr-2.5' style={{ width: 20 }} /> Đăng xuất</li>
+                        <li
+                            className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                location.pathname === "/detailAuth/homeAuth"
+                                ? "bg-blue-200 text-blue-900"
+                                : "hover:bg-blue-200 hover:text-blue-900"
+                            }`}
+                        >
+                            <Link to="/detailAuth/homeAuth" className="flex items-center w-full">
+                                <House className="mr-2.5" style={{ width: 20 }} />
+                                Tổng quan
+                            </Link>
+                        </li>
+
+                        <li
+                            className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                location.pathname.startsWith("/detailAuth/orderHistory")
+                                ? "bg-blue-200 text-blue-900"
+                                : "hover:bg-blue-200 hover:text-blue-900"
+                            }`}
+                        >
+                            <Link to="/detailAuth/orderHistory" className="flex items-center w-full">
+                                <ScrollText className="mr-2.5" style={{ width: 20 }} />
+                                Lịch sử mua hàng
+                            </Link>
+                        </li>
+
+                        <li
+                            className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                location.pathname === "/detailAuth/accountInformation"
+                                ? "bg-blue-200 text-blue-900"
+                                : "hover:bg-blue-200 hover:text-blue-900"
+                            }`}
+                        >
+                            <Link to="/detailAuth/accountInformation" className="flex items-center w-full">
+                                <Settings className="mr-2.5" style={{ width: 20 }} />
+                                Thông tin tài khoản
+                            </Link>
+                        </li>
+
+                        <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
+                            <FileText className="mr-2.5" style={{ width: 20 }} />
+                            Chính sách bảo hành
+                        </li>
+
+                        <li
+                            className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                location.pathname === "/detailAuth/discountCode"
+                                ? "bg-blue-200 text-blue-900"
+                                : "hover:bg-blue-200 hover:text-blue-900"
+                            }`}
+                        >
+                            <Link to="/detailAuth/discountCode" className="flex items-center w-full">
+                                <Tickets className="mr-2.5" style={{ width: 20 }} />
+                                Khuyến mãi của tôi
+                            </Link>
+                        </li>
+
+                        <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
+                            <Mail className="mr-2.5" style={{ width: 20 }} />
+                            Góp ý - Phản hồi - Hỗ trợ
+                        </li>
+
+                        <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
+                            <LogOut className="mr-2.5" style={{ width: 20 }} />
+                            Đăng xuất
+                        </li>
                     </ul>
                 </nav>
+
                 <div className='ml-3 w-3/4'>
                     <Outlet />
                 </div>
