@@ -40,7 +40,7 @@ const Thanhtoan = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmCoupon = (selectedCoupon) => {
+  const handleConfirmCoupon = (selectedCoupon:any) => {
     if (cartContext?.applied_coupon?.code === selectedCoupon.code) {
       setSelectedVoucherCode(null);
       removeVoucherFromCart();
@@ -77,7 +77,7 @@ const Thanhtoan = () => {
       return;
     }
 
-    const orderItems = cart.items.map((item) => ({
+    const orderItems = cart.items.map((item:any) => ({
       product: item.product._id,
       price: item.unit_price,
       quantity: item.quantity,
@@ -134,7 +134,7 @@ if (paymentData.data?.paymentUrl) {
   navigate('/');
 }
 
-  } catch (error) {
+  } catch (error:any) {
     message.error(error.message);
   } finally {
     setIsLoading(false);
@@ -154,7 +154,7 @@ if (paymentData.data?.paymentUrl) {
 
         <div className="bg-white p-4 rounded-xl shadow space-y-4">
           <h3 className="font-medium">Danh sách sản phẩm</h3>
-          {cart?.items?.map((product, index) => (
+          {cart?.items?.map((product:any, index:any) => (
             <div key={product._id}>
               <div className="flex space-x-3">
                 <img
@@ -287,7 +287,7 @@ if (paymentData.data?.paymentUrl) {
         footer={null}
       >
         <div className="space-y-3">
-          {vouchers?.data?.coupons?.map((coupon) => (
+          {vouchers?.data?.coupons?.map((coupon:any) => (
             <div
               key={coupon._id}
               onClick={() => handleConfirmCoupon(coupon)}

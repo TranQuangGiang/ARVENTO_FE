@@ -34,21 +34,21 @@ const EditCoupon = () => {
     _id: id,
   });
 
-  const categoryOption = categoryData?.data.map((cat) => ({
+  const categoryOption = categoryData?.data.map((cat:any) => ({
     label: cat.name,
     value: cat._id,
   }));
 
   const { data: userData } = useList({ resource: "/users" });
   const userOption =
-    userData?.data?.docs?.map((user) => ({
+    userData?.data?.docs?.map((user:any) => ({
       label: user.email,
       value: user._id,
     })) || [];
 
   const { data: productData } = useList({ resource: "/products" });
   const productOption =
-    productData?.data?.docs?.map((product) => ({
+    productData?.data?.docs?.map((product:any) => ({
       label: product.name,
       value: product._id,
     })) || [];
@@ -66,7 +66,7 @@ const EditCoupon = () => {
     setDiscountType(c.discountType);
   }, [coupon, form]);
 
-  const onFinish = (values) => {
+  const onFinish = (values:any) => {
     const payload = {
       code: values.code,
       discountType: values.discountType,

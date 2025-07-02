@@ -57,6 +57,7 @@ import ListFavorite from './components/admin/favorite/listFavorite'
 import FavoriteUsers from './components/admin/favorite/chitietfavorite'
 import ListOrder from './components/admin/order/listOrder'
 import DetailOrder from './components/admin/order/detailOrder'
+import UpdateAddresses from './components/client/auth/DetailAuth/layoutAuth/updateAddresses'
 
 
 
@@ -76,6 +77,7 @@ function App() {
         {path: 'discountCode', element: <DiscountCode />},
         {path: 'updateAccount', element: <UpdateAccount />},
         {path: 'addAddresses', element: <AddAddresses />},
+        {path: 'editAddresses/:id', element: <UpdateAddresses />}
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},

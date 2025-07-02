@@ -14,6 +14,7 @@ const ListOrder = () => {
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
 
   const { data, refetch } = useList({ resource: "/orders" });
+  console.log("orders data", data);
 
   const statusOptions = ["pending", "confirmed", "shipping", "completed"];
 
@@ -115,7 +116,7 @@ const ListOrder = () => {
                   <div>
                     <p className="text-gray-500 mb-1">Order ID: <strong>{order._id}</strong></p>
                     <p className="font-bold text-lg mb-2">Products in order:</p>
-                    {order.items?.map((item) => {
+                    {order.items?.map((item:any) => {
                       const itemTotal = item.quantity * item.price;
                       return (
                         <div key={item.product._id} className="flex items-center gap-3 mb-2">

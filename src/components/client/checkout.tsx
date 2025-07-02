@@ -84,6 +84,8 @@ const Checkout = () => {
   }, [userData]);
 
   const products = cart?.items || [];
+  console.log(products);
+  
   const subtotal = cart?.subtotal || 0;
   const discount = cart?.applied_coupon?.discount_amount || 0;
   const total = cart ? cart.total : subtotal;
@@ -150,9 +152,9 @@ const Checkout = () => {
                     <span className="text-red-500 font-semibold">
                       {product.unit_price.toLocaleString()}₫
                     </span>
-                    {product.original_price && (
+                    {product?.unit_price && (
                       <span className="line-through text-gray-400 text-xs">
-                        {product.original_price.toLocaleString()}₫
+                        {product?.unit_price.toLocaleString()}₫
                       </span>
                     )}
                   </div>
@@ -264,26 +266,28 @@ const Checkout = () => {
             <input type="radio" name="invoice" /> <span>Không</span>
           </label>
         </div>
-
-        <div className="flex justify-between font-semibold text-base pt-3">
-          <h3 className="text-base font-medium text-gray-600">TỔNG TIỀN TẠM TÍNH:</h3>
-          <span className="text-red-500">{subtotal.toLocaleString()}₫</span>
-        </div>
-
-        {cart?.applied_coupon && (
-          <div className="flex justify-between font-semibold text-base pt-1 text-green-600">
-            <h3>Giảm giá ({cart.applied_coupon.code}):</h3>
-            <span>-{discount.toLocaleString()}₫</span>
+        <div className="w-full min-h-[100px] rounded bg-white shadow-lg">
+          <div className="flex justify-between font-semibold text-base pt-3 pl-3 pb-3 pr-3">
+            <h3 className="text-[15px] font-sans font-medium text-gray-600">Tổng tiền tạm tính:</h3>
+            <span className="text-red-500 font-sans">{subtotal.toLocaleString()}₫</span>
           </div>
-        )}
 
-        <div className="flex justify-between font-semibold text-lg pt-1">
-          <h3>TỔNG CỘNG:</h3>
-          <span className="text-red-500">{total.toLocaleString()}₫</span>
+          {cart?.applied_coupon && (
+            <div className="flex justify-between font-semibold pt-1 text-green-600">
+              <h3 className="text-[14px] font-sans">Giảm giá ({cart.applied_coupon.code}):</h3>
+              <span>-{discount.toLocaleString()}₫</span>
+            </div>
+          )}
+
+          <div className="flex justify-between font-semibold text-lg pt-1 pl-3 pr-3 pb-3">
+            <h3 className="text-[18px] font-sans font-bold">Tổng cộng:</h3>
+            <span className="text-red-500 font-sans text-[18px] font-bold">{total.toLocaleString()}₫</span>
+          </div>
         </div>
+        
 
         <button
-          className="w-full bg-blue-950 text-white py-2 rounded-xl text-base hover:bg-blue-900 mt-2"
+          className="w-full bg-blue-950 mt-4 text-white py-2 rounded mb-8 text-base hover:bg-blue-900 cursor-pointer"
           onClick={handleContinue}
         >
           Tiếp tục

@@ -11,7 +11,7 @@ export const useDelete = ({resource, onSuccess}: useListParams) => {
     return useMutation({
         mutationFn: ( _id:string ) => deleteOne({resource, _id}),
         onSuccess: () => {
-            message.success("Xóa thành công");
+            message.success("Delete successful");
             if (onSuccess) {
                 onSuccess();
             } 

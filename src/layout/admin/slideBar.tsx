@@ -194,7 +194,7 @@ const AdminSidebar = () => {
                                 <li>
                                 <Link
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
-                                    to="/dashboard/orders"
+                                    to="/admin/listorder"
                                 >
                                     Order List
                                 </Link>

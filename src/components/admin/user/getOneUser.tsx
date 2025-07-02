@@ -23,6 +23,16 @@ const UserDetail = () => {
         _id: id,
     });
 
+
+    const { data: adddresses } = useOneData({
+        resource: `/addresses/user`,
+        _id: id, 
+    });
+    console.log("addresses", adddresses);
+    
+    const address = adddresses?.data?.docs || [];
+    console.log(address);
+    
     const { mutateAsync: updateRoleUser } = useUpdateRole({
         resource: `/users/${id}/role`,
     });
@@ -46,24 +56,6 @@ const UserDetail = () => {
             setUpdating(false);
         }
     };
-
-    // Địa chỉ fix cứng (sẽ thay bằng fetch từ /addresses?userId=...)
-    const addresses = [
-        {
-            phone: "0912345678",
-            province: "Hà Nội",
-            district: "Ba Đình",
-            ward: "Phúc Xá",
-            detail: "Số 1 Đường Thanh Niên",
-        },
-        {
-            phone: "0909876543",
-            province: "TP.HCM",
-            district: "Quận 1",
-            ward: "Bến Nghé",
-            detail: "456 Nguyễn Huệ",
-        },
-    ];
 
     return (
         <motion.div
@@ -116,9 +108,9 @@ const UserDetail = () => {
                         {/* Danh sách địa chỉ */}
                         <div className="mt-10">
                             <h2 className="text-xl font-semibold mb-4">📦 Addresses</h2>
-                            {addresses.length > 0 ? (
+                            {address.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {addresses.map((addr, index) => (
+                                    {address.map((addr:any, index: number) => (
                                         <Card
                                             key={index}
                                             title={`Address ${index + 1}`}
@@ -130,6 +122,7 @@ const UserDetail = () => {
                                             <p><strong>District:</strong> {addr.district || "N/A"}</p>
                                             <p><strong>Ward:</strong> {addr.ward || "N/A"}</p>
                                             <p><strong>Detail:</strong> {addr.detail || "N/A"}</p>
+                                            <p><strong>FullAddress:</strong> {addr.fullAddress || "N/A"}</p>
                                         </Card>
                                     ))}
                                 </div>
