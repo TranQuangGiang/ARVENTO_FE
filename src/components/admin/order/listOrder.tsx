@@ -14,6 +14,7 @@ const ListOrder = () => {
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
 
   const { data, refetch } = useList({ resource: "/orders" });
+  console.log("orders data", data);
 
   const statusOptions = ["pending", "confirmed", "shipping", "completed"];
 

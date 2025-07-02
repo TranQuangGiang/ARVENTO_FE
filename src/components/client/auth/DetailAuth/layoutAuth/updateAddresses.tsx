@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Form,
@@ -15,16 +15,35 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useCreate } from "../../../../../hooks/useCreate";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useOne } from "../../../../../providers/data/dataProviders";
+import { useOneData } from "../../../../../hooks/useOne";
+import { useUpdate } from "../../../../../hooks/useUpdate";
 
 const { Title } = Typography;
 
-const AddAddresses = () => {
+const UpdateAddresses = () => {
     const [form] = Form.useForm();
     const [ selected,setSelected ] = useState('');
     const nav = useNavigate();
-    const { mutate } = useCreate({
-        resource: `/addresses/me`
+
+    const { id } = useParams();
+    const { data:addresses } = useOneData({
+        resource: `/addresses`,
+        _id: id
+    });
+    const address = addresses?.data;
+    useEffect(() => {
+        if (!address) return;
+        form.setFieldsValue(address);
+        setSelected(address.label); 
+    }, [address]);
+    
+    
+
+    const { mutate } = useUpdate({
+        resource: `/addresses`,
+        _id: id,
     }) 
 
     const handleFinish = (values: any) => {
@@ -41,7 +60,7 @@ const AddAddresses = () => {
                 <div className="text-center mb-6">
                     <Title level={3}>
                         <HomeOutlined className="mr-2 text-blue-500" />
-                        Thêm địa chỉ mới
+                        Cập nhập địa chỉ                     
                     </Title>
                 </div>
 
@@ -157,7 +176,7 @@ const AddAddresses = () => {
                             Đặt lại
                         </Button>
                         <Button icon={<PlusOutlined />} type="primary" htmlType="submit" style={{height: 40}} className="w-40">
-                            Thêm địa chỉ
+                            Cập nhập địa chỉ
                         </Button>
                     </div>
                 </Form>
@@ -166,4 +185,4 @@ const AddAddresses = () => {
     );
 };
 
-export default AddAddresses;
+export default UpdateAddresses;
