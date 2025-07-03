@@ -59,6 +59,7 @@ import ListOrder from './components/admin/order/listOrder'
 import DetailOrder from './components/admin/order/detailOrder'
 import UpdateAddresses from './components/client/auth/DetailAuth/layoutAuth/updateAddresses'
 import AddAddressesClient from './components/client/addAddresses'
+import Thanhcong from './components/client/thanhcong'
 
 
 
@@ -83,6 +84,7 @@ function App() {
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
       {path: 'addAddress', element: <AddAddressesClient />},
+      {path: 'thanhcong', element: <Thanhcong />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

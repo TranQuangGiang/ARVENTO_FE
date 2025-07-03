@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Card, List, Image, Tag, Spin, Typography, Divider, Row, Col } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import { Card, List, Image, Tag, Spin, Typography, Divider, Row, Col, Button } from "antd";
 import { motion } from "framer-motion";
 import { useOneDataOrder } from "../../../hooks/useOnedataOrder";
 import {
@@ -12,12 +12,26 @@ import {
   FileTextOutlined,
   ClockCircleOutlined,
   ReloadOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
+const statusColors: Record<string, string> = {
+  pending: "#faad14",
+  confirmed: "#1677ff",
+  processing: "#13c2c2",
+  shipping: "#722ed1",
+  delivered: "#2f54eb",
+  completed: "#52c41a",
+  cancelled: "#ff4d4f",
+  returned: "#d46b08",
+};
+
 const DetailOrder = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
 
   const { data, isLoading, refetch } = useOneDataOrder({
     resource: `/orders/${id}`,
@@ -76,44 +90,57 @@ const DetailOrder = () => {
               </p>
             </div>
           </Col>
-          <Col xs={24} md={12}>
-            <Title level={4}>Order Info</Title>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <p>
-                <TagOutlined className="mr-1" />
-                <strong>Order ID:</strong>
-                <span style={{ float: "right" }}>{order._id}</span>
-              </p>
-              <p>
-                <SyncOutlined className="mr-1" />
-                <strong>Status:</strong>
-                <span style={{ float: "right" }}>
-                  <Tag color={
-                    order.status === "completed" ? "green" :
-                    order.status === "pending" ? "orange" :
-                    order.status === "canceled" ? "red" : "blue"
-                  }>
-                    {order.status.toUpperCase()}
-                  </Tag>
-                </span>
-              </p>
-              <p>
-                <FileTextOutlined className="mr-1" />
-                <strong>Note:</strong>
-                <span style={{ float: "right" }}>{order.note || "-"}</span>
-              </p>
-              <p>
-                <ClockCircleOutlined className="mr-1" />
-                <strong>Created At:</strong>
-                <span style={{ float: "right" }}>{new Date(order.createdAt).toLocaleString()}</span>
-              </p>
-              <p>
-                <ReloadOutlined className="mr-1" />
-                <strong>Last Updated:</strong>
-                <span style={{ float: "right" }}>{new Date(order.updatedAt).toLocaleString()}</span>
-              </p>
-            </div>
-          </Col>
+         <Col xs={24} md={12}>
+  <Title level={4}>Order Info</Title>
+  <div className="bg-gray-100 p-4 rounded-lg">
+    <p>
+      <TagOutlined className="mr-1" />
+      <strong>Order ID:</strong>
+      <span style={{ float: "right" }}>{order._id}</span>
+    </p>
+    <p>
+      <SyncOutlined className="mr-1" />
+      <strong>Status:</strong>
+      <span style={{ float: "right" }}>
+        <Tag color={statusColors[order.status] || "blue"}>
+          <strong style={{ fontWeight: 500 }}>{order.status.toUpperCase()}</strong>
+        </Tag>
+      </span>
+    </p>
+    <p className="mt-1">
+      <DollarOutlined className="mr-1" />
+      <strong>Payment Status:</strong>
+      <span style={{ float: "right" }}>
+        <Tag color={order.payment_status === "paid" ? "green" : "orange"}>
+          <strong style={{ fontWeight: 500 }}>{order.payment_status?.toUpperCase()}</strong>
+        </Tag>
+      </span>
+    </p>
+    <p className="mt-1">
+      <DollarOutlined className="mr-1" />
+      <strong>Payment Method:</strong>
+      <span style={{ float: "right"}}>
+        {order.payment_method ? order.payment_method.toUpperCase() : "-"}
+      </span>
+    </p>
+    <p>
+      <FileTextOutlined className="mr-1" />
+      <strong>Note:</strong>
+      <span style={{ float: "right" }}>{order.note || "-"}</span>
+    </p>
+    <p>
+      <ClockCircleOutlined className="mr-1" />
+      <strong>Created At:</strong>
+      <span style={{ float: "right" }}>{new Date(order.created_at).toLocaleString()}</span>
+    </p>
+    <p>
+      <ReloadOutlined className="mr-1" />
+      <strong>Last Updated:</strong>
+      <span style={{ float: "right" }}>{new Date(order.updated_at).toLocaleString()}</span>
+    </p>
+  </div>
+</Col>
+
         </Row>
 
         <Divider />
@@ -122,7 +149,7 @@ const DetailOrder = () => {
         <Card bordered={false} className="bg-gray-50">
           <List
             dataSource={order.items}
-            renderItem={(item) => {
+            renderItem={(item: any) => {
               const totalItemPrice = item.price * item.quantity;
               return (
                 <List.Item key={item.product._id}>
@@ -130,8 +157,8 @@ const DetailOrder = () => {
                     avatar={
                       <Image
                         width={60}
-                        src={item.product.images[0]?.url}
-                        alt={item.product.images[0]?.alt}
+                        src={item.selected_variant?.image?.url || item.product.images[0]?.url}
+                        alt={item.selected_variant?.image?.alt || item.product.images[0]?.alt}
                         className="rounded-lg"
                       />
                     }
@@ -142,6 +169,17 @@ const DetailOrder = () => {
                         <Text style={{ marginLeft: 12, color: "red", fontWeight: 500 }}>
                           {totalItemPrice.toLocaleString()}₫
                         </Text>
+                        {item.selected_variant?.color?.name && (
+                          <Text
+                            style={{
+                              display: "block",
+                              marginTop: 2,
+                              
+                            }}
+                          >
+                            Color: <strong> {item.selected_variant.color.name}</strong>
+                          </Text>
+                        )}
                       </>
                     }
                     description={
@@ -169,10 +207,14 @@ const DetailOrder = () => {
             <Card bordered={false} className="bg-gray-50">
               <List
                 dataSource={order.timeline}
-                renderItem={(item, index) => (
+                renderItem={(item :any, index) => (
                   <List.Item key={index}>
                     <List.Item.Meta
-                      title={<Tag>{item.status}</Tag>}
+                      title={
+                        <Tag color={statusColors[item.status] || "blue"}>
+                          <strong style={{ fontWeight: 500 }}>{item.status.toUpperCase()}</strong>
+                        </Tag>
+                      }
                       description={
                         <>
                           <Text>Time: {new Date(item.changedAt).toLocaleString()}</Text><br />
@@ -186,6 +228,11 @@ const DetailOrder = () => {
             </Card>
           </>
         )}
+        <div className="text-right mt-5">
+            <Button onClick={() => navigate(`/admin/listorder`)}>
+              Cancel
+            </Button>
+          </div>
       </Card>
     </motion.div>
   );
