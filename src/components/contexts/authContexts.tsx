@@ -69,6 +69,7 @@ export const AuthProvider = ({ children }: any) => {
   const logout = async () => {
     try {
       await apiClient.post("/auth/logout");
+      
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error);
     } finally {

@@ -107,11 +107,15 @@ const DeltaiProduct = () => {
     const userInfo: any = token ? jwtDecode(token) : null;
     const userId = userInfo?.id;
     if (!userId) return message.error("Bạn cần đăng nhập để thêm vào giỏ hàng.");
+    
     const variant = variants.find((v: any) => v.color.name === selectedColor && v.size === selectedSize);
+    
     if (!variant) return;
+    
     const unitPrice = typeof product.sale_price === "object"
       ? Number(product.sale_price?.$numberDecimal || 0)
       : product.sale_price;
+    
     const cartItem = {
       userId,
       product: product._id,
@@ -120,7 +124,7 @@ const DeltaiProduct = () => {
       selected_variant: {
         color: variant.color,
         size: String(selectedSize),
-        image: selectedImage
+        image: String(selectedImage),
       },
       quantity,
       unit_price: unitPrice,
@@ -129,10 +133,16 @@ const DeltaiProduct = () => {
     try {
       setLoading(true);
       await addToCart(cartItem);
-    } catch (error) {
-      console.error(error);
-      message.error("Lỗi khi thêm vào giỏ hàng!");
-    } finally {
+    } 
+    catch (error:any) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.";
+
+      message.error(errorMsg);
+    } 
+    finally {
       setLoading(false);
     }
   };
