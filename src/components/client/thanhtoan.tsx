@@ -146,7 +146,32 @@ const Thanhtoan = () => {
     } else {
       message.success("Đặt hàng và thanh toán thành công");
       await clearCart();
-      navigate('/');
+      const convertedItems = cartContext.items.map((item) => ({
+  product: item.product,
+  selected_variant: item.selected_variant,
+  quantity: item.quantity,
+  price: item.unit_price,
+  total_price: item.total_price,
+}));
+
+navigate('/thanhcong', {
+  state: {
+    order: {
+      ...orderData.data,
+      items: convertedItems,
+      address: {
+        ...orderData.data.address,
+        recipient: shippingInfo?.recipient,
+        phone: customerInfo?.phone, 
+        address: shippingInfo?.fullAddress,
+        note: shippingInfo?.note,
+      },
+      total: cartContext?.total,
+      subtotal: cartContext?.subtotal,
+    },
+  },
+});
+
     }
 
 
@@ -317,8 +342,9 @@ const Thanhtoan = () => {
               <span>{coupon.code} - {coupon.description}</span>
             </div>
           ))}
-        </div>
+        </div>        
       </Modal>
+      
     </div>
   );
 };

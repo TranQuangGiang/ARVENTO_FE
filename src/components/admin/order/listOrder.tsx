@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Select, Button, Input, Card, Image, message } from "antd";
+import { Table, Select, Button, Input, message, Card, Typography } from "antd";
 import { useList } from "../../../hooks/useList";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { CalendarOutlined, DollarOutlined, FileTextOutlined } from "@ant-design/icons";
 import axiosInstance from "../../../utils/axiosInstance";
+import { EyeOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
+const { Title } = Typography;
 
 const ListOrder = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -14,19 +14,29 @@ const ListOrder = () => {
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
 
   const { data, refetch } = useList({ resource: "/orders" });
-  console.log("orders data", data);
 
-  const statusOptions = ["pending", "confirmed", "shipping", "completed"];
+  const statusOptions = [
+    "pending",
+    "confirmed",
+    "processing",
+    "shipping",
+    "delivered",
+    "completed",
+    "cancelled",
+    "returned",
+  ];
 
   const statusColors: Record<string, string> = {
     pending: "#faad14",
     confirmed: "#1677ff",
+    processing: "#13c2c2",
     shipping: "#722ed1",
+    delivered: "#2f54eb",
     completed: "#52c41a",
-    canceled: "#ff4d4f",
+    cancelled: "#ff4d4f",
+    returned: "#d46b08",
   };
 
-  // Lấy các trạng thái tiếp theo (vẫn hiển thị trạng thái hiện tại, nhưng disable)
   const getSelectableStatuses = (currentStatus: string) => {
     const currentIndex = statusOptions.indexOf(currentStatus);
     return statusOptions.map((status, index) => ({
@@ -43,23 +53,20 @@ const ListOrder = () => {
         `/orders/${orderId}/status`,
         { status: newStatus },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      message.success("Order status updated successfully!");
+      message.success("Cập nhật trạng thái thành công!");
       refetch();
     } catch (error) {
-      message.error("Failed to update order status.");
+      message.error("Cập nhật trạng thái thất bại.");
     } finally {
       setLoadingOrderId(null);
     }
   };
 
   const sortedData = useMemo(() => {
-    const orders = data?.data?.orders;
-    if (!Array.isArray(orders)) return [];
+    const orders = data?.data?.orders || [];
     return [...orders]
       .filter(
         (item) =>
@@ -73,119 +80,108 @@ const ListOrder = () => {
       });
   }, [data?.data?.orders, searchTerm, sortOrder]);
 
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="px-6 py-8 bg-gray-50 min-h-screen"
-      >
-        <Card
-          title={
-            <div className="flex items-center gap-2">
-              <FileTextOutlined style={{ fontSize: "20px", color: "black" }} />
-              <h2 className="text-xl font-bold mb-0 text-black">Order List</h2>
-            </div>
-          }
-          bordered
-          className="bg-white shadow-lg"
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      render: (_: any, __: any, index: number) => index + 1,
+    },
+    {
+      title: "Mã đơn",
+      dataIndex: "_id",
+      key: "_id",
+    },
+    {
+      title: "User",
+      dataIndex: ["user", "name"],
+      key: "user",
+      render: (text: string) => <span>{text}</span>,
+    },
+    {
+      title: "Email",
+      dataIndex: ["user", "email"],
+      key: "email",
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: ["shipping_address", "fullAddress"],
+      key: "address",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string, record: any) => (
+        <Select
+          value={status}
+          onChange={(value) => handleUpdateStatus(record._id, value)}
+          style={{ width: 140, fontWeight: 600 }}
+          loading={loadingOrderId === record._id}
         >
-          <div className="mb-4 flex justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <span>Sort:</span>
-              <Select value={sortOrder} onChange={(value) => setSortOrder(value)} style={{ width: 130 }}>
-                <Option value="asc">Oldest first</Option>
-                <Option value="desc">Newest first</Option>
-              </Select>
-            </div>
-            <Input
-              placeholder="Search by ID or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              style={{ width: 250 }}
-            />
+          {getSelectableStatuses(status).map((option) => (
+            <Option key={option.value} value={option.value} disabled={option.disabled}>
+              <span
+                style={{
+                  color: statusColors[option.value],
+                  fontWeight: 500,
+                  opacity: option.disabled && option.value !== status ? 0.5 : 1,
+                }}
+              >
+                {option.value.charAt(0).toUpperCase() + option.value.slice(1)}
+              </span>
+            </Option>
+          ))}
+        </Select>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, record: any) => (
+        <Link to={`/admin/orderDetail/${record._id}`}>
+          <Button icon={<EyeOutlined />}>
+            Details
+          </Button>
+        </Link>
+      ),
+    },
+  ];
+
+  return (
+    <div className="p-6 min-h-screen bg-gray-100">
+      <Card
+        bordered={false}
+        style={{ background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
+      >
+        <Title level={3}>Order List</Title>
+
+        <div className="flex justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <span>Sắp xếp:</span>
+            <Select value={sortOrder} onChange={setSortOrder} style={{ width: 130 }}>
+              <Option value="asc">Cũ nhất</Option>
+              <Option value="desc">Mới nhất</Option>
+            </Select>
           </div>
+          <Input
+            placeholder="Tìm theo ID hoặc email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+            style={{ width: 250 }}
+          />
+        </div>
 
-          <div className="flex flex-col gap-4">
-            {sortedData.map((order) => (
-              <Card key={order._id} bordered className="shadow-sm">
-                <div className="flex justify-between flex-wrap gap-4">
-                  <div>
-                    <p className="text-gray-500 mb-1">Order ID: <strong>{order._id}</strong></p>
-                    <p className="font-bold text-lg mb-2 mt-2">Products in order:</p>
-                    {order.items?.map((item:any) => {
-                      const itemTotal = item.quantity * item.price;
-                      return (
-                        <div key={item.product._id} className="flex items-center gap-3 mb-2">
-                          <Image
-                            src={item.product.images[0]?.url}
-                            width={70}
-                            height={70}
-                            preview={false}
-                            className="rounded"
-                          />
-                          <div>
-                            <p className="font-medium text-base">
-                              {item.product.name} - x{item.quantity} - 
-                              <span className="text-red-600 font-semibold ml-1">
-                                {itemTotal.toLocaleString()}₫
-                              </span>
-                            </p>
-                            <p className="text-gray-600 text-sm">
-                              Unit price: {item.price?.toLocaleString()}₫
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2 min-w-[220px]">
-                    <Select
-                      value={order.status}
-                      onChange={(value) => handleUpdateStatus(order._id, value)}
-                      style={{
-                        width: 180,
-                        fontWeight: 600,
-                      }}
-                      loading={loadingOrderId === order._id}
-                      dropdownStyle={{ padding: 0 }}
-                    >
-                     {getSelectableStatuses(order.status).map((option) => (
-                    <Option key={option.value} value={option.value} disabled={option.disabled}>
-                      <span
-                        style={{
-                          color: statusColors[option.value], // ✅ luôn dùng màu trạng thái
-                          fontWeight: option.disabled ? 500 : 500,
-                          opacity: option.disabled && option.value !== order.status ? 0.5 : 1, // ✅ nếu là trạng thái hiện tại thì giữ opacity = 1
-                        }}
-                      >
-                        {option.value.charAt(0).toUpperCase() + option.value.slice(1)}
-                      </span>
-                    </Option>
-                  ))}
-                    </Select>
-
-                    <p className="text-gray-600 text-base mt-2">
-                      <CalendarOutlined /> Order date: {new Date(order.createdAt).toLocaleDateString()}
-                    </p>
-                    <p className="font-bold text-red-600 text-lg">
-                      <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
-                    </p>
-                    <Link className="mt-2.5" to={`/admin/orderDetail/${order._id}`}>
-                      <Button type="primary" size="large">View order details</Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Card>
-      </motion.div>
-    </AnimatePresence>
+        <Table
+          dataSource={sortedData}
+          columns={columns}
+          rowKey="_id"
+          bordered
+          pagination={{ pageSize: 10 }}
+        />
+      </Card>
+    </div>
   );
 };
 
