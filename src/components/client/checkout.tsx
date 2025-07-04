@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../contexts/cartContexts";
 import { useList } from "../../hooks/useList";
 import AddAddressesClient from "./addAddresses";
-import { Button, message } from "antd";
+import { Button, message, Spin } from "antd";
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -86,15 +86,15 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    if (userData?.data) {
-      const user = userData.data;
-      setCustomerInfo({
-        name: user.name || "",
-        phone: address?.data.phone,
-        email: user.email || "",
-      });
-    }
-  }, [userData]);
+  if (userData?.data) {
+    const user = userData.data;
+    setCustomerInfo((prev) => ({
+      ...prev,
+      name: user.name || "",
+      email: user.email || "",
+    }));
+  }
+}, [userData])
 
   const products = cart?.items || [];
   console.log(products);
@@ -130,11 +130,10 @@ const Checkout = () => {
     });
   };
 
-  const { data:address, refetch:isReFetchDefault } = useList({
+  const { data:address, refetch:isReFetchDefault, isLoading } = useList({
     resource: `/addresses/me/default`,
   });
-  console.log(address);
-  
+
   const { data:addressData, refetch:isRefeatchAddres  } = useList({
     resource: `/addresses/me`
   });
@@ -143,34 +142,49 @@ const Checkout = () => {
   console.log(addresses);
   console.log(sortedAddresses);
   
-  
-  
+  useEffect(() => {
+    if (!isLoading && !address?.data) {
+      message.warning("Bạn chưa có địa chỉ mặc định. Vui lòng thêm địa chỉ.");
+    }
+  }, [address, isLoading]);
 
   useEffect(() => {
-    if (!address?.data || Object.keys(address.data).length === 0) {
-      setShowModal("addAddress");
-      isReFetchDefault();
-      isRefeatchAddres();
+    if (!isLoading) {
+      if (addresses.length === 0) {
+        // Không có địa chỉ mặc định
+        setShippingInfo({
+          id: "",
+          recipient: "",
+          fullAddress: "",
+          note: "",
+        });
+        setCustomerInfo(prev => ({
+          ...prev,
+          phone: "",
+        }));
+        setShowModal("addAddress");
+      } else {
+        // Có địa chỉ mặc định
+        setShippingInfo(prev => ({
+          ...prev,
+          fullAddress: address.data.fullAddress || "",
+          note: address.data.note || "",
+          id: address.data._id,
+          recipient: address.data.recipient || "",
+        }));
+        setCustomerInfo(prev => ({
+          ...prev,
+          phone: address.data.phone || "",
+        }));
+        setShowModal(null);
+      }
     }
-    else {
-      setShippingInfo(prev => ({
-        ...prev,
-        fullAddress: address.data.fullAddress || "",
-        note: address.data.note || "",
-        id: address.data._id,
-      }));
+  }, [address, isLoading, addresses]);
 
-      setCustomerInfo((prev) => ({
-        ...prev,
-        phone: address?.data.phone || "",
-      }));
-    
-      setShowModal(null);
-    }
-  }, [address]);
-
+  
   return (
-    <div className="w-full bg-gray-100">
+    <Spin spinning={isLoading} tip="Đang tải địa chỉ...">
+      <div className="w-full bg-gray-100">
       <div className="max-w-3xl mx-auto p-4 space-y-4 text-sm">
         <div className="flex">
           <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">
@@ -228,7 +242,7 @@ const Checkout = () => {
               <FloatingInput
                 label="Số điện thoại"
                 name="phone"
-                value={address?.data.phone}
+                value={customerInfo.phone}
                 onChange={handleCustomerChange}
                 placeholder="Số điện thoại"
               />
@@ -259,7 +273,7 @@ const Checkout = () => {
             <FloatingInput
               label="Địa chỉ giao hàng mặc định"
               name="fullAddress"
-              value={address?.data.fullAddress}
+              value={shippingInfo.fullAddress}
               onChange={handleShippingChange}
               placeholder="Địa chỉ giao hàng"
               readOnly 
@@ -421,8 +435,16 @@ const Checkout = () => {
           Tiếp tục
         </button>
       </div>
-      <AddAddressesClient isOpen={showModal === "addAddress"} onClose={() => setShowModal(null)} />
+      <AddAddressesClient 
+        isOpen={showModal === "addAddress"} 
+        onClose={async () => {
+          setShowModal(null);
+          await isReFetchDefault();
+          await isRefeatchAddres();
+      }}
+      />
     </div>
+    </Spin>
   );
 };
 

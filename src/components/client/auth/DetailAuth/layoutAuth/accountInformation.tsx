@@ -34,6 +34,7 @@ const AccountInformation = () => {
 
     const delAddresses = async (id: any) => {
         deleAddresses(id);
+        await refetch();
     }
 
 
@@ -47,9 +48,10 @@ const AccountInformation = () => {
                 <div className='flex justify-between items-center'>
                     <h4 className='text-[17px] font-bold font-[Product Sans]'>Thông tin cá nhân</h4>
                     <Button
-                        style={{ border: 0 }}
+                        style={{ border: 0, color: "blue" }}
                         icon={<EditOutlined />}
                         onClick={() => setShowModal('updateAccount')}
+                       
                     >
                         Cập nhật thông tin
                     </Button>
@@ -61,7 +63,7 @@ const AccountInformation = () => {
                             <p className='text-gray-500 text-[14px]'>Full name:</p>
                             <p className='text-[14px] font-sans font-medium'>{UserMe?.data.name}</p>
                         </div>
-                        <div className='flex justify-between'>
+                        <div className='flex justify-between '>
                             <p className='text-gray-500 text-[14px]'>Email:</p>
                             <p className='text-[14px] font-sans font-medium'>{UserMe?.data.email}</p>
                         </div>
@@ -84,7 +86,7 @@ const AccountInformation = () => {
                     <div className="flex justify-between items-center mb-4">
                         <h4 className="text-[17px] font-bold font-[Product Sans]">Sổ địa chỉ</h4>
                         
-                            <Button onClick={() =>  setShowModal("addAddresses")} className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
+                            <Button type='primary' onClick={() =>  setShowModal("addAddresses")} className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
                                 <PlusOutlined className="mr-1" /> Thêm địa chỉ
                             </Button>
                         

@@ -178,6 +178,13 @@ const HeaderClient = () => {
                 >
                   Register
                 </button>
+                <Link to={`/admin`}>
+                  <button
+                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
+                  >
+                    Admin Access
+                  </button>
+                </Link>
               </div>
             )}
           </div>

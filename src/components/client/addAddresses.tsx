@@ -17,6 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCreate } from "../../hooks/useCreate";
+import { useList } from "../../hooks/useList";
 
 const { Title } = Typography;
 
@@ -24,7 +25,6 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
     const [showModal, setShowModal] = useState<"addAddress" | null>("addAddress");
     const [form] = Form.useForm();
     const [ selected,setSelected ] = useState('');
-    const nav = useNavigate();
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -33,13 +33,24 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
         }
     };
 
+     const { data, refetch } = useList({
+        resource: `/addresses/me`
+    }); 
+
     const { mutate } = useCreate({
         resource: `/addresses/me`
     }) 
 
     const handleFinish = (values: any) => {
-        mutate(values);
-        onClose();
+        mutate(values ,{
+            onSuccess: () => {
+                refetch();
+                form.resetFields();
+                setSelected("");
+                onClose();
+            }
+        });
+        
     };
 
     return (
