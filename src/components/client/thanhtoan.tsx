@@ -147,12 +147,12 @@ const Thanhtoan = () => {
       message.success("Đặt hàng và thanh toán thành công");
       await clearCart();
       const convertedItems = cartContext.items.map((item) => ({
-  product: item.product,
-  selected_variant: item.selected_variant,
-  quantity: item.quantity,
-  price: item.unit_price,
-  total_price: item.total_price,
-}));
+        product: item.product,
+        selected_variant: item.selected_variant,
+        quantity: item.quantity,
+        price: item.unit_price,
+        total_price: item.total_price,
+      }));
 
 navigate('/thanhcong', {
   state: {

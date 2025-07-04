@@ -158,15 +158,16 @@ const DetailAuth = () => {
                             </Link>
                         </li>
 
-                        <li className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
-                                location.pathname === "/detailAuth/WishlistClient"
-                                ? "bg-blue-200 text-blue-900"
-                                : "hover:bg-blue-200 hover:text-blue-900"
-                            }`}>
-                            <Heart className="mr-2.5" style={{ width: 20 }} />
-                            Sản phẩm yêu thích
-                        </li>
-
+                        <Link to={`/detailAuth/wishlistClient`}>
+                            <li className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
+                                    location.pathname === "/detailAuth/wishlistClient"
+                                    ? "bg-blue-200 text-blue-900"
+                                    : "hover:bg-blue-200 hover:text-blue-900"
+                                }`}>
+                                <Heart className="mr-2.5" style={{ width: 20 }} />
+                                Sản phẩm yêu thích
+                            </li>
+                        </Link>    
                         <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                             <Mail className="mr-2.5" style={{ width: 20 }} />
                             Góp ý - Phản hồi - Hỗ trợ

@@ -79,67 +79,67 @@ const DetailOrder = () => {
               <p>
                 <PhoneOutlined className="mr-1" />
                 <strong>Phone:</strong>
-                <span style={{ float: "right" }}>{order.address?.phone || "-"}</span>
+                <span style={{ float: "right" }}>{order.shipping_address?.phone || "-"}</span>
               </p>
               <p>
                 <HomeOutlined className="mr-1" />
                 <strong>Address:</strong>
                 <span style={{ float: "right" }}>
-                  {order.address?.address}, {order.address?.ward}, {order.address?.district}, {order.address?.city}
+                  {order.shipping_address?.fullAddress}
                 </span>
               </p>
             </div>
           </Col>
          <Col xs={24} md={12}>
-  <Title level={4}>Order Info</Title>
-  <div className="bg-gray-100 p-4 rounded-lg">
-    <p>
-      <TagOutlined className="mr-1" />
-      <strong>Order ID:</strong>
-      <span style={{ float: "right" }}>{order._id}</span>
-    </p>
-    <p>
-      <SyncOutlined className="mr-1" />
-      <strong>Status:</strong>
-      <span style={{ float: "right" }}>
-        <Tag color={statusColors[order.status] || "blue"}>
-          <strong style={{ fontWeight: 500 }}>{order.status.toUpperCase()}</strong>
-        </Tag>
-      </span>
-    </p>
-    <p className="mt-1">
-      <DollarOutlined className="mr-1" />
-      <strong>Payment Status:</strong>
-      <span style={{ float: "right" }}>
-        <Tag color={order.payment_status === "paid" ? "green" : "orange"}>
-          <strong style={{ fontWeight: 500 }}>{order.payment_status?.toUpperCase()}</strong>
-        </Tag>
-      </span>
-    </p>
-    <p className="mt-1">
-      <DollarOutlined className="mr-1" />
-      <strong>Payment Method:</strong>
-      <span style={{ float: "right"}}>
-        {order.payment_method ? order.payment_method.toUpperCase() : "-"}
-      </span>
-    </p>
-    <p>
-      <FileTextOutlined className="mr-1" />
-      <strong>Note:</strong>
-      <span style={{ float: "right" }}>{order.note || "-"}</span>
-    </p>
-    <p>
-      <ClockCircleOutlined className="mr-1" />
-      <strong>Created At:</strong>
-      <span style={{ float: "right" }}>{new Date(order.created_at).toLocaleString()}</span>
-    </p>
-    <p>
-      <ReloadOutlined className="mr-1" />
-      <strong>Last Updated:</strong>
-      <span style={{ float: "right" }}>{new Date(order.updated_at).toLocaleString()}</span>
-    </p>
-  </div>
-</Col>
+            <Title level={4}>Order Info</Title>
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <p>
+                <TagOutlined className="mr-1" />
+                <strong>Order ID:</strong>
+                <span style={{ float: "right" }}>{order._id}</span>
+              </p>
+              <p>
+                <SyncOutlined className="mr-1" />
+                <strong>Status:</strong>
+                <span style={{ float: "right" }}>
+                  <Tag color={statusColors[order.status] || "blue"}>
+                    <strong style={{ fontWeight: 500 }}>{order.status.toUpperCase()}</strong>
+                  </Tag>
+                </span>
+              </p>
+              <p className="mt-1">
+                <DollarOutlined className="mr-1" />
+                <strong>Payment Status:</strong>
+                <span style={{ float: "right" }}>
+                  <Tag color={order.payment_status === "paid" ? "green" : "orange"}>
+                    <strong style={{ fontWeight: 500 }}>{order.payment_status?.toUpperCase()}</strong>
+                  </Tag>
+                </span>
+              </p>
+              <p className="mt-1">
+                <DollarOutlined className="mr-1" />
+                <strong>Payment Method:</strong>
+                <span style={{ float: "right"}}>
+                  {order.payment_method ? order.payment_method.toUpperCase() : "-"}
+                </span>
+              </p>
+              <p>
+                <FileTextOutlined className="mr-1" />
+                <strong>Note:</strong>
+                <span style={{ float: "right" }}>{order.note || "-"}</span>
+              </p>
+              <p>
+                <ClockCircleOutlined className="mr-1" />
+                <strong>Created At:</strong>
+                <span style={{ float: "right" }}>{new Date(order.created_at).toLocaleString()}</span>
+              </p>
+              <p>
+                <ReloadOutlined className="mr-1" />
+                <strong>Last Updated:</strong>
+                <span style={{ float: "right" }}>{new Date(order.updated_at).toLocaleString()}</span>
+              </p>
+            </div>
+          </Col>
 
         </Row>
 
