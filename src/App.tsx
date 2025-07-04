@@ -59,7 +59,10 @@ import ListOrder from './components/admin/order/listOrder'
 import DetailOrder from './components/admin/order/detailOrder'
 import UpdateAddresses from './components/client/auth/DetailAuth/layoutAuth/updateAddresses'
 import AddAddressesClient from './components/client/addAddresses'
+import DetailOrderClient from './components/client/auth/DetailAuth/layoutAuth/detailOrder'
+import LoginAdmin from './components/admin/auth/loginAdmin'
 import Thanhcong from './components/client/thanhcong'
+
 
 
 
@@ -79,7 +82,8 @@ function App() {
         {path: 'discountCode', element: <DiscountCode />},
         {path: 'updateAccount', element: <UpdateAccount />},
         {path: 'addAddresses', element: <AddAddresses />},
-        {path: 'editAddresses/:id', element: <UpdateAddresses />}
+        {path: 'editAddresses/:id', element: <UpdateAddresses />},
+        {path: 'detailOrder/:id', element: <DetailOrderClient />}
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
@@ -88,6 +92,7 @@ function App() {
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
+        {path: 'loginAdmin', element: <LoginAdmin />},
         {path: '', element: <Dashboad />},
         {path: 'listbanner', element: <ListBanner />},
         {path: 'addbanner', element: <AddBanner />},

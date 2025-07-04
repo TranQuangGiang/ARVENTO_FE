@@ -116,17 +116,17 @@ const DetailAuth = () => {
 
                         <li
                             className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
-                                location.pathname.startsWith("/detailAuth/orderHistory")
+                                location.pathname.startsWith("/detailAuth/orderHistory") ||
+                                location.pathname.startsWith("/detailAuth/detailOrder")
                                 ? "bg-blue-200 text-blue-900"
                                 : "hover:bg-blue-200 hover:text-blue-900"
                             }`}
-                        >
+                            >
                             <Link to="/detailAuth/orderHistory" className="flex items-center w-full">
                                 <ScrollText className="mr-2.5" style={{ width: 20 }} />
                                 Lịch sử mua hàng
                             </Link>
                         </li>
-
                         <li
                             className={`px-6 py-3.5 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center ${
                                 location.pathname === "/detailAuth/accountInformation"
