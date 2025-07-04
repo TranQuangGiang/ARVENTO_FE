@@ -62,6 +62,7 @@ import AddAddressesClient from './components/client/addAddresses'
 import DetailOrderClient from './components/client/auth/DetailAuth/layoutAuth/detailOrder'
 import LoginAdmin from './components/admin/auth/loginAdmin'
 import Thanhcong from './components/client/thanhcong'
+import Wishlist from './components/client/auth/DetailAuth/layoutAuth/wishlist'
 
 
 
@@ -83,7 +84,8 @@ function App() {
         {path: 'updateAccount', element: <UpdateAccount />},
         {path: 'addAddresses', element: <AddAddresses />},
         {path: 'editAddresses/:id', element: <UpdateAddresses />},
-        {path: 'detailOrder/:id', element: <DetailOrderClient />}
+        {path: 'detailOrder/:id', element: <DetailOrderClient />},
+        {path: 'wishlistClient', element: <Wishlist />}
       ]},
       {path: 'checkout', element: <Checkout />},
       {path: 'thanhtoan', element: <Thanhtoan />},
