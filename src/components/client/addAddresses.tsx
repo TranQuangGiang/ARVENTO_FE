@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Form,
@@ -7,6 +7,7 @@ import {
   Typography,
   Row,
   Col,
+  Select,
 } from "antd";
 import {
   PhoneOutlined,
@@ -14,17 +15,20 @@ import {
   HomeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCreate } from "../../hooks/useCreate";
 import { useList } from "../../hooks/useList";
 
+const { Option } = Select;
 const { Title } = Typography;
 
 const AddAddressesClient = ({ isOpen, onClose }: any) => {
     const [showModal, setShowModal] = useState<"addAddress" | null>("addAddress");
     const [form] = Form.useForm();
-    const [ selected,setSelected ] = useState('');
+    const [selected, setSelected] = useState('');
+    const [ loading, setLoading ] = useState(false);
+    const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
+    const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -45,13 +49,37 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
         mutate(values ,{
             onSuccess: () => {
                 refetch();
-                form.resetFields();
-                setSelected("");
+                form.resetFields(); // reset form fields
+                setSelectedProvince(null); // reset tỉnh
+                setSelectedDistrict(null); // reset huyện
+                setSelected(""); // reset label 'home' hoặc 'office'
                 onClose();
+                setLoading(true);
             }
         });
         
     };
+
+    {/* tỉnh  */}
+    const { data: provinces, refetch: refetchProvinces } = useList({
+        resource: '/ghn/provinces'
+    });
+    
+    {/** Huyện */}
+    const { data: districtsData } = useList({
+        resource: `/ghn/districts?province_id=${selectedProvince}`,
+    });
+    
+    {/** Xã */}
+    const { data: wardsData } = useList({
+        resource: `/ghn/wards?district_id=${selectedDistrict}`,
+    });
+    
+    useEffect(() => {
+        if (isOpen) {
+          refetchProvinces();
+        }
+    }, [isOpen]);
 
     return (
         <AnimatePresence>
@@ -96,65 +124,136 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                                 >
                                     <Row gutter={16}>
                                         <Col span={12}>
-                                        <Form.Item
-                                            label="Số điện thoại"
-                                            name="phone"
-                                            rules={[
-                                                { required: true, message: "Vui lòng nhập số điện thoại" },
-                                            ]}
-                                        >
-                                            <Input
-                                                
-                                                prefix={<PhoneOutlined />}
-                                                placeholder="Nhập số điện thoại"
-                                                className="rounded-lg h-[40px]"
-                                            />
-                                        </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                        <Form.Item
-                                            label="Tỉnh / Thành phố"
-                                            name="province"
-                                            rules={[
-                                            { required: true, message: "Vui lòng nhập tỉnh/thành phố" },
-                                            ]}
-                                        >
-                                            <Input
-                                                prefix={<EnvironmentOutlined />}
-                                                placeholder="Nhập tỉnh hoặc thành phố"
-                                                className="rounded-lg h-[40px]"
-                                            />
-                                        </Form.Item>
-                                        </Col>
-                                    </Row>
-
-                                    <Row gutter={16}>
-                                        <Col span={12}>
                                             <Form.Item
-                                                label="Quận / Huyện"
-                                                name="district"
+                                                label="Số điện thoại"
+                                                name="phone"
                                                 rules={[
-                                                    { required: true, message: "Vui lòng nhập quận/huyện" },
+                                                    { required: true, message: "Vui lòng nhập số điện thoại" },
                                                 ]}
                                             >
                                                 <Input
-                                                    placeholder="Nhập quận hoặc huyện"
+                                                    
+                                                    prefix={<PhoneOutlined />}
+                                                    placeholder="Nhập số điện thoại"
                                                     className="rounded-lg h-[40px]"
                                                 />
                                             </Form.Item>
                                         </Col>
                                         <Col span={12}>
+                                        {/* Hidden field province_id */}
+                                            <Form.Item name="province_id" hidden><Input /></Form.Item>
+                                         
+                                            <Form.Item
+                                                label="Tỉnh / Thành phố"
+                                                name="province"
+                                                rules={[{ required: true, message: "Vui lòng chọn tỉnh/thành phố" }]}
+                                            >
+                                                <Select
+                                                    showSearch
+                                                    placeholder="Chọn tỉnh hoặc thành phố"
+                                                    className="rounded-lg"
+                                                    style={{height: 40}}
+                                                    onChange={(provinceId) => {
+                                                        const selected = provinces.find((p: any) => p.ProvinceID === provinceId);
+                                                        setSelectedProvince(provinceId);
+                                                            form.setFieldsValue({
+                                                            province_id: provinceId,
+                                                            province: selected?.ProvinceName,
+                                                            district: null,
+                                                            district_id: null,
+                                                            ward: null,
+                                                            ward_code: null
+                                                        });
+                                                    }}
+                                                    filterOption={(input, option: any) =>
+                                                        (option?.children as string)
+                                                            ?.toLowerCase()
+                                                            .includes(input.toLowerCase())
+                                                    }
+                                                >
+                                                    {provinces?.map((province: any) => (
+                                                        <Option key={province.ProvinceID} value={province.ProvinceID}>
+                                                            {province.ProvinceName}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>  
+                                        </Col>
+                                    </Row>
+
+                                    <Row gutter={16}>
+                                          <Col span={12}>
+                                                {/* Hidden field district_id */}
+                                                <Form.Item name="district_id" hidden><Input /></Form.Item>
+                                        
+                                                <Form.Item
+                                                    label="Quận / Huyện"
+                                                    name="district"
+                                                    rules={[{ required: true, message: "Vui lòng chọn quận/huyện" }]}
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        placeholder="Chọn quận hoặc huyện"
+                                                        className="rounded-lg"
+                                                        style={{height: 40}}
+                                                        disabled={!selectedProvince}
+                                                        onChange={(districtId) => {
+                                                            const selected = districtsData?.find((d: any) => d.DistrictID === districtId);
+                                                            setSelectedDistrict(districtId);
+                                                            form.setFieldsValue({
+                                                                district_id: districtId, // ID để gửi lên API
+                                                                district: selected?.DistrictName, // tên hiển thị
+                                                                ward: null,
+                                                                ward_code: null,
+                                                            });
+                                                        }}
+                                                        filterOption={(input, option: any) =>
+                                                        (option?.children as string)
+                                                            ?.toLowerCase()
+                                                            .includes(input.toLowerCase())
+                                                        }
+                                                    >
+                                                        {districtsData?.map((district: any) => (
+                                                        <Option key={district.DistrictID} value={district.DistrictID}>
+                                                            {district.DistrictName}
+                                                        </Option>
+                                                        ))}
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                        <Col span={12}>
+                                        {/* Hidden field ward_code */}
+                                            <Form.Item name="ward_code" hidden><Input /></Form.Item>
+                    
                                             <Form.Item
                                                 label="Phường / Xã"
                                                 name="ward"
-                                                rules={[
-                                                    { required: true, message: "Vui lòng nhập phường/xã" },
-                                                ]}
+                                                rules={[{ required: true, message: "Vui lòng chọn phường/xã" }]}
                                             >
-                                                <Input
-                                                    placeholder="Nhập phường hoặc xã"
-                                                    className="rounded-lg h-[40px]"
-                                                />
+                                                <Select
+                                                showSearch
+                                                placeholder="Chọn phường hoặc xã"
+                                                className="rounded-lg"
+                                                style={{height: 40}}
+                                                disabled={!selectedDistrict}
+                                                onChange={(wardCode, option:any) => {
+                                                    form.setFieldsValue({
+                                                    ward_code: wardCode,
+                                                    ward: option?.children
+                                                    });
+                                                }}
+                                                filterOption={(input, option: any) =>
+                                                    (option?.children as string)
+                                                    ?.toLowerCase()
+                                                    .includes(input.toLowerCase())
+                                                }
+                                                >
+                                                {Array.isArray(wardsData) && wardsData.map((ward: any) => (
+                                                    <Option key={ward.WardCode} value={ward.WardCode}>
+                                                    {ward.WardName}
+                                                    </Option>
+                                                ))}
+                                                </Select>
                                             </Form.Item>
                                         </Col>
                                     </Row>
@@ -198,7 +297,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                                         <Button onClick={onClose} htmlType="reset" style={{height: 40}}>
                                             Hủy
                                         </Button>
-                                        <Button icon={<PlusOutlined />} type="primary" htmlType="submit" style={{height: 40}} className="w-40">
+                                        <Button icon={<PlusOutlined />} loading={loading} type="primary" htmlType="submit" style={{height: 40}} className="w-40">
                                             Thêm địa chỉ
                                         </Button>
                                     </div>
