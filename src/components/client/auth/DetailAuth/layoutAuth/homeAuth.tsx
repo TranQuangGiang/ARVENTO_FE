@@ -132,7 +132,7 @@ const HomeAuth = () => {
                                 </Card>
                         ))
                     ) : (
-                        <div className='w-3/4 relative h-[250px] bg-white rounded-[15px] '>
+                        <div className='w-full relative h-[250px] bg-white rounded-[15px] '>
                             <h4 className='absolute top-4 text-[17px] font-semibold left-4'>Đơn hàng gần đây</h4>
                             <div className="relative w-full h-full flex items-center flex-col justify-center pt-3">
                                 <div className="absolute w-[300px] h-[100px] rounded-full bg-blue-500 opacity-30 blur-2xl"></div>

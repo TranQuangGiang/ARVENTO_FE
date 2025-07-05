@@ -15,7 +15,7 @@ interface FloatingInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   placeholder?: string;
-  readOnly?: boolean;
+  disabled?: boolean;
 }
 
 const FloatingInput = ({
@@ -25,7 +25,7 @@ const FloatingInput = ({
   onChange,
   type = "text",
   placeholder = "",
-  readOnly = false,
+  disabled = false,
 }: FloatingInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   
@@ -276,7 +276,7 @@ const Checkout = () => {
               value={shippingInfo.fullAddress}
               onChange={handleShippingChange}
               placeholder="Địa chỉ giao hàng"
-              readOnly 
+              disabled
             />
             <Button
               type="link"
