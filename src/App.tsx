@@ -39,9 +39,7 @@ import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
 import OrderHistory from './components/client/auth/DetailAuth/layoutAuth/OrderHistory'
 import AccountInformation from './components/client/auth/DetailAuth/layoutAuth/accountInformation'
 import DiscountCode from './components/client/auth/DetailAuth/layoutAuth/discountCode'
-import ListColor from './components/admin/color/listClolor'
 import AddColor from './components/admin/color/addColor'
-import EditColor from './components/admin/color/editColer'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
 
@@ -63,6 +61,9 @@ import DetailOrderClient from './components/client/auth/DetailAuth/layoutAuth/de
 import LoginAdmin from './components/admin/auth/loginAdmin'
 import Thanhcong from './components/client/thanhcong'
 import Wishlist from './components/client/auth/DetailAuth/layoutAuth/wishlist'
+import AddColorAvarin from './components/admin/colorAvarin/AddColorAvarin'
+import ListColorAvarin from './components/admin/colorAvarin/ListColorAvarin'
+import UpdateColorAvarin from './components/admin/colorAvarin/UpdateColorAvarin'
 
 
 
@@ -122,15 +123,18 @@ function App() {
         {path: 'listcoupon', element: <ListCoupon />},
         {path: 'addCoupon', element: <AddCoupon />},
         {path: 'editcoupon/:id', element: <EditCoupon />},
-        {path: 'listcolor', element: <ListColor />},
-        {path: 'addcolor', element: <AddColor />},
-        {path: 'editcolor', element: <EditColor />},
+        // {path: 'listcolor', element: <ListColor />},
+        // {path: 'addcolor', element: <AddColor />},
+        // {path: 'editcolor', element: <EditColor />},
         {path: 'listreview', element: <ListReview />},
         {path: 'editreview/:id', element: <UpdateReview />},
         {path: 'listfavorite', element: <ListFavorite />},
         {path: 'favorites/:id/users', element: <FavoriteUsers />},
         {path: 'listorder', element: <ListOrder />},
         {path: 'orderDetail/:id', element: <DetailOrder />},
+        {path: 'addcolor', element: <AddColorAvarin />},
+        {path: 'listcolor', element: <ListColorAvarin />},
+        {path: 'editcolor/:key', element: <UpdateColorAvarin />},
       ]
     }
   ])
