@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AddCategoryBlog = () => {
+    const [form] = Form.useForm();
     const nav = useNavigate();
     const { mutate } = useCreate({
         resource: "/categoryPost/admin",
@@ -33,7 +34,24 @@ const AddCategoryBlog = () => {
                         </span>
                     </div>
                     <hr className="border-t border-gray-200 mb-4" />
-                    <Form layout="vertical" onFinish={onFinish}>
+                    <Form 
+                        form={form}
+                        layout="vertical" 
+                        onFinish={onFinish}
+                        onValuesChange={(changedValues, allValues) => {
+                            if ("name" in changedValues) {
+                                const rawName = changedValues.name || "";
+                                const generatedSlug = rawName
+                                .toLowerCase()
+                                .normalize("NFD")
+                                .replace(/[\u0300-\u036f]/g, "")
+                                .replace(/[^a-z0-9 ]/g, "")
+                                .trim()
+                                .replace(/\s+/g, "-");
+                                form.setFieldsValue({ slug: generatedSlug });
+                            }
+                        }}
+                    >
                         <Form.Item
                             label="Name"
                             name="name"

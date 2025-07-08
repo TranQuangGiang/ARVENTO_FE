@@ -1,103 +1,123 @@
-import React from 'react';
-import { useOneData } from '../../../../../hooks/useOne';
-import { useParams } from 'react-router-dom';
-import { Timeline } from 'antd';
-import { useList } from '../../../../../hooks/useList';
+import React from "react";
+import { useParams } from "react-router-dom";
+import {
+  Card, List, Image, Tag, Typography, Divider, Row, Col,
+} from "antd";
+import {
+  UserOutlined, PhoneOutlined, HomeOutlined, TagOutlined,
+  SyncOutlined, FileTextOutlined, ClockCircleOutlined,
+  DollarOutlined
+} from "@ant-design/icons";
+import { Timeline } from "antd";
+import { useOneData } from "../../../../../hooks/useOne";
 
-const statusColorMap: Record<string, { text: string; color: string; bg: string }> = {
-  pending: { text: 'Chờ xác nhận', color: 'orange', bg: 'bg-orange-100' },
-  confirmed: { text: 'Đã xác nhận', color: 'blue', bg: 'bg-blue-100' },
-  processing: { text: 'Đang xử lý', color: 'cyan', bg: 'bg-cyan-100' },
-  shipping: { text: 'Đang giao hàng', color: 'purple', bg: 'bg-purple-100' },
-  delivered: { text: 'Đã giao hàng', color: 'green', bg: 'bg-green-100' },
-  completed: { text: 'Hoàn thành', color: 'green', bg: 'bg-green-100' },
-  cancelled: { text: 'Đã huỷ', color: 'red', bg: 'bg-red-100' },
-  returned: { text: 'Đã trả hàng', color: 'red', bg: 'bg-red-100' },
+const { Title, Text } = Typography;
+
+const statusColorMap: Record<string, { text: string; color: string }> = {
+  pending: { text: "pending", color: "orange" },
+  confirmed: { text: "confirmed", color: "geekblue" },
+  processing: { text: "processing", color: "cyan" },
+  shipping: { text: "shipping", color: "purple" },
+  delivered: { text: "delivered", color: "blue" },
+  completed: { text: "completed", color: "green" },
+  cancelled: { text: "cancelled", color: "red" },
+  returned: { text: "returned", color: "volcano" },
 };
 
 const DetailOrderClient = () => {
   const { id } = useParams();
-  const { data: order } = useOneData({ resource: '/orders', _id: id });
-  const detail = order?.data;
-  console.log(detail);
-  
-  if (!detail) return null;
+  const { data } = useOneData({ resource: "/orders", _id: id });
+  const order = data?.data;
 
-  const getStatusInfo = (status: string) =>
-    statusColorMap[status] || { text: status, color: 'gray', bg: 'bg-gray-100' };
+  if (!order) return null;
+
+  const getStatusInfo = (status: string) => statusColorMap[status] || { text: status, color: "gray" };
+
   return (
-    <div className="max-w-5xl mx-auto p-5 bg-white shadow rounded-lg border border-gray-100">
-      <h2 className="text-xl font-semibold mb-5 text-blue-600 border-b pb-2">🧾 Chi tiết đơn hàng</h2>
+    <div className="bg-gray-50 min-h-screen px-4 py-8 rounded-[15px]">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <Title level={3} className="text-blue-600">🧾 Chi tiết đơn hàng</Title>
 
-      <div className="grid md:grid-cols-2 gap-5 mb-6 text-sm text-gray-700">
-        <div className="space-y-2">
-          <p><strong>Mã đơn hàng:</strong> {detail._id}</p>
-          <p><strong>Ngày đặt:</strong> {new Date(detail.created_at).toLocaleDateString()}</p>
-          <p>
-            <strong>Trạng thái:</strong>{' '}
-            <span
-              className={`ml-1 px-2 py-0.5 text-xs rounded-full font-medium text-${getStatusInfo(detail.status).color}-700 ${getStatusInfo(detail.status).bg}`}
-            >
-              {getStatusInfo(detail.status).text}
-            </span>
-          </p>
-          <p><strong>Thanh toán :</strong> {detail.payment_method}</p>
-          <p><strong>Ghi chú :</strong> {detail.note || 'Không có'}</p>
-        </div>
-
-        <div className="space-y-2">
-          <h3 className="text-base font-semibold text-gray-800 mb-1">📦 Địa chỉ giao hàng</h3>
-          <p><strong>Người nhận :</strong> {detail.address?.recipient}</p>
-          <p><strong>Địa chỉ :</strong> {detail.address?.address}</p>
-          <p><strong>SĐT :</strong> {detail.shipping_address?.phone}</p>
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <h3 className="text-base font-semibold mb-2 text-gray-800">🛒 Sản phẩm</h3>
-        <div className="divide-y">
-          {detail.items.map((item: any, index: number) => (
-            <div key={index} className="flex justify-between items-center py-3">
-              <div className="flex gap-4 items-center">
-                <img
-                  src={item.selected_variant?.image?.url || item.product?.images?.[0]?.url}
-                  alt={item.product.name}
-                  className="w-14 h-14 object-cover rounded-md border"
-                />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{item.product.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {item.quantity} x {item.price?.toLocaleString()}₫
-                  </p>
-                </div>
-              </div>
-              <p className="text-[16px] font-semibold text-red-500">
-                {(item.price * item.quantity).toLocaleString()}₫
+        {/* Thông tin giao hàng và đơn hàng */}
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={12}>
+            <Card title="Thông tin giao hàng" bordered={false} className="shadow rounded-lg min-h-[246px]">
+              <p><UserOutlined /> <strong>Người nhận:</strong> <span className="float-right">{order.address?.recipient || "-"}</span></p>
+              <p className="mt-2"><PhoneOutlined /> <strong>Điện thoại:</strong> <span className="float-right">{order.shipping_address?.phone || "-"}</span></p>
+              <p className="mt-2"><HomeOutlined /> <strong>Địa chỉ:</strong> <span className="float-right">{order.shipping_address?.fullAddress}</span></p>
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card title="Thông tin đơn hàng" bordered={false} className="shadow rounded-lg">
+              <p><TagOutlined /> <strong>Mã đơn:</strong> <span className="float-right">{order._id}</span></p>
+              <p className="mt-2"><SyncOutlined /> <strong>Trạng thái:</strong>
+                <Tag color={getStatusInfo(order.status).color} className="float-right">{getStatusInfo(order.status).text}</Tag>
               </p>
-            </div>
-          ))}
-        </div>
-      </div>
+              <p className="mt-2"><DollarOutlined /> <strong>Phương thức:</strong> <span className="float-right">{order.payment_method || "-"}</span></p>
+              <p className="mt-2"><FileTextOutlined /> <strong>Ghi chú:</strong> <span className="float-right">{order.note || "-"}</span></p>
+              <p className="mt-2"><ClockCircleOutlined /> <strong>Ngày đặt:</strong> <span className="float-right">{new Date(order.created_at).toLocaleString()}</span></p>
+            </Card>
+          </Col>
+        </Row>
 
-      <div className="text-right border-t pt-4 space-y-1 text-sm">
-        <p>Tạm tính: <strong>{detail.subtotal.toLocaleString()}₫</strong></p>
-        <p>Giảm giá: <strong className="text-green-600">- {detail.discount_amount.toLocaleString()}₫</strong></p>
-        <p className="text-lg font-bold text-blue-600">Thành tiền: {detail.total.toLocaleString()}₫</p>
-      </div>
+        {/* Danh sách sản phẩm */}
+        <Card title="🛍️ Sản phẩm trong đơn" bordered={false} className="shadow rounded-lg">
+          <List
+            itemLayout="horizontal"
+            dataSource={order.items}
+            renderItem={(item: any) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Image
+                      width={70}
+                      className="rounded"
+                      src={item.selected_variant?.image?.url || item.product.images[0]?.url}
+                    />
+                  }
+                  title={
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Text strong>{item.product.name}</Text>
+                        <span className="ml-2 text-gray-500">x{item.quantity}</span>
+                        {item.selected_variant?.color?.name && (
+                          <p className="text-sm">Màu: <strong>{item.selected_variant.color.name}</strong></p>
+                        )}
+                      </div>
+                      <Text className="text-red-500 font-semibold">
+                        {(item.price * item.quantity).toLocaleString()}₫
+                      </Text>
+                    </div>
+                  }
+                  description={<Text>Đơn giá: {item.price.toLocaleString()}₫</Text>}
+                />
+              </List.Item>
+            )}
+          />
+          <Divider />
+          <div className="text-right text-base">
+            <p>Tạm tính: <strong>{order.subtotal.toLocaleString()}₫</strong></p>
+            <p>Giảm giá: <strong className="text-green-600">- {order.discount_amount.toLocaleString()}₫</strong></p>
+            <p className="text-lg font-bold text-blue-600">Tổng tiền: {order.total.toLocaleString()}₫</p>
+          </div>
+        </Card>
 
-      <div className="mt-8">
-        <h3 className="text-base font-semibold mb-3 text-gray-800">📍 Lịch sử cập nhật</h3>
-        <Timeline>
-          {detail.timeline?.map((item: any, idx: number) => (
-            <Timeline.Item
-              key={idx}
-              color={statusColorMap[item.status]?.color || 'gray'}
-              label={new Date(item.changedAt).toLocaleString()}
-            >
-              {statusColorMap[item.status]?.text || item.status}
-            </Timeline.Item>
-          ))}
-        </Timeline>
+        {/* Lịch sử đơn hàng */}
+        {order.timeline?.length > 0 && (
+          <Card title="📍 Lịch sử cập nhật đơn" bordered={false} className="shadow rounded-lg">
+            <Timeline>
+              {order.timeline.map((item: any, index: number) => (
+                <Timeline.Item
+                  key={index}
+                  color={getStatusInfo(item.status).color}
+                  label={new Date(item.changedAt).toLocaleString()}
+                >
+                  {getStatusInfo(item.status).text}
+                </Timeline.Item>
+              ))}
+            </Timeline>
+          </Card>
+        )}
       </div>
     </div>
   );

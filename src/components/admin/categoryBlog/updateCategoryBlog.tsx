@@ -48,7 +48,24 @@ const EditCategoryBlog = () => {
                     </div>
                     <hr className="border-t border-gray-200 mb-4" />
 
-                    <Form layout="vertical" onFinish={onFinish} form={form}>
+                    <Form 
+                        layout="vertical" 
+                        onFinish={onFinish} 
+                        form={form}
+                        onValuesChange={(changedValues, allValues) => {
+                            if ("name" in changedValues) {
+                                const rawName = changedValues.name || "";
+                                const generatedSlug = rawName
+                                .toLowerCase()
+                                .normalize("NFD")
+                                .replace(/[\u0300-\u036f]/g, "")
+                                .replace(/[^a-z0-9 ]/g, "")
+                                .trim()
+                                .replace(/\s+/g, "-");
+                                form.setFieldsValue({ slug: generatedSlug });
+                            }
+                        }}
+                    >
                         <Form.Item
                             label="Name"
                             name="name"
