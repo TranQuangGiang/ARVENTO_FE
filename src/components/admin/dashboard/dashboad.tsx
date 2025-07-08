@@ -1,7 +1,24 @@
 import { HandCoins, ShoppingBag, UserLock } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
+import { useList } from '../../../hooks/useList';
+import TopSellingProducts from './topSellDingProduct';
 const Dashboad = () => {
+
+  const { data:countUser, refetch:refetchCountUser } = useList({
+    resource: '/dashboard/users/new'
+  });
+  useEffect(() => {
+    if (!countUser) return;
+    refetchCountUser();
+  }, [countUser]);
+  
+  const { data:overview, refetch:refetchOverview } = useList({
+    resource: `/dashboard/overview`
+  });
+  console.log(overview);
+   
+  
   return (
     <AnimatePresence>
       <motion.div
@@ -69,16 +86,17 @@ const Dashboad = () => {
                 </div>
                 <div className='content w-full mt-[50px] flex justify-around'>
                   <span>
-                    <p className='text-[17px] font-sans text-gray-600 font-medium'>Daily Visitors</p>
-                    <h3 className='mt-[15px] text-[20px] font-semibold'>$654.66k</h3>
+                    <p className='text-[17px] font-sans text-gray-600 font-medium'>number of new users</p>
+                    <h3 className='mt-[15px] text-[20px] font-semibold'>{countUser?.data?.length}</h3>
                   </span>
                   <span>   
-                    <p className='text-[17px] font-sans text-yellow-400 font-medium'>+16.24 %</p>
+                    <p className='text-[17px] font-sans text-yellow-400 font-medium'>+{countUser?.data?.length}</p>
                     <p className='mt-[20px] cursor-pointer transition-all duration-300 hover:text-red-500 text-[12px] border-b pb-0.5'>See details</p>
                   </span>
                 </div>  
               </div>
             </div>
+            <TopSellingProducts />
           </div>
         </motion.div>
       </motion.div>

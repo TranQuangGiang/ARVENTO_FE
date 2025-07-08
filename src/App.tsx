@@ -61,9 +61,14 @@ import DetailOrderClient from './components/client/auth/DetailAuth/layoutAuth/de
 import LoginAdmin from './components/admin/auth/loginAdmin'
 import Thanhcong from './components/client/thanhcong'
 import Wishlist from './components/client/auth/DetailAuth/layoutAuth/wishlist'
+import ListBlogClient from './components/client/blog/listBlog'
+import DetailBlogClient from './components/client/blog/detaiBlog'
+import ListBlogCategory from './components/client/blog/listBlogCategory'
+import ListProductCategory from './components/client/listProductCategory'
 import AddColorAvarin from './components/admin/colorAvarin/AddColorAvarin'
 import ListColorAvarin from './components/admin/colorAvarin/ListColorAvarin'
 import UpdateColorAvarin from './components/admin/colorAvarin/UpdateColorAvarin'
+
 
 
 
@@ -92,6 +97,10 @@ function App() {
       {path: 'thanhtoan', element: <Thanhtoan />},
       {path: 'addAddress', element: <AddAddressesClient />},
       {path: 'thanhcong', element: <Thanhcong />},
+      {path: 'listBlogClient', element: <ListBlogClient />},
+      {path: 'detailBlog/:slug', element: <DetailBlogClient />},
+      {path: 'listBlog/category/:slug', element: <ListBlogCategory />},
+      {path: 'products', element: <ListProductCategory />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
