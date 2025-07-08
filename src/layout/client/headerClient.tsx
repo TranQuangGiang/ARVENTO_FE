@@ -18,8 +18,8 @@ const HeaderClient = () => {
   const [showModal, setShowModal] = useState<string | null>(null);
   const { user, logout } = useContext(AuthContexts);
   const [searchParams] = useSearchParams(); 
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
 
   const modalParam = searchParams.get("modal");
     useEffect(() => {
@@ -35,22 +35,8 @@ const HeaderClient = () => {
   const category = data?.data;
   console.log(category);
   
-  const fetchProductsByCategory = async (categoryId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`/products?category_id=${categoryId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      setProducts(data?.data || []);
-    } catch (error) {
-      console.error("Lỗi khi lấy sản phẩm:", error);
-    }
-  };
   return (
-    <div className='fixed top-0 left-0 right-0 z-50 w-full bg-white h-[80px]'>
+    <div className='fixed top-0 left-0 right-0 z-50 w-full bg-white h-[80px] shadow-md'>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
         {/* Logo */}
         <section className='header-logo [&_img]:w-[200px] [&_img]:cursor-pointer'>
@@ -65,47 +51,22 @@ const HeaderClient = () => {
           <nav className='flex items-center gap-6 transition-all duration-300 [&_a]:text-[15px] [&_a]:text-[#0b1f4e]'>
             <a href="">Home</a>
             <div className="relative group">
-              <a className="cursor-pointer text-[15px] text-[#0b1f4e]">Products</a>
+              <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Products</span>
               <ul className="absolute top-full left-0 z-20 min-w-[200px] mt-2 rounded-md bg-white shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                 {category?.map((cat: any) => (
-                  <li
-                    key={cat._id}
-                    className="relative px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                    onMouseEnter={() => {
-                      setHoveredCategory(cat._id);
-                      fetchProductsByCategory(cat._id);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredCategory(null);
-                      setProducts([]);
-                    }}
-                  >
-                    <span className="text-[#0b1f4e] cursor-pointer text-[14px] block w-full">{cat.name}</span>
-
-                    {/* Submenu con: sản phẩm */}
-                    {hoveredCategory === cat._id && products.length > 0 && (
-                      <ul className="absolute top-0 left-full min-w-[250px] bg-white rounded-md shadow-lg z-30 ml-1">
-                        {products.map((product) => (
-                          <li
-                            key={product._id}
-                            className="px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                          >
-                            <Link
-                              to={`/product/${product.slug}`}
-                              className="text-[#0b1f4e] block"
-                            >
-                              {product.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  <li key={cat._id} className="px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
+                    <Link
+                      to={`/products?category=${cat._id}`}
+                      className="text-[#0b1f4e] block"
+                    >
+                      {cat.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
             <a href="">Pages</a>
-            <a href="">Blog New</a>
+            <Link to={`/listBlogClient`}>Blog New</Link>
             <a href="">Contact</a>
           </nav>
 
@@ -114,6 +75,8 @@ const HeaderClient = () => {
             {/* Search Input */}
             <input
               type="text"
+              value={searchTerm}
+              // onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search..."
               className={`h-[35px] pr-10 pl-3 border border-[#0b1f4e] rounded text-black transition-all duration-300 outline-0 ${
                 searchOpen ? 'w-[350px]' : 'w-0 px-0 border-0'

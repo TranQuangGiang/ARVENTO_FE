@@ -12,21 +12,21 @@ const OrderHistory = () => {
     const getOrderStatusLabel = (status: string) => {
         switch (status) {
             case "pending":
-                return "Chờ xác nhận";
+                return "pending";
             case "confirmed":
-                return "Đã xác nhận";
+                return "confirmed";
             case "processing":
-                return "Đang xử lý";
+                return "processing";
             case "shipping":
-                return "Đang giao hàng";
+                return "shipping";
             case "delivered":
-                return "Đã giao hàng";
+                return "delivered";
             case "completed":
-                return "Hoàn thành";
+                return "completed";
             case "cancelled":
-                return "Đã huỷ";
+                return "cancelled";
             case "returned":
-                return "Đã trả hàng";
+                return "returned";
             default:
                 return "Không xác định";
         }
@@ -55,15 +55,15 @@ const OrderHistory = () => {
         }
     };
     const orderTabs = [
-        { key: "all", label: "Tất cả" },
-        { key: "pending", label: "Chờ xác nhận" },
-        { key: "confirmed", label: "Đã xác nhận" },
-        { key: "processing", label: "Đang xử lý" },
-        { key: "shipping", label: "Đang giao hàng" },
-        { key: "delivered", label: "Đã giao hàng" },
-        { key: "completed", label: "Hoàn thành" },
-        { key: "cancelled", label: "Đã huỷ" },
-        { key: "returned", label: "Đã trả hàng" },
+        { key: "all", label: "All" },
+        { key: "pending", label: "Pending" },
+        { key: "confirmed", label: "Confirmed" },
+        { key: "processing", label: "Processing" },
+        { key: "shipping", label: "Shipping" },
+        { key: "delivered", label: "Delivered" },
+        { key: "completed", label: "Completed" },
+        { key: "cancelled", label: "Cancelled" },
+        { key: "returned", label: "Returned" },
     ];
 
 
@@ -78,10 +78,10 @@ const OrderHistory = () => {
      : orders.filter((order: any) => order.status === selectedStatus);
 
 
-    const handleCancelOrder = async (orderId: string) => {
+    const handleCancelOrder = async (orderId: string, status: string) => {
         try {
             const token = localStorage.getItem("token");
-            if (orders.status !== "pending" && orders.status !== "confirmed") {
+            if (status !== "pending" && status !== "confirmed") {
                 message.error("Bạn khổng thể hủy đơn hàng đơn hàng đã được xử lý");
                 return;
             } 
@@ -100,6 +100,26 @@ const OrderHistory = () => {
             message.error("Không thể huỷ đơn hàng.");
         }
     };
+
+    const handleConfirmComplete = async (orderId:number) => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.patch(`http://localhost:3000/api/orders/${orderId}/status`, 
+                { status: "completed" },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            message.success("Xác nhận đơn hàng thành công, vui lòng đánh giá sản phẩm giúp shop !");
+            refetch();
+        } catch (error) {
+            console.error(error);
+            message.error("Không xác nhận hoàn thành đơn hàng.");
+        }
+        
+    }
     return (
         <div className='w-full min-h-screen'>
             <div className='w-full h-full rounded-[15px] bg-white min-h-screen'>
@@ -165,17 +185,50 @@ const OrderHistory = () => {
                                         <p className="font-bold text-red-600 text-[17px]">
                                             <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
                                         </p>
-                                        <Link to={`/detailAuth/detailOrder/${order._id}`}>
-                                            <Button type="primary" className='text-[17px]' style={{height: 40}}>View order details</Button>
-                                        </Link>
-                                        <Popconfirm title="Bạn chắc chứ ?" okText="Ok" cancelText="Hủy" onConfirm={() => handleCancelOrder(order._id)}>
-                                            <Button
-                                                danger
-                                                icon={<ExclamationCircleOutlined />}
-                                            >
-                                                Huỷ đơn hàng
-                                            </Button>
-                                        </Popconfirm>   
+                                        <div className="flex flex-wrap gap-2 justify-end mt-2">
+                                            <Link to={`/detailAuth/detailOrder/${order._id}`}>
+                                                <Button type="primary" className='text-[16px]' style={{ height: 38 }}>
+                                                Xem chi tiết
+                                                </Button>
+                                            </Link>
+
+                                            {order.status === "delivered" && (
+                                                <Popconfirm
+                                                title="Xác nhận bạn đã nhận hàng và muốn hoàn thành đơn hàng?"
+                                                okText="Hoàn thành"
+                                                cancelText="Hủy"
+                                                onConfirm={() => handleConfirmComplete(order._id)}
+                                                >
+                                                <Button
+                                                    type="default"
+                                                    style={{ height: 38, color: '#16a34a', borderColor: '#16a34a' }}
+                                                    className="text-[16px]"
+                                                >
+                                                    ✅ Đã nhận hàng
+                                                </Button>
+                                                </Popconfirm>
+                                            )}
+                                            {
+                                                order.status === 'pending' || order.status === "confirmed" && (
+                                                    <Popconfirm
+                                                        title="Bạn chắc chắn muốn huỷ đơn hàng này?"
+                                                        okText="Huỷ"
+                                                        cancelText="Không"
+                                                        onConfirm={() => handleCancelOrder(order._id, order.status)} // truyền status vào
+                                                    >
+                                                        <Button
+                                                            danger
+                                                            type="default"
+                                                            icon={<ExclamationCircleOutlined />}
+                                                            style={{ height: 38 }}
+                                                            className="text-[16px]"
+                                                        >
+                                                            Huỷ đơn
+                                                        </Button>
+                                                    </Popconfirm>
+                                                )
+                                            }
+                                        </div>  
                                     </div>
                                 </div>
                             </Card>

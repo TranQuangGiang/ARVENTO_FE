@@ -73,63 +73,67 @@ const HomeAuth = () => {
                     { orders.length > 0 ? (
                         orders.map((order:any) => (
                             <Card key={order._id} bordered className="shadow-sm ">
-                                    <div className="w-full flex justify-between flex-wrap gap-4">
-                                        <div>
-                                            <p className="text-gray-500 text-[12px] mb-1">
-                                                SKU: <strong>{order._id}</strong>
-                                            </p>
-                                            <p className="font-bold text-lg mb-2">Products in order:</p>
-                                            {order.items?.map((item: any) => {
-                                            const itemTotal = item.quantity * (item.price || 0);
-                                                return (
-                                                    <div key={item.product._id} className="flex items-center gap-3 mb-2">
-                                                        <Image
-                                                            src={item.selected_variant?.image?.url}
-                                                            width={70}
-                                                            height={70}
-                                                            preview={false}
-                                                            className="rounded"
-                                                        />
-                                                        <div>
-                                                            <p className="font-medium text-base">
-                                                                {item.product.name} - x{item.quantity} - 
-                                                                <span className="text-red-600 font-semibold ml-1">
-                                                                    {itemTotal.toLocaleString()}₫
-                                                                </span>
-                                                            </p>
-                                                            <p className="text-gray-600 text-sm">
-                                                                Unit price: {item.price?.toLocaleString()}₫
-                                                            </p>
-                                                        </div>
+                                <div className="w-full flex justify-between flex-wrap gap-4">
+                                    <div>
+                                        <p className="text-gray-500 text-[12px] mb-1">
+                                            SKU: <strong>{order._id}</strong>
+                                        </p>
+                                        <p className="font-bold text-lg mb-2">Products in order:</p>
+                                        {order.items?.map((item: any) => {
+                                        const itemTotal = item.quantity * (item.price || 0);
+                                            return (
+                                                <div key={item.product._id} className="flex items-center gap-3 mb-2">
+                                                    <Image
+                                                        src={item.selected_variant?.image?.url}
+                                                        width={70}
+                                                        height={70}
+                                                        preview={false}
+                                                        className="rounded"
+                                                    />
+                                                    <div>
+                                                        <p className="font-medium text-base">
+                                                            {item.product.name} - x{item.quantity} - 
+                                                            <span className="text-red-600 font-semibold ml-1">
+                                                                {itemTotal.toLocaleString()}₫
+                                                            </span>
+                                                        </p>
+                                                        <p className="text-gray-600 text-sm">
+                                                            Unit price: {item.price?.toLocaleString()}₫
+                                                        </p>
                                                     </div>
-                                                );
-                                            })}
-                                        </div>
-
-                                        <div className="flex flex-col items-end gap-2 min-w-[220px]">
-                                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getOrderStatusStyle(order.status)}`}>
-                                                {getOrderStatusLabel(order.status)}
-                                            </span>
-                                            <p className="text-gray-600 text-[15px]">
-                                                <CalendarOutlined /> Order date: {new Date(order.created_at).toLocaleDateString()}
-                                            </p>
-                                            <p className="font-bold text-red-600 text-[17px]">
-                                                <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
-                                            </p>
-                                            <Link to={`/detailAuth/detailOrder/${order._id}`}>
-                                                <Button type="primary" className='text-[17px]' style={{height: 40}}>View order details</Button>
-                                            </Link>
-                                            <Popconfirm title="Bạn không thể hủy tại đây !" okText="Ok" cancelText="Hủy" >
-                                                <Button
-                                                    danger
-                                                    icon={<ExclamationCircleOutlined />}
-                                                >
-                                                    Huỷ đơn hàng
-                                                </Button>
-                                            </Popconfirm>   
-                                        </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                </Card>
+
+                                    <div className="flex flex-col items-end gap-2 min-w-[220px]">
+                                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getOrderStatusStyle(order.status)}`}>
+                                            {getOrderStatusLabel(order.status)}
+                                        </span>
+                                        <p className="text-gray-600 text-[15px]">
+                                            <CalendarOutlined /> Order date: {new Date(order.created_at).toLocaleDateString()}
+                                        </p>
+                                        <p className="font-bold text-red-600 text-[17px]">
+                                            <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
+                                        </p>
+                                        <Link to={`/detailAuth/detailOrder/${order._id}`}>
+                                            <Button type="primary" className='text-[17px]' style={{height: 40}}>View order details</Button>
+                                        </Link>
+                                        {
+                                            order.status === "pending" || order.status === "confirmed" && (
+                                                <Popconfirm title="Bạn không thể hủy tại đây !" okText="Ok" cancelText="Hủy" >
+                                                    <Button
+                                                        danger
+                                                        icon={<ExclamationCircleOutlined />}
+                                                    >
+                                                        Huỷ đơn hàng
+                                                    </Button>
+                                                </Popconfirm> 
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                            </Card>
                         ))
                     ) : (
                         <div className='w-full relative h-[250px] bg-white rounded-[15px] '>

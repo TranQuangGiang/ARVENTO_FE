@@ -368,11 +368,11 @@ const handleToggleFavorite = async () => {
                 Price:
               </h6>
               <p className="ml-4 font-sans text-[17px] font-medium">
-                {formatPrice(product.original_price)}
+                {formatPrice(product.sale_price)}
                 <sup>đ</sup>
               </p>
               <del className="font-sans text-[17px] font-semibold ml-6 text-gray-400">
-                {formatPrice(product.sale_price)}
+                {formatPrice(product.original_price)}
                 <sup>đ</sup>
               </del>
             </span>

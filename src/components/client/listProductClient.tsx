@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { useListClient } from '../../hooks/useList';
+import { useList, useListClient } from '../../hooks/useList';
 import BannerClient from '../../layout/client/banner';
 
 const ListProductClient = () => {
@@ -19,7 +19,7 @@ const ListProductClient = () => {
   console.log(products);
   
   const categoryProducts = categoryProductData?.data?.docs || [];
-
+  
   const formatPrice = (price:any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
       return Number(price.$numberDecimal).toLocaleString();
@@ -33,7 +33,22 @@ const ListProductClient = () => {
   const newestProducts = [...products]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 4);
-   
+  
+    
+  const { data:categorys, refetch } = useList({
+    resource: `/categories/client`
+  }) ;
+  const category = categorys?.data; 
+
+  const { data:PostCLient } = useList({
+    resource: `/posts/client`
+  });
+  const posts = PostCLient?.data?.docs || [];
+  
+  // lấy ra 2 bài viết mới nhất 
+  const latesPost = posts.slice(0, 2);
+  console.log(PostCLient);
+  
   return (
     <main>
       <div className=' w-[100%]'>
@@ -58,9 +73,9 @@ const ListProductClient = () => {
                     <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
                     <div className='pt-1.5 flex items-center'>
                       <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                        {formatPrice(product.original_price)}<sup>đ</sup>
+                        {formatPrice(product.sale_price)}<sup>đ</sup>
                       </p>
-                      <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                      <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.original_price)}<sup>đ</sup></del>
                     </div>
                   </div>
                   <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
@@ -86,13 +101,18 @@ const ListProductClient = () => {
           </div>
         </div>
 
-        <div className='list-danhmuc w-full mt-[70px] h-[100px] '>
-          <ul className='flex h-full items-center w-[60%] mx-auto justify-between [&_li]:text-[28px] [&_li]:font-sans [&_li]:font-bold [&_li]:italic [&_li]:text-[#AAAAAA] group'>
-            <li className='hover:text-black transition-all duration-300'><Link to={''}>NIKE</Link></li>
-            <li className='hover:text-black transition-all duration-300'><Link to={''}>ADIDAS</Link></li>
-            <li className='hover:text-black transition-all duration-300'><Link to={''}>PUMA</Link></li>
-            <li className='hover:text-black transition-all duration-300'><Link to={''}>ADHIDA</Link></li>
-          </ul>
+        <div className=' grid grid-cols-6 gap-6'>
+          {category?.map((item: any) => (
+            <div
+              key={item._id}
+              className='flex flex-col items-center justify-center p-4 bg-[#f9f9f9] rounded-lg shadow hover:bg-[#f2f2f2] cursor-pointer transition'
+            >
+              <div className='w-[60px] h-[60px] rounded-full bg-[#ddd] flex items-center justify-center text-[24px] font-bold text-white bg-blue-500 mb-2'>
+                {item.name?.charAt(0)}
+              </div>
+              <p className='text-[14px] text-center font-medium'>{item.name}</p>
+            </div>
+          ))}
         </div>
 
         <div className='banner w-full h-[350px] mt-[10px] mb-[60px] overflow-hidden'>
@@ -151,9 +171,9 @@ const ListProductClient = () => {
                         <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
                         <div className='pt-1.5 flex items-center'>
                           <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                            {formatPrice(product.original_price)}<sup>đ</sup>
+                            {formatPrice(product.sale_price)}<sup>đ</sup>
                           </p>
-                          <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                          <del className='text-[14px] ml-4 font-medium text-gray-400'>{formatPrice(product.original_price)}<sup>đ</sup></del>
                         </div>
                       </div>
                       <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
@@ -193,9 +213,9 @@ const ListProductClient = () => {
                       <h4 className='w-full text-[15px] font-semibold font-sans text-black uppercase'>{product.name}</h4>
                       <div className='pt-1.5 flex items-center'>
                         <p className='font-sans font-medium text-[#0b1f4e] text-[15px]'>
-                          {formatPrice(product.original_price)}<sup>đ</sup>
+                          {formatPrice(product.sale_price)}<sup>đ</sup>
                         </p>
-                        <del className='text-[15px] ml-6 font-sans font-medium text-gray-400'>{formatPrice(product.sale_price)}<sup>đ</sup></del>
+                        <del className='text-[15px] ml-6 font-sans font-medium text-gray-400'>{formatPrice(product.original_price)}<sup>đ</sup></del>
                       </div>
                     </div>
                     <div className='mb-4 mt-1.5 w-[80%] mx-auto border-b-1 [&_p]:uppercase [&_p]:text-[13px] [&_p]:font-sans'>
@@ -206,7 +226,38 @@ const ListProductClient = () => {
               ))}
           </div>
         </div>
+        <div className='list-page w-[74%] mx-auto flex gap-[25px] mb-[120px]'>
+          {
+            latesPost.map((post: any) => (
+              <div className='list-page-1 w-[50%] h-[320px] overflow-hidden relative group'>
+                <img className='w-full absolute transition-all duration-300 group-hover:scale-[1.1]' src={post.thumbnail} alt="" />
+                <div className="className='w-full h-full absolute inset-0 bg-black/40"></div>
+                <div className='content w-full h-full absolute flex flex-col justify-center items-end text-right top-[30px] right-7'>
+                  <h3 className='text-white font-sans uppercase text-[22px] font-bold mb-4'>{post.title}</h3>
+                  <p className="text-white font-sans font-medium text-[12px] mb-5 max-w-[450px]">
+                    {post.excerpt}
+                  </p>
+                  <Link to={`/detailBlog/${post.slug}`}>
+                    <button className="text-white text-[15px] border border-white w-[150px] h-[50px] font-sans font-light hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
+                      SHOP NOW
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))
+          }
+        </div>
       </div>
+      <div className='w-full h-[380px] overflow-hidden relative'>
+        <img className='w-full h-[960px] absolute -bottom-[300px]' src="/footer.jpg" alt="" />
+        <div className='w-full h-full absolute inset-0 bg-black/70 flex flex-col items-center justify-center'>
+          <h2 className='text-white font-bold font-sans text-[36px] uppercase w-[560px] text-center leading-9'>SIgn Up NEwsletter & Get 15% Off</h2>
+          <form action="" className='flex items-center justify-center mt-[40px]'>
+            <input type="text" className='w-[420px] h-[55px] bg-white text-gray-400 pl-[25px] outline-0' placeholder='Email'/>
+            <button className='h-[56px] ml-[20px] text-white font-sans font-light w-[155px] bg-[#01225a] text-[15px]'><FontAwesomeIcon icon={faPaperPlane}/> Submit</button>
+          </form>
+        </div>
+        </div>
     </main>
   );
 };

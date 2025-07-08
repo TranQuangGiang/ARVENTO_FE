@@ -7,8 +7,9 @@ import {
   message,
   Switch,
   InputNumber,
+  Card,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, ReloadOutlined, SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -19,6 +20,7 @@ const fetchBanner = async (id: string) => {
 };
 
 const EditBanner = () => {
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -66,6 +68,7 @@ const EditBanner = () => {
     },
     onSuccess: () => {
       message.success("Banner update successfully");
+      setLoading(true);
       queryClient.invalidateQueries({ queryKey: ["bannersAdmin"] });
       navigate("/admin/listbanner");
     },
@@ -80,74 +83,114 @@ const EditBanner = () => {
 
 
   return (
-    <div className="p-6 bg-white min-h-screen mt-20 w-full mx-auto">
-      <h3 className="text-2xl font-semibold mb-1">EDIT BANNER</h3>
-      <p className="text-sm text-gray-500 mb-6">Update banner details</p>
-      <hr className="border-t border-gray-300 mb-6 -mt-3" />
-
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Please enter the title" }]}
-        >
-          <Input placeholder="Enter title" />
-        </Form.Item>
-
-        <Form.Item label="Link" name="link">
-          <Input placeholder="Enter link (optional)" />
-        </Form.Item>
-
-        <Form.Item label="Position" name="position">
-          <InputNumber style={{ width: "100%" }} placeholder="Position (optional)" />
-        </Form.Item>
-
-        <Form.Item
-          label="Image"
-          name="image"
-          valuePropName="fileList"
-          getValueFromEvent={(e) => e?.fileList || []}
-        >
-          <Upload
-            beforeUpload={() => false}
-            maxCount={1}
-            accept="image/*"
-            listType="picture"
-            defaultFileList={
-              previewUrl
-                ? [
-                    {
-                      uid: "-1",
-                      name: "current-image.png",
-                      status: "done",
-                      url: previewUrl,
-                    },
-                  ]
-                : []
-            }
+    <div className="ml-6 mr-6 min-h-screen mt-10 bg-gray-50">
+      <Card className="shadow-lg rounded-2xl border border-gray-200">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">Edit Banner</h2>
+            <p className="text-sm text-gray-500">Fill in the details to add a new banner.</p>
+          </div>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate("/admin/listbanner")}
           >
-            <Button icon={<UploadOutlined />}>Upload New Image</Button>
-          </Upload>
-        </Form.Item>
+            Back to List
+          </Button>
+        </div>
 
-        <Form.Item
-          label="Active"
-          name="is_active"
-          valuePropName="checked"
-          initialValue={true}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          <Switch />
-        </Form.Item>
+          {/* Left Section */}
+          <div className="space-y-6">
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter the title" }]}
+            >
+              <Input placeholder="Enter banner title" className="text-[15px] w-[700px] h-[40px]"  />
+            </Form.Item>
 
-        <Form.Item>
-          <div className="flex justify-end space-x-3">
-            <Button type="primary" htmlType="submit">
+            <Form.Item label="Link" name="link">
+              <Input placeholder="Optional link when clicking banner" className="text-[15px] h-[40px]" />
+            </Form.Item>
+
+            <Form.Item label="Position" name="position">
+              <InputNumber
+                placeholder="Optional position for sort order"
+                className="text-[15px]"
+                style={{
+                  width: "100%",
+                  height: "40px",         // Set chiều cao giống các input
+                  display: "flex",
+                  alignItems: "center"    // Căn giữa chiều dọc
+                }}
+              />
+            </Form.Item>
+          </div>
+
+          {/* Right Section */}
+          <div className="space-y-6">
+            <Form.Item
+              label="Banner Image"
+              name="image"
+              valuePropName="file"
+              getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+              rules={[{ required: true, message: "Please upload an image" }]}
+            >
+              <Upload
+                beforeUpload={() => false}
+                maxCount={1}
+                accept="image/*"
+                listType="picture-card"
+              >
+                <div>
+                  <UploadOutlined />
+                  <div className="mt-1">Upload</div>
+                </div>
+              </Upload>
+            </Form.Item>
+
+            <Form.Item
+              label="Active"
+              name="is_active"
+              valuePropName="checked"
+              initialValue={true}
+            >
+              <Switch />
+            </Form.Item>
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="md:col-span-2 flex justify-end gap-4 mt-4">
+            
+            <Button 
+              type="primary"
+              icon={<SaveOutlined />}
+              htmlType="submit"
+              loading={loading}
+              style={{height: 40}}
+              className="h-[40px] w-[180px]"
+            >
               Update Banner
             </Button>
-            <Button onClick={() => navigate("/admin/listbanner")}>Cancel</Button>
+            <Button 
+              icon={<ReloadOutlined />}
+              htmlType="button"
+              onClick={() => form.resetFields()}
+              disabled={loading}
+              style={{height: 40}}
+              className="h-[40px]"
+              danger
+            >
+              Cancel
+            </Button>
           </div>
-        </Form.Item>
-      </Form>
+        </Form>
+      </Card>
     </div>
   );
 };
