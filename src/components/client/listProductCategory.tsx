@@ -213,7 +213,9 @@ const ListProductCategory = () => {
                                                 />
                                             </div>
                                             <div className='content w-[80%] mt-[0px]'>
-                                                <h4 className='w-full text-[15px] font-semibold text-black'>{product.name}</h4>
+                                                <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
+                                                    {product.name}
+                                                </h4>
                                                 <div className='pt-1.5 flex items-center'>
                                                     <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
                                                         {formatPrice(product.sale_price)}<sup>đ</sup>

@@ -209,7 +209,7 @@ const OrderHistory = () => {
                                                 </Popconfirm>
                                             )}
                                             {
-                                                order.status === 'pending' || order.status === "confirmed" && (
+                                                (order.status === 'pending' || order.status === "confirmed") && (
                                                     <Popconfirm
                                                         title="Bạn chắc chắn muốn huỷ đơn hàng này?"
                                                         okText="Huỷ"
