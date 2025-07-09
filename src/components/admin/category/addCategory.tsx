@@ -1,22 +1,52 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Form, Input, Button, Card, Upload, message } from "antd";
+import { useNavigate, Link } from "react-router-dom";
 import { useCreate } from "../../../hooks/useCreate";
-import { OrderedListOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import {
+  OrderedListOutlined,
+  ReloadOutlined,
+  SaveOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 
 const AddCategory = () => {
   const nav = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
   const { mutate } = useCreate<FormData>({
     resource: "/categories/admin",
   });
 
   const onFinish = (values: any) => {
-    mutate(values);
+    if (!values.image || values.image.length === 0) {
+      message.error("Please upload at least one image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("slug", values.slug);
+    formData.append("description", values.description || "");
+
+    values.image.forEach((file: any) => {
+      if (file.originFileObj) {
+        formData.append("image", file.originFileObj);
+      }
+    });
+
     setLoading(true);
-    nav("/admin/listcategory");
+    mutate(formData, {
+      onSuccess: () => {
+        nav("/admin/listcategory");
+      },
+      onError: () => {
+        message.error("Failed to create category.");
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+    });
   };
 
   return (
@@ -30,7 +60,13 @@ const AddCategory = () => {
             Add New Category
           </h2>
           <Link to={`/admin/listcategory`}>
-            <Button type="primary" icon={<OrderedListOutlined />} style={{width: 200, height: 40}}>List Category</Button>
+            <Button
+              type="primary"
+              icon={<OrderedListOutlined />}
+              style={{ width: 200, height: 40 }}
+            >
+              List Category
+            </Button>
           </Link>
         </div>
         <p className="text-sm text-gray-500 mb-6">
@@ -42,17 +78,26 @@ const AddCategory = () => {
           form={form}
           onFinish={onFinish}
           className="space-y-5"
+          onValuesChange={(changedValues, allValues) => {
+            if ("name" in changedValues) {
+              const rawName = changedValues.name || "";
+              const generatedSlug = rawName
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9 ]/g, "")
+                .trim()
+                .replace(/\s+/g, "-");
+              form.setFieldsValue({ slug: generatedSlug });
+            }
+          }}
         >
           <Form.Item
             label={<span className="text-base font-medium">Title</span>}
             name="name"
             rules={[{ required: true, message: "Please enter the title" }]}
           >
-            <Input
-              placeholder="Enter title"
-              className="h-10"
-              size="large"
-            />
+            <Input placeholder="Enter title" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
@@ -60,42 +105,54 @@ const AddCategory = () => {
             name="slug"
             rules={[{ required: true, message: "Please enter the slug" }]}
           >
-            <Input
-              placeholder="Enter slug"
-              className="h-10"
-              size="large"
-            />
+            <Input placeholder="Enter slug" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
             label={<span className="text-base font-medium">Description</span>}
             name="description"
           >
-            <Input.TextArea
-              placeholder="Enter description"
-              rows={4}
-            />
+            <Input.TextArea placeholder="Enter description" rows={4} />
+          </Form.Item>
+
+          <Form.Item
+            name="image"
+            label={<span className="text-base font-medium">Image Categories</span>}
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+            rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
+          >
+            <Upload 
+              listType="picture-card"
+              beforeUpload={() => false}
+              maxCount={1} // chỉ 1 ảnh duy nhất
+              multiple={false}
+              accept="image/*"
+            >
+              <div>
+                <UploadOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>
+            </Upload>
           </Form.Item>
 
           <div className="flex justify-end space-x-3">
             <Button
-              htmlType="button"
-              onClick={() => nav("/admin/listcategory")}
+              htmlType="submit"
               className="rounded-xl"
               icon={<SaveOutlined />}
               loading={loading}
-              style={{height: 40}}
+              style={{ height: 40 }}
               type="primary"
             >
               Save Category
             </Button>
             <Button
               danger
-              htmlType="submit"
-              className="rounded-xl"
-              size="middle"
+              htmlType="button"
               onClick={() => form.resetFields()}
-              style={{height: 40}}
+              className="rounded-xl"
+              style={{ height: 40 }}
               icon={<ReloadOutlined />}
             >
               Cancel

@@ -68,6 +68,7 @@ import ListProductCategory from './components/client/listProductCategory'
 import AddColorAvarin from './components/admin/colorAvarin/AddColorAvarin'
 import ListColorAvarin from './components/admin/colorAvarin/ListColorAvarin'
 import UpdateColorAvarin from './components/admin/colorAvarin/UpdateColorAvarin'
+import SearchProduct from './components/client/searchProduct'
 
 
 
@@ -101,6 +102,7 @@ function App() {
       {path: 'detailBlog/:slug', element: <DetailBlogClient />},
       {path: 'listBlog/category/:slug', element: <ListBlogCategory />},
       {path: 'products', element: <ListProductCategory />},
+      {path: 'searchProduct', element: <SearchProduct />}
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

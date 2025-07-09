@@ -84,8 +84,8 @@ const BannerClient = () => {
                     </span>
                 </div>
             </section>
-            <section className='w-[75%] mt-[80px] justify-around mx-auto flex items-center '>
-                <div className='w-[50%] h-[270px]'>
+            <section className='w-[76%] mt-[80px] mx-auto flex items-center justify-between'>
+                <div className='w-[52%] h-[270px]'>
                     <div className='img w-full h-full relative'>
                         <img className='object-cover h-full w-full' src="/running.jpg" alt="" />
                         <div className='absolute top-0 left-0 w-full h-full'>

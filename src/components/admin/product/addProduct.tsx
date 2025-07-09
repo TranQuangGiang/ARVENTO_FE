@@ -28,6 +28,12 @@ const AddProduct = () => {
     value: cat._id,
   }));
 
+  const { data:option, refetch } = useList({
+    resource: `/options`,
+  });
+  console.log(option);
+  
+
   const { mutate: product } = useCreate<FormData>({ resource: "/products" });
 
   const onFinish = async (values: any) => {
@@ -140,11 +146,27 @@ const AddProduct = () => {
               <Form.Item name="category_id" label="Danh mục" rules={[{ required: true }]}>
                 <Select style={{height: 40}} className="h-[40px]"  placeholder="Chọn danh mục" options={categoryOption} />
               </Form.Item>
-              <Form.Item name="original_price" label="Giá gốc (VND)" rules={[{ required: true }]}>
-                <InputNumber style={{width: 560}} min={0} className="w-[full] h-[40px]" />
+              <Form.Item
+                label="Original_Price (VND)"
+                name="original_price"
+                className="font-semibold custom-input-number"
+                rules={[{ required: true, message: "Please enter the price" }]}
+              >
+                <InputNumber<number>
+                  min={0}
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
-              <Form.Item name="sale_price" label="Giá khuyến mãi (VND)" rules={[{ required: true }]}>
-                <InputNumber style={{width: 560}} min={0} className="w-full h-[40px]" />
+              <Form.Item
+                label="Sale_Price (VND)"
+                name="sale_price"
+                className="font-semibold custom-input-number"
+                rules={[{ required: true, message: "Please enter the price" }]}
+              >
+                <InputNumber<number>
+                  min={0}
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
               <Form.Item
                 name="tags" 
@@ -210,7 +232,26 @@ const AddProduct = () => {
                   label={`Giá trị ${type === "color" ? "màu sắc" : "kích thước"}`}
                   rules={[{ required: true, message: `Nhập giá trị cho ${type}` }]}
                 >
-                  <Select className="w-full" mode="tags" placeholder={type === "color" ? "VD: Đỏ, Xanh" : "VD: 38, 39, 40"} />
+                  <Select 
+                    className="w-full" 
+                    mode="tags" 
+                    placeholder={type === "color" ? "VD: Đỏ, Xanh" : "VD: 38, 39, 40"} 
+                    options={
+                      type === "color"
+                      ? (
+                        option?.data?.data.find((opt: any) => opt.key === "color")?.values.map((val: any) => ({
+                          label: val.name,
+                          value: val.name,
+                        })) || []
+                      )
+                      : (
+                        option?.data?.data.find((opt: any) => opt.key === "size")?.values.map((val: string) => ({
+                        label: val,
+                        value: val,
+                        })) || []
+                      )
+                    }  
+                  />
                 </Form.Item>
               </Card>
             ))}

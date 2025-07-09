@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Select, Table } from "antd";
+import { Button, Image, Input, Popconfirm, Select, Table } from "antd";
 import { Link } from "react-router-dom";
 import { useDelete } from "../../../hooks/useDelete";
 import { useList } from "../../../hooks/useList";
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChartColumnStacked } from "lucide-react";
+import { render } from "react-dom";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -60,6 +61,23 @@ const ListCategory = () => {
       dataIndex: "description",
       key: "description",
       render: (text: string) => text || "-",
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image: any) =>
+        image?.url ? (
+          <Image
+            src={image.url}
+            alt={image.alt || "Category image"}
+            width={60}
+            height={60}
+            style={{ objectFit: "cover", borderRadius: 8 }}
+          />
+        ) : (
+          "-"
+        ),
     },
     {
       title: "Actions",

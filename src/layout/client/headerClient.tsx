@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 // import Login from '../../components/client/auth/Login';
 // import Register from '../../components/client/auth/Register';
 import { AuthContexts } from '../../components/contexts/authContexts';
@@ -11,6 +11,7 @@ import { useCart } from '../../components/contexts/cartContexts';
 import Login from '../../components/client/auth/Login';
 import Register from '../../components/client/auth/Register';
 import { useList, useListClient } from '../../hooks/useList';
+import axios from 'axios';
 
 
 const HeaderClient = () => {
@@ -20,6 +21,7 @@ const HeaderClient = () => {
   const [searchParams] = useSearchParams(); 
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const nav = useNavigate();
 
   const modalParam = searchParams.get("modal");
     useEffect(() => {
@@ -35,6 +37,35 @@ const HeaderClient = () => {
   const category = data?.data;
   console.log(category);
   
+  const handleSearchChange = async (value: string) => {
+    setSearchTerm(value);
+
+    if (!value) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await axios.get(`http://localhost:3000/api/products/search?keyword=${value}`);
+      const docs = res?.data?.data?.docs;
+      setSuggestions(docs);
+      console.log(res?.data);
+      
+    } catch (error) {
+      console.error("Lỗi tìm kiếm:", error);
+    }
+  }
+
+  const formatPrice = (price: any) => {
+    if (typeof price === 'object' && price?.$numberDecimal) {
+      return Number(price.$numberDecimal).toLocaleString();
+    }
+    if (typeof price === 'number') {
+      return price.toLocaleString();
+    }
+    return 'Liên hệ';
+  };
+
   return (
     <div className='fixed top-0 left-0 right-0 z-50 w-full bg-white h-[80px] shadow-md'>
       <div className='header w-[85%] mx-auto h-[80px] bg-white flex items-center justify-around'>
@@ -76,7 +107,15 @@ const HeaderClient = () => {
             <input
               type="text"
               value={searchTerm}
-              // onChange={(e) => handleSearchChange(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setSuggestions([]);       // Xóa gợi ý
+                  setSearchTerm("");        // Xóa ô tìm kiếm
+                  setSearchOpen(false); 
+                  nav(`/searchProduct?keyword=${encodeURIComponent(searchTerm)}`);
+                }
+              }}
               placeholder="Search..."
               className={`h-[35px] pr-10 pl-3 border border-[#0b1f4e] rounded text-black transition-all duration-300 outline-0 ${
                 searchOpen ? 'w-[350px]' : 'w-0 px-0 border-0'
@@ -89,6 +128,25 @@ const HeaderClient = () => {
               className="absolute text-[18px] right-3 font-extrabold text-black cursor-pointer"
               onClick={() => setSearchOpen(prev => !prev)}
             />
+            {
+              searchTerm && Array.isArray(suggestions) && suggestions.length > 0 && (
+                <div className="absolute top-full mt-2 bg-white rounded w-[350px] z-40 shadow-lg drop-shadow-xl ring-1 ring-gray-200">
+                  <h3 className='font-bold font-sans text-[18px] text-gray-800 text-center mt-3.5 mb-2 up'>Kết quả tìm kiếm </h3>
+                  {suggestions.map((product:any) => (
+                    <Link to={`/detailProductClient/${product._id}`} key={product._id} className="flex items-center gap-2 p-3 hover:bg-gray-100">
+                      <img src={product?.images?.[0].url} alt={product.name} className="w-12 h-12 object-cover" />
+                      <div className="text-sm">
+                        <p>{product.name}</p>
+                        <span className='flex items-center gap-3'>
+                          <p className="text-red-500 text-[15px]">{formatPrice(product.sale_price)}đ</p>
+                          <del className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}đ</del>
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )
+            }
           </div>
         </section>
 
