@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useList } from '../../../../../hooks/useList';
-import { Button, Card, Image, message, Popconfirm, Select } from 'antd';
+import { Button, Card, Image, Input, message, Modal, Popconfirm, Select } from 'antd';
 import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useUpdateUser } from '../../../../../hooks/useUpdate';
@@ -25,6 +25,8 @@ const OrderHistory = () => {
                 return "completed";
             case "cancelled":
                 return "cancelled";
+            case "returning": 
+                return "returning"
             case "returned":
                 return "returned";
             default:
@@ -48,6 +50,8 @@ const OrderHistory = () => {
                 return "bg-green-200 text-green-800";
             case "cancelled":
                 return "bg-red-100 text-red-700";
+            case "returning":
+                return "bg-orange-100 text-orange-700"
             case "returned":
                 return "bg-red-200 text-red-800";
             default:
@@ -63,6 +67,7 @@ const OrderHistory = () => {
         { key: "delivered", label: "Delivered" },
         { key: "completed", label: "Completed" },
         { key: "cancelled", label: "Cancelled" },
+        { key: "returning", label: "Returning" },
         { key: "returned", label: "Returned" },
     ];
 
@@ -120,6 +125,69 @@ const OrderHistory = () => {
         }
         
     }
+    // chức năng yêu cầu trả hàng
+    const handleRequestReturn = (orderId: string) => {
+        let reason = "";
+
+        Modal.confirm({
+            width: 600,
+            height: 300,
+            title: <span style={{ fontSize: '18px', fontWeight: 600, color: '#eab308', textAlign: "center", width: "100%"}}> Yêu cầu trả hàng</span>,
+            content: (
+                <div style={{ marginTop: 10 }}>
+                    <p style={{ fontWeight: 500, marginBottom: 8 }}>Vui lòng nhập lý do muốn trả hàng:</p>
+                    <Input.TextArea
+                        rows={4}
+                        maxLength={500}
+                        onChange={(e) => { reason = e.target.value; }}
+                        placeholder="Nhập lý do trả hàng (tối đa 500 ký tự)"
+                        style={{
+                            borderRadius: 8,
+                            padding: 10,
+                            fontSize: 14,
+                            resize: 'none'
+                        }}
+                    />
+                </div>
+            ),
+            okText: <span style={{ fontWeight: 600 }}>Gửi yêu cầu</span>,
+            cancelText: "Hủy",
+            okButtonProps: {
+                style: {
+                    backgroundColor: '#10b981',
+                    borderColor: '#10b981',
+                    fontWeight: 600,
+                    borderRadius: 6
+                }
+            },
+            cancelButtonProps: {
+                style: {
+                    borderRadius: 6
+                }
+            },
+            onOk: async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    await axios.patch(`http://localhost:3000/api/orders/${orderId}/request-return`, 
+                        {
+                            is_return_requested: true,
+                            note: reason || ""
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    );
+                    message.success("Đã gửi yêu cầu trả hàng!");
+                    refetch();
+                } catch (error) {
+                    console.error(error);
+                    message.error("Gửi yêu cầu thất bại!");
+                }
+            }
+        })
+    }
     return (
         <div className='w-full min-h-screen'>
             <div className='w-full h-full rounded-[15px] bg-white min-h-screen'>
@@ -128,7 +196,7 @@ const OrderHistory = () => {
                         <div
                             key={tab.key}
                             onClick={() => setSelectedStatus(tab.key)}
-                            className={`pb-2 ml-6 text-center px-1.5 cursor-pointer text-[14px] font-semibold ${
+                            className={`pb-2 ml-6 text-center cursor-pointer text-[14px] font-semibold ${
                                 selectedStatus === tab.key
                                 ? "text-red-600 border-b-[3px] rounded-[1px] border-red-600"
                                 : "text-gray-500"
@@ -175,7 +243,7 @@ const OrderHistory = () => {
                                         })}
                                     </div>
 
-                                    <div className="flex flex-col items-end gap-2 min-w-[220px]">
+                                    <div className="flex flex-col items-end gap-2 max-w-[300px]">
                                         <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getOrderStatusStyle(order.status)}`}>
                                             {getOrderStatusLabel(order.status)}
                                         </span>
@@ -207,6 +275,17 @@ const OrderHistory = () => {
                                                     ✅ Đã nhận hàng
                                                 </Button>
                                                 </Popconfirm>
+                                            )}
+                                            {order.status === "delivered" && (
+                                                <Button
+                                                    type="default"
+                                                    style={{ height: 38, color: '#d97706', borderColor: '#d97706' }}
+                                                    className="text-[16px]"
+                                                    onClick={() => handleRequestReturn(order._id)}
+                                                >
+                                                    ↩️ Yêu cầu trả hàng
+                                                </Button>
+                                            
                                             )}
                                             {
                                                 (order.status === 'pending' || order.status === "confirmed") && (

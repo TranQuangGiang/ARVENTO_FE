@@ -4,6 +4,7 @@ export const initialState: CartState = {
     cart: null,
     cartItemCount: 0,
     selectedVoucher: null,
+    applied_coupon_data: null,
 };
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
@@ -52,6 +53,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
                 cart: updatedCart,
                 cartItemCount: count,
                 selectedVoucher: state.selectedVoucher,
+                applied_coupon_data: action.payload,
+
             };
         }
 
@@ -72,6 +75,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
                 cart: updatedCart,
                 cartItemCount: count,
                 selectedVoucher: state.selectedVoucher,
+                applied_coupon_data: action.payload,
+
             };
         }
 
@@ -95,6 +100,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
                 cart: updatedCart,
                 cartItemCount: count,
                 selectedVoucher: state.selectedVoucher,
+                applied_coupon_data: action.payload,
+
             };
         }
         case "CLEAR_CART":
@@ -107,6 +114,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
             return {
                 ...state,
                 selectedVoucher: action.payload,
+                applied_coupon_data: action.payload,
+
             };
         default:
             return state;

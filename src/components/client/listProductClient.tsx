@@ -53,7 +53,7 @@ const ListProductClient = () => {
     <main>
       <div className=' w-[100%]'>
         {location.pathname === "/" && <BannerClient />}
-        <div className='list-product w-[76%] mx-auto mt-[100px] mb-[60px] flex items-center justify-between'>
+        <div className='list-product w-[76%] mx-auto mt-[100px] mb-[80px] flex items-center justify-between'>
           {isFetchingAll && <p>Loading...</p>}
           {!isFetchingAll &&
             newestProducts.map((product, index) => {
@@ -105,33 +105,34 @@ const ListProductClient = () => {
           </div>
         </div>
 
-        <div className="w-[76%] mx-auto my-10 mb-9">
+        <div className="w-[76%] mx-auto my-10">
           <h2 className="text-xl font-semibold mb-6 uppercase text-gray-700">Danh mục sản phẩm</h2>
           <div className="w-full flex flex-wrap justify-between">
             {category?.map((item: any) => (
-              <div
-                key={item._id}
-                className="flex w-[115px] h-[130px] flex-col bg-white shadow-md hover:shadow-xl items-center cursor-pointer group p-2 transition-all duration-300"
-              >
-                <div className="w-16 h-16 overflow-hidden flex items-center justify-center mb-2">
-                  <img
-                    src={item.image?.url || "/default-category.png"}
-                    alt={item.name}
-                    className="w-16 h-16 object-contain"
-                  />
+              <Link key={item._id} to={`/products?category=${item._id}`}>
+                <div  
+                  className="flex w-[115px] h-[130px] flex-col bg-white shadow-md hover:shadow-xl items-center cursor-pointer group p-2 transition-all duration-300"
+                >
+                  <div className="w-16 h-16 overflow-hidden flex items-center justify-center mb-2">
+                    <img
+                      src={item.image?.url || "/default-category.png"}
+                      alt={item.name}
+                      className="w-16 h-16 object-contain"
+                    />
+                  </div>
+                  <p className="text-center text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
+                    {item.name}
+                  </p>
                 </div>
-                <p className="text-center text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
-                  {item.name}
-                </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
 
-        <div className="banner w-full h-[350px] mt-[40px] mb-[60px] overflow-hidden banner-shine relative">
-          <div className="w-[1800px] h-full relative overflow-hidden">
+        <div className="banner w-full h-[350px] mt-[100px] mb-[60px] overflow-hidden banner-shine relative">
+          <div className="w-full h-full relative overflow-hidden">
             <img
-              className="absolute object-cover w-[1800px] -top-[250px]"
+              className="absolute object-cover w-full -top-[250px]"
               src="/healthy.jpg"
               alt=""
             />

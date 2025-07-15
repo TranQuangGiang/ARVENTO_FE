@@ -28,8 +28,8 @@ const ResetPassword = () => {
     }
     return (
         <AnimatePresence>
-            <div className="p-6 w-full h-screen">
-                <div className='w-[50%] mx-auto mt-14'>
+            <div className="p-6 w-full max-h-screen">
+                <div className='w-[50%] mx-auto '>
                     <div className='[&_img]:w-1/3 [&_img]:mx-auto [&_img]:mb-0'>
                         <img src="/resetpassword.jpg" alt="" />
                     </div>

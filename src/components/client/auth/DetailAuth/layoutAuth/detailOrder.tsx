@@ -95,9 +95,20 @@ const DetailOrderClient = () => {
             )}
           />
           <Divider />
-          <div className="text-right text-base">
+          <div className="text-right text-base flex flex-col gap-1">
             <p>Tạm tính: <strong>{order.subtotal.toLocaleString()}₫</strong></p>
+            {order.shipping_fee > 0 && (
+              <div>
+                <Text>
+                  Phí vận chuyển:{" "}
+                  <strong style={{ color: "black" }}>
+                    {Number(order.shipping_fee ).toLocaleString("vi-VN")}₫
+                  </strong>
+                </Text>
+              </div>
+            )}
             <p>Giảm giá: <strong className="text-green-600">- {order.discount_amount.toLocaleString()}₫</strong></p>
+            
             <p className="text-lg font-bold text-blue-600">Tổng tiền: {order.total.toLocaleString()}₫</p>
           </div>
         </Card>

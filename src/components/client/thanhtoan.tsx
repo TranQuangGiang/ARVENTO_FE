@@ -7,7 +7,7 @@ import { useCart } from "../contexts/cartContexts"; // ✅ Dùng context
 const Thanhtoan = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { customerInfo, shippingInfo } = location.state || {};
+  const { customerInfo, shippingInfo, shippingFee, subtotal, discount, total, appliedCoupon } = location.state || {};
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTempMethod, setSelectedTempMethod] = useState("");
@@ -74,7 +74,7 @@ const Thanhtoan = () => {
 
   try {
     setIsLoading(true);
-
+    
     const token = localStorage.getItem("token");
     if (!token) {
       message.error("Bạn chưa đăng nhập hoặc token hết hạn");
@@ -91,7 +91,7 @@ const Thanhtoan = () => {
       total_price: item.total_price,
       
     }));
-
+    const totalWithShipping = total + (shippingFee || 0);
     const orderRes = await fetch("http://localhost:3000/api/orders", {
       method: "POST",
       headers: {
@@ -100,20 +100,22 @@ const Thanhtoan = () => {
       },
       body: JSON.stringify({
         items: orderItems,
-        total: cartContext?.total,
-        subtotal: cartContext?.subtotal,
-        discount_amount: cartContext?.subtotal && cartContext?.total
-          ? Number(cartContext.subtotal) - Number(cartContext.total)
-          : 0,
+        total: totalWithShipping,
+        subtotal: subtotal,
+        applied_coupon: {
+          code: appliedCoupon.code,
+          discount_amount: appliedCoupon.discount_amount,
+          discount_type: appliedCoupon.discount_type,
+        },
         address: {
           recipient: shippingInfo?.recipient,
           address: shippingInfo?.fullAddress,
           note: shippingInfo?.note || "",
         },
         shipping_address: shippingInfo?.id,
+        shipping_fee: shippingFee || 0 ,
         note: shippingInfo?.note || "",
         payment_method: selectedMethod,
-        coupon: cartContext?.applied_coupon?.code || null
       }),
     });
     const orderData = await orderRes.json();
@@ -131,7 +133,7 @@ const Thanhtoan = () => {
       },
       body: JSON.stringify({
         order: orderData.data._id,
-        amount: cartContext?.total,
+        amount: total,
         note: shippingInfo?.note || "Test zalopay payments",
       }),
     });
@@ -146,7 +148,7 @@ const Thanhtoan = () => {
     } else {
       message.success("Đặt hàng và thanh toán thành công");
       await clearCart();
-      const convertedItems = cartContext.items.map((item) => ({
+      const convertedItems = cartContext?.items.map((item) => ({
         product: item.product,
         selected_variant: item.selected_variant,
         quantity: item.quantity,
@@ -154,23 +156,23 @@ const Thanhtoan = () => {
         total_price: item.total_price,
       }));
 
-navigate('/thanhcong', {
-  state: {
-    order: {
-      ...orderData.data,
-      items: convertedItems,
-      address: {
-        ...orderData.data.address,
-        recipient: shippingInfo?.recipient,
-        phone: customerInfo?.phone, 
-        address: shippingInfo?.fullAddress,
-        note: shippingInfo?.note,
-      },
-      total: cartContext?.total,
-      subtotal: cartContext?.subtotal,
-    },
-  },
-});
+      navigate('/thanhcong', {
+        state: {
+          order: {
+            ...orderData.data,
+            items: convertedItems,
+            address: {
+              ...orderData.data.address,
+              recipient: shippingInfo?.recipient,
+              phone: customerInfo?.phone, 
+              address: shippingInfo?.fullAddress,
+              note: shippingInfo?.note,
+            },
+            total: total,
+            subtotal: cartContext?.subtotal,
+          },
+        },
+      });
 
     }
 
@@ -278,19 +280,24 @@ navigate('/thanhcong', {
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
           <div className="flex justify-between font-semibold text-base">
             <span>Tạm tính:</span>
-            <span className="text-red-500">{cartContext?.subtotal?.toLocaleString()}₫</span>
+            <span className="text-red-500">{subtotal?.toLocaleString()}₫</span>
           </div>
-          {cartContext?.applied_coupon && cartContext.subtotal && cartContext.total && (
+
+          {discount > 0 && (
             <div className="flex justify-between font-semibold text-base text-green-600">
               <span>Giảm giá:</span>
-              <span>
-                -{(Number(cartContext.subtotal) - Number(cartContext.total)).toLocaleString()}₫
-              </span>
+              <span>-{discount?.toLocaleString()}₫</span>
             </div>
           )}
+
+          <div className="flex justify-between font-semibold text-base">
+            <span>Phí vận chuyển:</span>
+            <span>{shippingFee?.toLocaleString()}₫</span>
+          </div>
+
           <div className="flex justify-between font-semibold text-lg">
             <span>Tổng cộng:</span>
-            <span className="text-red-500">{cartContext?.total?.toLocaleString()}₫</span>
+            <span className="text-red-500">{total?.toLocaleString()}₫</span>
           </div>
           <button
             className="w-full bg-blue-950 mt-4 mb-8 text-white py-2 cursor-pointer rounded text-base hover:bg-blue-900 disabled:opacity-60"
