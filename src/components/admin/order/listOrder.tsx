@@ -19,7 +19,7 @@ const ListOrder = () => {
 
   const statusOptions = [
     "pending", "confirmed", "processing", "shipping",
-    "delivered", "completed", "cancelled", "returned",
+    "delivered", "completed", "cancelled", "returning" , "returned",
   ];
 
   const statusColors: Record<string, string> = {
@@ -30,6 +30,7 @@ const ListOrder = () => {
     delivered: "#2f54eb",
     completed: "#52c41a",
     cancelled: "#ff4d4f",
+    returning: "#ffc53d",
     returned: "#d46b08",
   };
 
@@ -131,8 +132,6 @@ const ListOrder = () => {
               title={
                 option.value === "cancelled"
                   ? "Admin không được phép huỷ đơn hàng"
-                  : option.value === "returned" && record.status !== "cancelled"
-                  ? "Chỉ cho phép trả hàng khi đơn hàng đã bị huỷ"
                   : ""
               }
             >

@@ -62,7 +62,6 @@ const EditCategory = () => {
     setLoading(true);
     mutate(formData, {
       onSuccess: () => {
-        message.success("Cập nhật danh mục thành công!");
         nav("/admin/listcategory");
       },
       onError: () => {

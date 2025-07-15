@@ -32,7 +32,7 @@ const Thanhcong = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="px-6 py-10 bg-gray-50 min-h-screen"
+      className="px-6 py-10 bg-gray-50 min-h-screen mb-6"
     >
       <Card
         bordered={false}
@@ -164,11 +164,35 @@ const Thanhcong = () => {
             }}
           />
           <Divider />
-          <div className="text-right pr-4 mb-4">
+          <div className="text-right pr-4 mb-4 gap-1 flex flex-col">
+            <div>
+              <Text>
+                Subtotal: <strong>{order.subtotal?.toLocaleString()}₫</strong>
+              </Text>
+            </div>
+             {order.applied_coupon?.discount_amount > 0 && (
+              <div>
+                <Text>
+                  Discount: <strong className="text-green-600">-{Number(order.applied_coupon.discount_amount).toLocaleString()}₫</strong>
+                </Text>
+              </div>
+            )}
+            {order.shipping_fee > 0 && (
+              <div>
+                <Text>
+                  Phí vận chuyển:{" "}
+                  <strong style={{ color: "black" }}>
+                    {Number(order.shipping_fee).toLocaleString("vi-VN")}₫
+                  </strong>
+                </Text>
+              </div>
+            )}
+            <Divider />
             <Text strong style={{ fontSize: 18 }}>
-              Order Total: <span className="text-green-600">{order.total?.toLocaleString()}₫</span>
+              Order Total: <span className="text-blue-500">{order.total?.toLocaleString()}₫</span>
             </Text>
           </div>
+
         </Card>
         <div className="text-right mt-5">
             <Button onClick={() => navigate("/")}>

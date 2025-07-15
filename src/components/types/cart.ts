@@ -41,6 +41,7 @@ export type CartState = {
   cart: Cart | null;
   cartItemCount: number;
   selectedVoucher: string | null;
+  applied_coupon_data: any | null;
 }
 
 export type CartAction = 
@@ -50,3 +51,4 @@ export type CartAction =
     | { type: "REMOVE_FROM_CART"; payload: string | number }
     | { type: "CLEAR_CART" }
     | { type: "SET_SELECTED_VOUCHER", payload: string | null}
+    | { type: "SET_APPLIED_COUPON_DATA"; payload: any | null }; 
