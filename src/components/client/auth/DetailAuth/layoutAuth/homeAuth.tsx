@@ -64,7 +64,6 @@ const HomeAuth = () => {
             <div className='w-full h-14 border border-blue-500 rounded-[7px] flex items-center mb-3 bg-[#ebf3fe]'>
                 <span className='w-full flex items-center justify-between'>  
                     <p className='flex text-[15px] ml-4 items-center font-medium'><Info className='mr-2 text-blue-600' style={{width: 20}} /> Thêm địa chỉ để đặt hàng nhanh hơn </p>
-                    <p className='text-[15px] mr-7 font-medium cursor-pointer text-blue-500'>Thêm địa chỉ</p>
                 </span>
                 
             </div>
@@ -73,7 +72,7 @@ const HomeAuth = () => {
                     { orders.length > 0 ? (
                         orders.map((order:any) => (
                             <Card key={order._id} bordered className="shadow-sm ">
-                                <div className="w-full flex justify-between flex-wrap gap-4">
+                                <div className="w-full flex justify-between gap-4">
                                     <div>
                                         <p className="text-gray-500 text-[12px] mb-1">
                                             SKU: <strong>{order._id}</strong>
@@ -91,7 +90,7 @@ const HomeAuth = () => {
                                                         className="rounded"
                                                     />
                                                     <div>
-                                                        <p className="font-medium text-base">
+                                                        <p className="font-medium text-sm">
                                                             {item.product.name} - x{item.quantity} - 
                                                             <span className="text-red-600 font-semibold ml-1">
                                                                 {itemTotal.toLocaleString()}₫

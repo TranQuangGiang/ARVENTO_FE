@@ -8,8 +8,8 @@ import { faLocationDot, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-
 const FooterClient = () => {
   return (
     <div className='w-full bg-[#01225a] h-[400px]'>
-        <div className='w-[89%] mx-auto pt-[20px] flex justify-between'>
-            <section className='footer-logo w-[410px] flex flex-col '>
+        <div className='w-[87%] mx-auto pt-[20px] flex justify-between'>
+            <section className='footer-logo w-[310px] flex flex-col '>
                 <img className='w-[200px]' src="/logo1.png" alt="" />
                 <p className='w-[355px] pl-[26px] text-[15px] font-sans text-white'>
                     ARVENTO được định hướng trở thành hệ thống thương mại điện tử bán giày chính hãng hàng đầu Việt Nam.
@@ -21,7 +21,7 @@ const FooterClient = () => {
                     <FontAwesomeIcon className='text-[20px] text-white hover:scale-[1.1] transition-all duration-300 cursor-pointer' icon={faLinkedin} />
                 </span>
             </section>
-            <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
+            <section className=' mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
                 <h3 className='font-semibold text-[18px]'>Về chúng tôi</h3>
                 <ul className='[&_li]:pt-[10px] [&_li]:text-[14px] [&_li]:text-white'>
                     <li>Giới thiệu</li>

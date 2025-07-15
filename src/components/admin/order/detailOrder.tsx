@@ -21,6 +21,7 @@ const statusColors: Record<string, string> = {
   delivered: "blue",
   completed: "green",
   cancelled: "red",
+  returning: "gold",
   returned: "volcano",
 };
 
@@ -116,11 +117,24 @@ const DetailOrder = () => {
             )}
           />
           <Divider />
-          <div className="text-right">
+          <div className="text-right space-y-2">
+            <Text>
+              Mã giảm giá: <strong>{order.applied_coupon?.code || "-"}</strong>
+            </Text>
+            <br />
+            <Text>
+              Giảm giá: <span className="text-green-600">-{order.discount_amount?.toLocaleString()}₫</span>
+            </Text>
+            <br />
+            <Text>
+              Phí vận chuyển: <span className="text-blue-600">{order.shipping_fee?.toLocaleString()}₫</span>
+            </Text>
+            <br />
             <Text strong style={{ fontSize: 18 }}>
-              Tổng đơn hàng: <span className="	text-red-500">{order.total?.toLocaleString()}₫</span>
+              Tổng đơn hàng: <span className="text-red-500">{order.total?.toLocaleString()}₫</span>
             </Text>
           </div>
+
         </Card>
 
         {/* Timeline trạng thái */}
