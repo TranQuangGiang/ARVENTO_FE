@@ -69,6 +69,11 @@ import AddColorAvarin from './components/admin/colorAvarin/AddColorAvarin'
 import ListColorAvarin from './components/admin/colorAvarin/ListColorAvarin'
 import UpdateColorAvarin from './components/admin/colorAvarin/UpdateColorAvarin'
 import SearchProduct from './components/client/searchProduct'
+import GioiThieu from './components/client/gioithieu'
+import DieuKhoan from './components/client/dieukhoan'
+import ChinhSach from './components/client/chinhsach'
+import HuongDan from './components/client/huongdan'
+import ChinhSachMuaHang from './components/client/chinhsachmh'
 
 
 
@@ -102,7 +107,12 @@ function App() {
       {path: 'detailBlog/:slug', element: <DetailBlogClient />},
       {path: 'listBlog/category/:slug', element: <ListBlogCategory />},
       {path: 'products', element: <ListProductCategory />},
-      {path: 'searchProduct', element: <SearchProduct />}
+      {path: 'searchProduct', element: <SearchProduct />},
+      {path: 'gioithieu', element: <GioiThieu />},
+      {path: 'dieukhoan', element: <DieuKhoan />},
+      {path: 'chinhsach', element: <ChinhSach />},
+      {path: 'hdmh', element: <HuongDan />},
+      {path: 'chinhsachmuahang', element: <ChinhSachMuaHang />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

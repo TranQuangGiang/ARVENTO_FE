@@ -24,17 +24,27 @@ const FooterClient = () => {
             <section className=' mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
                 <h3 className='font-semibold text-[18px]'>Về chúng tôi</h3>
                 <ul className='[&_li]:pt-[10px] [&_li]:text-[14px] [&_li]:text-white'>
-                    <li>Giới thiệu</li>
-                    <li>Điều khoản sử dụng</li>
-                    <li>Chính sách bảo mật</li>
+                    <a href="/gioithieu">
+                        <li>Giới thiệu</li>
+                    </a>
+                    <a href="/dieukhoan">
+                        <li>Điều khoản sử dụng</li>
+                    </a>
+                    <a href="/chinhsach">
+                        <li>Chính sách bảo mật</li>
+                    </a>
                     <li>Tin tức</li>
                 </ul>
             </section>
             <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
                 <h3 className='font-semibold text-[18px]'>Khách hàng</h3>
                 <ul className='[&_li]:text-white [&_li]:pt-[10px] [&_li]:text-[14px]'>
-                    <li>Hướng dẫn mua hàng</li>
-                    <li>Chính sách mua hàng</li>
+                    <a href="/hdmh">
+                        <li>Hướng dẫn mua hàng</li>
+                    </a>
+                    <a href="/chinhsachmuahang">
+                        <li>Chính sách mua hàng</li>
+                    </a>
                     <li>Chính sách đổi trả</li>
                     <li>Hướng dẫn chọn size</li>
                     <li>Khách hàng thân thiết</li>
