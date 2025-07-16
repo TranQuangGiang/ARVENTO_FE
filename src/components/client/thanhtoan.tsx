@@ -102,11 +102,13 @@ const Thanhtoan = () => {
         items: orderItems,
         total: totalWithShipping,
         subtotal: subtotal,
-        applied_coupon: {
+        applied_coupon: appliedCoupon
+        ? {
           code: appliedCoupon.code,
           discount_amount: appliedCoupon.discount_amount,
           discount_type: appliedCoupon.discount_type,
-        },
+        }
+        : {},
         address: {
           recipient: shippingInfo?.recipient,
           address: shippingInfo?.fullAddress,
