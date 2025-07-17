@@ -74,6 +74,9 @@ import DieuKhoan from './components/client/dieukhoan'
 import ChinhSach from './components/client/chinhsach'
 import HuongDan from './components/client/huongdan'
 import ChinhSachMuaHang from './components/client/chinhsachmh'
+import DoiTra from './components/client/chinhsachdoitra'
+import ChonSize from './components/client/chonsize'
+import KhuyenMai from './components/client/khuyenmai'
 
 
 
@@ -113,6 +116,9 @@ function App() {
       {path: 'chinhsach', element: <ChinhSach />},
       {path: 'hdmh', element: <HuongDan />},
       {path: 'chinhsachmuahang', element: <ChinhSachMuaHang />},
+      {path: 'chinhsachdoitra', element: <DoiTra />},
+      {path: 'huongdanchonsize', element: <ChonSize />},
+      {path: 'khuyenmai', element: <KhuyenMai />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [
