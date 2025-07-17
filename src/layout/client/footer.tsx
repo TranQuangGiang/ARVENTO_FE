@@ -45,10 +45,16 @@ const FooterClient = () => {
                     <a href="/chinhsachmuahang">
                         <li>Chính sách mua hàng</li>
                     </a>
-                    <li>Chính sách đổi trả</li>
-                    <li>Hướng dẫn chọn size</li>
+                    <a href="/chinhsachdoitra">
+                        <li>Chính sách đổi trả</li>
+                    </a>
+                    <a href="/huongdanchonsize">
+                        <li>Hướng dẫn chọn size</li>
+                    </a>
                     <li>Khách hàng thân thiết</li>
-                    <li>Chương trình khuyết mãi</li>
+                    <a href="/khuyenmai">
+                        <li>Chương trình khuyết mãi</li>
+                    </a>
                 </ul>
             </section>
             <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
