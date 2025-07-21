@@ -86,7 +86,7 @@ const OrderHistory = () => {
     const handleCancelOrder = async (orderId: string, status: string) => {
         try {
             const token = localStorage.getItem("token");
-            if (status !== "pending" && status !== "confirmed") {
+            if (status !== "pending") {
                 message.error("Bạn khổng thể hủy đơn hàng đơn hàng đã được xử lý");
                 return;
             } 
@@ -190,7 +190,7 @@ const OrderHistory = () => {
     }
     return (
         <div className='w-full min-h-screen'>
-            <div className='w-full h-full rounded-[15px] bg-white min-h-screen'>
+            <div className='w-full h-full rounded-[15px] bg-white min-h-screen mb-4'>
                 <div className="flex h-16 items-center ">
                     {orderTabs.map((tab) => (
                         <div
@@ -209,7 +209,15 @@ const OrderHistory = () => {
                 <div className="flex flex-col gap-4">
                     {filteredOrders.length > 0 ? (
                         filteredOrders.map((order: any) => (
-                            <Card key={order._id} bordered className="shadow-sm">
+                            <Card key={order._id} bordered className="shadow-md rounded-xl transition-all duration-200 hover:shadow-lg">
+                                {order.status === "delivered" && order.is_return_requested && (
+                                    <div className="w-full bg-yellow-50 border mt-0 border-yellow-300 text-yellow-800 px-4 py-1.5 rounded mb-3 flex items-center gap-2">
+                                        <span className="text-xl">⚠️</span>
+                                        <span className="font-medium text-[14px]">
+                                            Yêu cầu trả hàng của bạn đang được xử lý. Vui lòng chờ shop phản hồi!
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between flex-wrap gap-4">
                                     <div>
                                         <p className="text-gray-500 text-[12px] mb-1">
@@ -260,7 +268,7 @@ const OrderHistory = () => {
                                                 </Button>
                                             </Link>
 
-                                            {order.status === "delivered" && (
+                                            {order.status === "delivered" && !order.is_return_requested && (
                                                 <Popconfirm
                                                 title="Xác nhận bạn đã nhận hàng và muốn hoàn thành đơn hàng?"
                                                 okText="Hoàn thành"
@@ -276,7 +284,7 @@ const OrderHistory = () => {
                                                 </Button>
                                                 </Popconfirm>
                                             )}
-                                            {order.status === "delivered" && (
+                                            {order.status === "delivered" && !order.is_return_requested &&  (
                                                 <Button
                                                     type="default"
                                                     style={{ height: 38, color: '#d97706', borderColor: '#d97706' }}
@@ -288,7 +296,7 @@ const OrderHistory = () => {
                                             
                                             )}
                                             {
-                                                (order.status === 'pending' || order.status === "confirmed") && (
+                                                (order.status === 'pending') && (
                                                     <Popconfirm
                                                         title="Bạn chắc chắn muốn huỷ đơn hàng này?"
                                                         okText="Huỷ"

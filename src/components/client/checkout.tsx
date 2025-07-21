@@ -71,9 +71,35 @@ const Checkout = () => {
   const products = cart?.items || [];
 
   const { data: userData } = useList({ resource: "/users/me" });
-  const { data: address, refetch: refetchDefault, isLoading } = useList({ resource: "/addresses/me/default" });
   const { data: addressData, refetch: refetchAddresses } = useList({ resource: "/addresses/me" });
 
+  const [defaultAddress, setDefaultAddress] = useState<any>(null);
+  const [loadingAddress, setLoadingAddress] = useState(true);
+
+  const fetchDefaultAddress = async () => {
+    setLoadingAddress(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:3000/api/addresses/me/default", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+     
+      if (res.data?.success && res?.data) {
+        setDefaultAddress(res.data.data);
+      } else {
+        setDefaultAddress(null);
+      }
+    } catch (err) {
+      console.error("Lỗi fetch địa chỉ mặc định:", err);
+      setDefaultAddress(null);
+    } finally {
+      setLoadingAddress(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDefaultAddress();
+  }, []);
   const [customerInfo, setCustomerInfo] = useState({ name: "", phone: "", email: "" });
   const [shippingInfo, setShippingInfo] = useState({ id: "", recipient: "", fullAddress: "", note: "" });
   const [shippingFee, setShippingFee] = useState(0);
@@ -97,8 +123,8 @@ const Checkout = () => {
   }, [userData]);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!address?.data) {
+    if (!loadingAddress) {
+      if (!defaultAddress) {
         message.warning("Bạn chưa có địa chỉ mặc định. Vui lòng thêm địa chỉ.");
         setShippingInfo({ id: "", recipient: "", fullAddress: "", note: "" });
         setCustomerInfo(prev => ({ ...prev, phone: "" }));
@@ -106,19 +132,19 @@ const Checkout = () => {
       } else {
         setShippingInfo(prev => ({
           ...prev,
-          fullAddress: address.data.fullAddress || "",
-          note: address.data.note || "",
-          id: address.data._id,
-          recipient: address.data.recipient || "",
+          fullAddress: defaultAddress.fullAddress || "",
+          note: defaultAddress.note || "",
+          id: defaultAddress._id,
+          recipient: defaultAddress.recipient || "",
         }));
         setCustomerInfo(prev => ({
           ...prev,
-          phone: address.data.phone || "",
+          phone: defaultAddress.phone || "",
         }));
         setShowModal(null);
       }
     }
-  }, [address, isLoading]);
+  }, [defaultAddress, loadingAddress]);
 
   const calculateShippingFee = async (addr: any) => {
   try {
@@ -165,10 +191,10 @@ const Checkout = () => {
 };
 
   useEffect(() => {
-  if (!isLoading && address?.data && products.length > 0) {
-    calculateShippingFee(address.data); 
+  if (!loadingAddress && defaultAddress && products.length > 0) {
+    calculateShippingFee(defaultAddress); 
   }
-}, [address, isLoading, products])
+}, [defaultAddress, loadingAddress, products]);
 
   const handleCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });
@@ -199,7 +225,7 @@ const Checkout = () => {
   };
   
   return (
-    <Spin spinning={isLoading} tip="Đang tải địa chỉ...">
+    <Spin spinning={loadingAddress} tip="Đang tải địa chỉ...">
       <div className="w-full bg-gray-100">
         <div className="max-w-3xl mx-auto p-4 space-y-4 text-sm">
 
@@ -345,7 +371,7 @@ const Checkout = () => {
                                   }
                                 );
                                 message.success("Đã đặt làm địa chỉ mặc định", 1);
-                                await refetchDefault();
+                                await fetchDefaultAddress();
                                 await refetchAddresses();
                               } catch (error) {
                                 message.error("Có lỗi xảy ra khi đặt mặc định");
@@ -420,10 +446,10 @@ const Checkout = () => {
 
         {/* Modal thêm địa chỉ */}
         <AddAddressesClient
-          isOpen={showModal === "addAddress"}
+          isOpen={showModal === "addAddress" }
           onClose={async () => {
             setShowModal(null);
-            await refetchDefault();
+            await fetchDefaultAddress();
             await refetchAddresses();
           }}
         />
