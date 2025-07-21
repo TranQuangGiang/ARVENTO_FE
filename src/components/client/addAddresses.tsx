@@ -46,19 +46,23 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
     }) 
 
     const handleFinish = (values: any) => {
-        mutate(values ,{
-            onSuccess: () => {
-                refetch();
-                form.resetFields(); // reset form fields
-                setSelectedProvince(null); // reset tỉnh
-                setSelectedDistrict(null); // reset huyện
-                setSelected(""); // reset label 'home' hoặc 'office'
-                onClose();
-                setLoading(true);
-            }
-        });
-        
-    };
+  setLoading(true); // bắt đầu loading
+
+  mutate(values, {
+    onSuccess: () => {
+      refetch();
+      form.resetFields();
+      setSelectedProvince(null);
+      setSelectedDistrict(null);
+      setSelected("");
+      onClose();
+      setLoading(false); // kết thúc loading
+    },
+    onError: () => {
+      setLoading(false); // nếu lỗi cũng kết thúc loading
+    }
+  });
+};
 
     {/* tỉnh  */}
     const { data: provinces, refetch: refetchProvinces } = useList({

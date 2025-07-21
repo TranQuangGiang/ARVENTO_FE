@@ -24,6 +24,8 @@ const HomeAuth = () => {
                 return "Hoàn thành";
             case "cancelled":
                 return "Đã huỷ";
+            case "returning": 
+                return "returning"
             case "returned":
                 return "Đã trả hàng";
             default:
@@ -46,6 +48,8 @@ const HomeAuth = () => {
                 return "bg-green-200 text-green-800";
             case "cancelled":
                 return "bg-red-100 text-red-700";
+            case "returning":
+                return "bg-orange-100 text-orange-700"
             case "returned":
                 return "bg-red-200 text-red-800";
             default:
