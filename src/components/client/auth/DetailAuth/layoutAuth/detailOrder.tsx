@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Timeline } from "antd";
 import { useOneData } from "../../../../../hooks/useOne";
+import { useList } from "../../../../../hooks/useList";
 
 const { Title, Text } = Typography;
 
@@ -27,8 +28,9 @@ const statusColorMap: Record<string, { text: string; color: string }> = {
 const DetailOrderClient = () => {
   const { id } = useParams();
   const { data } = useOneData({ resource: "/orders", _id: id });
+  
   const order = data?.data;
-
+  
   if (!order) return null;
 
   const getStatusInfo = (status: string) => statusColorMap[status] || { text: status, color: "gray" };
@@ -112,22 +114,77 @@ const DetailOrderClient = () => {
             <p className="text-lg font-bold text-blue-600">Tổng tiền: {order.total.toLocaleString()}₫</p>
           </div>
         </Card>
-
+        {order.status === "delivered" && order.is_return_requested && (
+          <Card
+            bordered={false}
+            className="rounded-lg shadow-sm bg-yellow-50 border border-yellow-200"
+            style={{ borderLeft: "3px solid #faad14" }}
+          >
+            <div className="flex items-start md:items-center justify-between gap-4">
+              {/* Icon + Text */}
+              <div className="flex items-start gap-3">
+                <span className="text-yellow-500 text-xl mt-1">⚠️</span>
+                <div>
+                  <Text strong className="text-gray-800 text-base">Yêu cầu trả hàng của bạn đang được xử lý. Vui lòng chờ phản hồi!</Text>
+                  <div className="mt-1">
+                    <Text strong>Lý do trả hàng:</Text>{" "}
+                    <Text type="danger">
+                        {
+                          order.timeline
+                            ?.filter((t:any) => t.status === "delivered" && t.note?.trim())
+                            .pop()?.note || "Không có lý do cụ thể"
+                        }
+                      </Text>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
         {/* Lịch sử đơn hàng */}
         {order.timeline?.length > 0 && (
           <Card title="📍 Lịch sử cập nhật đơn" bordered={false} className="shadow rounded-lg">
-            <Timeline>
-              {order.timeline.map((item: any, index: number) => (
-                <Timeline.Item
-                  key={index}
-                  color={getStatusInfo(item.status).color}
-                  label={new Date(item.changedAt).toLocaleString()}
-                >
-                  {getStatusInfo(item.status).text}
-                </Timeline.Item>
-              ))}
-            </Timeline>
+            <Timeline
+                items={order.timeline.map((item: any, index: number) => ({
+                color: getStatusInfo(item.status).color,
+                label: new Date(item.changedAt).toLocaleString(),
+                children: (
+                  <div className="flex flex-col gap-1">
+                    <Tag
+                      color={getStatusInfo(item.status).color}
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        alignSelf: "flex-start",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {getStatusInfo(item.status).text.toUpperCase()}
+                    </Tag>
+
+                    {item.note ? (
+                      <div
+                        style={{
+                          backgroundColor: "#f9f9f9",
+                          borderLeft: `4px solid ${getStatusInfo(item.status).color}`,
+                          padding: "8px 12px",
+                          fontStyle: "italic",
+                          fontSize: "13px",
+                          color: "#555",
+                          borderRadius: "6px",
+                        }}
+                      >
+                        {item.note}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: "13px", color: "#999" }}>Không có ghi chú.</div>
+                    )}
+                  </div>
+                ),
+              }))}
+            />
           </Card>
+
         )}
       </div>
     </div>

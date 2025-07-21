@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Card, List, Image, Tag, Spin, Typography, Divider, Row, Col, Button,
+  message,
 } from "antd";
 import { motion } from "framer-motion";
 import {
@@ -10,6 +11,7 @@ import {
   ReloadOutlined, DollarOutlined
 } from "@ant-design/icons";
 import { useOneDataOrder } from "../../../hooks/useOnedataOrder";
+import axiosInstance from "../../../utils/axiosInstance";
 
 const { Title, Text } = Typography;
 
@@ -136,6 +138,57 @@ const DetailOrder = () => {
           </div>
 
         </Card>
+        {order.status === "delivered" && order.is_return_requested && (
+          <Card
+            bordered={false}
+            className="rounded-lg shadow-sm bg-yellow-50 border border-yellow-200"
+            style={{ borderLeft: "3px solid #faad14" }}
+          >
+            <div className="flex items-start md:items-center justify-between gap-4">
+              {/* Icon + Text */}
+              <div className="flex items-start gap-3">
+                <span className="text-yellow-500 text-xl mt-1">⚠️</span>
+                <div>
+                  <Text strong className="text-gray-800 text-base">Yêu cầu trả hàng</Text>
+                  <div className="mt-1">
+                    <Text strong>Lý do trả hàng:</Text>{" "}
+                    <Text type="danger">
+                        {
+                          order.timeline
+                            ?.filter((t:any) => t.status === "delivered" && t.note?.trim())
+                            .pop()?.note || "Không có lý do cụ thể"
+                        }
+                      </Text>
+                  </div>
+                </div>
+              </div>
+
+              {/* Nút duyệt */}
+              <Button
+                type="primary"
+                danger
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem("token");
+                    await axiosInstance.patch(`/orders/${order._id}/status`,
+                      { 
+                        status: "returning",
+                        note: "Đã duyệt yêu cầu trả hàng"
+                      },
+                      { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    message.success("Đã duyệt yêu cầu trả hàng");
+                    refetch();
+                  } catch (err) {
+                    message.error("Xử lý thất bại!");
+                  }
+                }}
+              >
+                Duyệt yêu cầu trả hàng
+              </Button>
+            </div>
+          </Card>
+        )}
 
         {/* Timeline trạng thái */}
         {order.timeline && order.timeline.length > 0 && (
