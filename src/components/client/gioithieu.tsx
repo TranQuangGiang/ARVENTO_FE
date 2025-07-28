@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+interface Post {
+  title: string;
+  content: string;
+  tags?: string[];
+}
+
 
 const GioiThieu = () => {
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -43,6 +43,26 @@ const ListVariants = () => {
             }
         },
         {
+            title: "Price",
+            dataIndex: "price",
+            key: "price",
+            align: "center",
+            render: (price: any) => {
+                const value = parseFloat(price?.$numberDecimal || 0);
+                return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+            }
+        },
+        {
+            title: "Sale_Price",
+            dataIndex: "sale_price",
+            key: "sale_price",
+            align: "center",
+            render: (sale_price: any) => {
+                const value = parseFloat(sale_price?.$numberDecimal || 0);
+                return value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+            }
+        },
+        {
             title: "Color",
             dataIndex: "color",
             key: "color",

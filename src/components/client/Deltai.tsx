@@ -23,6 +23,11 @@ const DeltaiProduct = () => {
   const [userComment, setUserComment] = useState<string>("");
   const [fileList, setFileList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  // New state for current price
+  const [currentPrice, setCurrentPrice] = useState<number>(0);
+  // New states for variant original and sale prices
+  const [variantOriginalPrice, setVariantOriginalPrice] = useState<number>(0);
+  const [variantSalePrice, setVariantSalePrice] = useState<number>(0);
 
   const { addToCart } = useCart();
   const { id } = useParams();
@@ -45,7 +50,18 @@ const DeltaiProduct = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setVariants(res.data?.data?.data || []);
+        const fetchedVariants = res.data?.data?.data || [];
+        setVariants(fetchedVariants);
+
+        // Set initial selected color and size from the first variant if available
+        if (fetchedVariants.length > 0) {
+          const firstColor = fetchedVariants[0]?.color?.name;
+          setSelectedColor(firstColor);
+
+          // Find the first size for the initial color
+          const firstSizeForColor = fetchedVariants.find((v: any) => v.color.name === firstColor)?.size;
+          setSelectedSize(firstSizeForColor || null);
+        }
       } catch (error) {
         console.error("Lỗi khi lấy variants:", error);
         setVariants([]);
@@ -56,33 +72,89 @@ const DeltaiProduct = () => {
 
   useEffect(() => {
     if (!product || variants.length === 0) return;
-    const firstColor = variants[0]?.color?.name;
-    setSelectedColor(firstColor);
-    setSelectedSize(null);
-    const colorIndex = Array.from(new Set(variants.map(v => v.color.name))).indexOf(firstColor);
+
+    // Update selectedImage when selectedColor changes
+    const colorIndex = Array.from(new Set(variants.map(v => v.color.name))).indexOf(selectedColor);
     const filteredImages = product.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
     setSelectedImage(filteredImages[0]?.url || "");
-  }, [product, variants]);
+
+    // Update currentPrice and selectedSize when selectedColor changes
+    // If a color is selected, default to the first available size for that color, or null if no sizes for that color
+    const sizesForSelectedColor = variants.filter(v => v.color.name === selectedColor).map(v => v.size);
+    if (selectedColor && sizesForSelectedColor.length > 0 && !sizesForSelectedColor.includes(selectedSize)) {
+      setSelectedSize(sizesForSelectedColor[0]);
+    } else if (selectedColor && sizesForSelectedColor.length === 0) {
+      setSelectedSize(null);
+    }
+
+  }, [selectedColor, product, variants]);
+
+  // Effect to update prices based on selectedColor and selectedSize
+  useEffect(() => {
+    if (selectedColor && selectedSize) {
+      const selectedVariant = variants.find(
+        (v) => v.color.name === selectedColor && v.size === selectedSize
+      );
+
+      if (selectedVariant) {
+        const original = Number(selectedVariant.price?.$numberDecimal || 0);
+        const sale = Number(selectedVariant.sale_price?.$numberDecimal || 0);
+
+        setVariantOriginalPrice(original);
+        setVariantSalePrice(sale);
+
+        // Set currentPrice based on sale price if available and greater than 0, otherwise original
+        if (sale > 0 && sale < original) {
+          setCurrentPrice(sale);
+        } else {
+          setCurrentPrice(original);
+        }
+      } else {
+        setVariantOriginalPrice(0);
+        setVariantSalePrice(0);
+        setCurrentPrice(0);
+      }
+    } else if (product) {
+      // Fallback to product's sale_price/original_price if no variant is selected
+      const productOriginal = typeof product.original_price === 'object' && product.original_price?.$numberDecimal
+        ? Number(product.original_price.$numberDecimal)
+        : product.original_price || 0;
+
+      const productSale = typeof product.sale_price === 'object' && product.sale_price?.$numberDecimal
+        ? Number(product.sale_price.$numberDecimal)
+        : product.sale_price || 0;
+
+      setVariantOriginalPrice(productOriginal);
+      setVariantSalePrice(productSale);
+
+      if (productSale > 0 && productSale < productOriginal) {
+        setCurrentPrice(productSale);
+      } else {
+        setCurrentPrice(productOriginal);
+      }
+    }
+  }, [selectedColor, selectedSize, variants, product]);
+
 
   useEffect(() => {
-  const fetchReviews = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
-      console.log("REVIEW RESPONSE", res.data);
-      const reviewData = res.data?.data?.reviews || [];
+    const fetchReviews = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
+        console.log("REVIEW RESPONSE", res.data);
+        const reviewData = res.data?.data?.reviews || [];
 
-      // Chỉ hiển thị các review đã được duyệt và không bị ẩn
-      const filtered = reviewData.filter((r: any) => r.approved === true && r.hidden === false);
-      setReviews(filtered);
-    } catch (err) {
-      console.error("Lỗi khi tải đánh giá:", err);
-      setReviews([]);
+        // Chỉ hiển thị các review đã được duyệt và không bị ẩn
+        const filtered = reviewData.filter((r: any) => r.approved === true && r.hidden === false);
+        setReviews(filtered);
+      } catch (err) {
+        console.error("Lỗi khi tải đánh giá:", err);
+        setReviews([]);
+      }
+    };
+    if (product?._id) {
+      fetchReviews();
     }
-  };
-  if (product?._id) {
-    fetchReviews();
-  }
-}, [product]);
+  }, [product]);
 
 
   const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
@@ -107,24 +179,34 @@ const DeltaiProduct = () => {
     const userInfo: any = token ? jwtDecode(token) : null;
     const userId = userInfo?.id;
     if (!userId) return message.error("Bạn cần đăng nhập để thêm vào giỏ hàng.");
-    
+
     const variant = variants.find((v: any) => v.color.name === selectedColor && v.size === selectedSize);
+    console.log(variant);
     
     if (!variant) return;
-    
-    const unitPrice = typeof product.sale_price === "object"
-      ? Number(product.sale_price?.$numberDecimal || 0)
-      : product.sale_price;
-    
+
+    console.log("currentPrice khi thêm vào giỏ:", currentPrice);
+    console.log("variantOriginalPrice:", variantOriginalPrice);
+    console.log("variantSalePrice:", variantSalePrice);
+
+    // Use currentPrice for the unit price
+    const unitPrice = currentPrice;
+
     const cartItem = {
       userId,
       product: product._id,
       product_id: product._id,
       product_name: product.name,
       selected_variant: {
+        sku: variant.sku,                 // SKU từ variant
+        price: variant.price?.$numberDecimal || 0, // Giá sản phẩm (dưới dạng number)
+        stock: variant.stock || 0,        // Số lượng tồn kho
         color: variant.color,
         size: String(selectedSize),
-        image: String(selectedImage),
+        image: {
+          url: selectedImage,
+          alt: `Hình ảnh sản phẩm ${product.name}`
+        },
       },
       quantity,
       unit_price: unitPrice,
@@ -133,15 +215,15 @@ const DeltaiProduct = () => {
     try {
       setLoading(true);
       await addToCart(cartItem);
-    } 
-    catch (error:any) {
+    }
+    catch (error: any) {
       const errorMsg =
         error?.response?.data?.message ||
         error?.message ||
         "Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.";
 
       message.error(errorMsg);
-    } 
+    }
     finally {
       setLoading(false);
     }
@@ -192,102 +274,102 @@ const DeltaiProduct = () => {
       const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
       const reviewData = res.data?.data?.reviews;
       setReviews(Array.isArray(reviewData) ? reviewData : []);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      message.error("Lỗi khi gửi đánh giá!");
+      message.error(error?.response?.data.message);
     }
   };
 
-const handleDeleteReview = async (reviewId: string) => {
-  const token = localStorage.getItem("token");
-  if (!token) return message.error("Bạn chưa đăng nhập.");
-  try {
-    await axios.delete(`http://localhost:3000/api/reviews/${reviewId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    message.success("Đã xóa đánh giá!");
-    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
-  } catch (error) {
-    console.error("Lỗi khi xóa đánh giá:", error);
-    message.error("Xóa đánh giá thất bại!");
-  }
-};
-
-const [userId, setUserId] = useState<string | null>(null);
-
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
+  const handleDeleteReview = async (reviewId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return message.error("Bạn chưa đăng nhập.");
     try {
-      const decoded: any = jwtDecode(token);
-      setUserId(decoded?.id || null);
-    } catch (err) {
-      setUserId(null);
-    }
-  }
-}, []);
-
-// State
-const [isFavorite, setIsFavorite] = useState(false);
-
-// Kiểm tra sản phẩm đã được yêu thích hay chưa
-useEffect(() => {
-  if (!product?._id) return;
-
-  const token = localStorage.getItem("token");
-  if (!token) return;
-
-  const fetchFavoriteStatus = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3000/api/favorites/check/${product._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log("❤️ Trạng thái yêu thích:", res.data?.data?.isFavorite);
-      setIsFavorite(res.data?.data?.isFavorited || false);
-    } catch (err) {
-      console.error("❌ Không kiểm tra được trạng thái yêu thích", err);
-    }
-  };
-
-  fetchFavoriteStatus();
-}, [product?._id]);
-
-
-
-
-// Xử lý thêm vào yêu thích
-const handleToggleFavorite = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) return message.warning("Bạn cần đăng nhập để yêu thích sản phẩm.");
-  try {
-    if (isFavorite) {
-      await axios.delete(`http://localhost:3000/api/favorites/${product._id}`, {
+      await axios.delete(`http://localhost:3000/api/reviews/${reviewId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setIsFavorite(false);
-      message.success("Đã bỏ yêu thích sản phẩm!");
-    } else {
-      await axios.post(
-        `http://localhost:3000/api/favorites`,
-        { product_id: product._id },
-        {
+      message.success("Đã xóa đánh giá!");
+      setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+    } catch (error) {
+      console.error("Lỗi khi xóa đánh giá:", error);
+      message.error("Xóa đánh giá thất bại!");
+    }
+  };
+
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        setUserId(decoded?.id || null);
+      } catch (err) {
+        setUserId(null);
+      }
+    }
+  }, []);
+
+  // State
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Kiểm tra sản phẩm đã được yêu thích hay chưa
+  useEffect(() => {
+    if (!product?._id) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const fetchFavoriteStatus = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/favorites/check/${product._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("❤️ Trạng thái yêu thích:", res.data?.data?.isFavorited);
+        setIsFavorite(res.data?.data?.isFavorited || false);
+      } catch (err) {
+        console.error("❌ Không kiểm tra được trạng thái yêu thích", err);
+      }
+    };
+
+    fetchFavoriteStatus();
+  }, [product?._id]);
+
+
+
+
+  // Xử lý thêm vào yêu thích
+  const handleToggleFavorite = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return message.warning("Bạn cần đăng nhập để yêu thích sản phẩm.");
+    try {
+      if (isFavorite) {
+        await axios.delete(`http://localhost:3000/api/favorites/${product._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-      setIsFavorite(true);
-      message.success("Đã thêm vào yêu thích!");
+        });
+        setIsFavorite(false);
+        message.success("Đã bỏ yêu thích sản phẩm!");
+      } else {
+        await axios.post(
+          `http://localhost:3000/api/favorites`,
+          { product_id: product._id },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setIsFavorite(true);
+        message.success("Đã thêm vào yêu thích!");
+      }
+    } catch (err) {
+      console.error("Lỗi khi cập nhật yêu thích:", err);
+      message.error("Thao tác không thành công!");
     }
-  } catch (err) {
-    console.error("Lỗi khi cập nhật yêu thích:", err);
-    message.error("Thao tác không thành công!");
-  }
-};
+  };
 
 
 
@@ -317,24 +399,24 @@ const handleToggleFavorite = async () => {
           <div className="w-full flex flex-col items-center">
             <AnimatePresence>
               <div className="w-full overflow-hidden relative">
-                  {selectedImage && (
-                    <motion.div
-                      initial={{opacity: 0}}
-                      animate={{opacity: 1}}
-                      exit={{opacity: 0}}
-                      transition={{duration: 0.4}}
-                      key={selectedImage}
-                    >
-                      <Image
-                        className="w-full h-full object-cover"
-                        src={selectedImage}
-                        alt={product.name}
-                        preview={true}
-                      />
-                    </motion.div>
-                  )}
-                </div>
-             
+                {selectedImage && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    key={selectedImage}
+                  >
+                    <Image
+                      className="w-full h-full object-cover"
+                      src={selectedImage}
+                      alt={product.name}
+                      preview={true}
+                    />
+                  </motion.div>
+                )}
+              </div>
+
             </AnimatePresence>
             <div className="flex space-x-2 mt-4 flex-wrap justify-center">
               {filteredImages.map((img: any, i: number) => (
@@ -367,14 +449,24 @@ const handleToggleFavorite = async () => {
               <h6 className="text-[20px] font-sans font-medium text-[#01225a]">
                 Price:
               </h6>
-              <p className="ml-4 font-sans text-[17px] font-medium">
-                {formatPrice(product.sale_price)}
-                <sup>đ</sup>
-              </p>
-              <del className="font-sans text-[17px] font-semibold ml-6 text-gray-400">
-                {formatPrice(product.original_price)}
-                <sup>đ</sup>
-              </del>
+              {/* Conditional price display */}
+              {variantSalePrice > 0 && variantSalePrice < variantOriginalPrice ? (
+                <>
+                  <p className="ml-4 font-sans text-[17px] font-medium text-red-600">
+                    {formatPrice(variantSalePrice)}
+                    <sup>đ</sup>
+                  </p>
+                  <del className="font-sans text-[17px] font-semibold ml-6 text-gray-400">
+                    {formatPrice(variantOriginalPrice)}
+                    <sup>đ</sup>
+                  </del>
+                </>
+              ) : (
+                <p className="ml-4 font-sans text-[17px] font-medium">
+                  {formatPrice(variantOriginalPrice)}
+                  <sup>đ</sup>
+                </p>
+              )}
             </span>
 
             {/* Chọn màu */}
@@ -394,7 +486,6 @@ const handleToggleFavorite = async () => {
                       className={`w-[50px] h-[50px] cursor-pointer object-cover rounded border ${selectedColor === color ? "border-blue-600" : "border-gray-300"}`}
                       onClick={() => {
                         setSelectedColor(color);
-                        setSelectedSize(null);
                         setSelectedImage(firstImg);
                       }}
                     />
@@ -427,7 +518,7 @@ const handleToggleFavorite = async () => {
               {selectedSize !== null && (
                 <p className={`text-sm mt-2 ${
                   currentStock > 0 ? "text-green-500" : "text-red-500"
-                }`}>
+                  }`}>
                   {currentStock} in stock
                 </p>
               )}
@@ -448,7 +539,7 @@ const handleToggleFavorite = async () => {
                     fontSize: "14px",
                     height: 40,
                     width: 200
-                  }}  
+                  }}
                   loading={loading}
                   onClick={handleAddToCart}
                   disabled={selectedSize === null || currentStock <= 0}
@@ -505,50 +596,56 @@ const handleToggleFavorite = async () => {
           ) : (
             reviews.map((r, idx) => (
               <div key={idx} className="mb-6 border-b pb-4">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#01225a]">
-                  {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-                </span>
-                <div className="flex gap-2 items-center">
-                  <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
-                  {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                <Popconfirm
-                  title="Bạn chắc chắn muốn xóa đánh giá này?"
-                  onConfirm={() => handleDeleteReview(r._id)}
-                  okText="Xóa"
-                  cancelText="Hủy"
-                >
-                  <Button size="small" danger>Xóa</Button>
-                </Popconfirm>
-              )}
-            </div>
-        </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center mb-3">
+                    <div className="w-9 h-9 rounded-full bg-[#2d0d0d] text-white flex items-center justify-center text-sm font-sans font-semibold">
+                      {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
+                    </div>
+                    <span className="font-semibold text-[#01225a] ml-2">
+                      {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+                    </span>
+                  </div>
 
-      <Rate disabled defaultValue={r.rating} className="mt-1" />
-      <p className="mt-2 text-gray-700">{r.comment}</p>
+                  <div className="flex gap-2 items-center">
+                    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+                    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                      <Popconfirm
+                        title="Bạn chắc chắn muốn xóa đánh giá này?"
+                        onConfirm={() => handleDeleteReview(r._id)}
+                        okText="Xóa"
+                        cancelText="Hủy"
+                      >
+                        <Button size="small" danger>Xóa</Button>
+                      </Popconfirm>
+                    )}
+                  </div>
+                </div>
 
-      {r.images?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {r.images.map((img:any, i:any) => (
-            <img
-              key={i}
-              src={img}
-              className="w-16 h-16 rounded border object-cover"
-              alt={`review-img-${i}`}
-            />
-          ))}
-        </div>
-      )}
+                <Rate disabled defaultValue={r.rating} className="mt-1" />
+                <p className="mt-2 text-gray-700">{r.comment}</p>
 
-      {/* Nếu có phản hồi từ admin */}
-      {r.reply && (
-        <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
-          <strong>Phản hồi từ Admin:</strong> {r.reply}
-        </div>
-      )}
-    </div>
-  ))
-)}
+                {r.images?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {r.images.map((img: any, i: any) => (
+                      <img
+                        key={i}
+                        src={img}
+                        className="w-16 h-16 rounded border object-cover"
+                        alt={`review-img-${i}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Nếu có phản hồi từ admin */}
+                {r.reply && (
+                  <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
+                    <strong>Phản hồi từ Admin:</strong> {r.reply}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
 
 
           <div className="mt-8 p-5 bg-gray-50 rounded-md">

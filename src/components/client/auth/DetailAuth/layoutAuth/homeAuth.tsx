@@ -1,33 +1,30 @@
 import { Info } from 'lucide-react'
-import React, { useState } from 'react'
 import { useList } from '../../../../../hooks/useList';
 import { Button, Card, Image, Popconfirm } from 'antd';
 import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const HomeAuth = () => {
-    const [selectedStatus, setSelectedStatus] = useState("all");
-
     const getOrderStatusLabel = (status: string) => {
         switch (status) {
             case "pending":
-                return "Chờ xác nhận";
+                return "Pending";
             case "confirmed":
-                return "Đã xác nhận";
+                return "Confirmed";
             case "processing":
-                return "Đang xử lý";
+                return "Processing";
             case "shipping":
-                return "Đang giao hàng";
+                return "Shipping";
             case "delivered":
-                return "Đã giao hàng";
+                return "Delivered";
             case "completed":
-                return "Hoàn thành";
+                return "Completed";
             case "cancelled":
-                return "Đã huỷ";
+                return "Cancelled";
             case "returning": 
-                return "returning"
+                return "Returning"
             case "returned":
-                return "Đã trả hàng";
+                return "Returned";
             default:
                 return "Không xác định";
         }
@@ -83,16 +80,22 @@ const HomeAuth = () => {
                                         </p>
                                         <p className="font-bold text-lg mb-2">Products in order:</p>
                                         {order.items?.map((item: any) => {
-                                        const itemTotal = item.quantity * (item.price || 0);
+                                        const itemTotal = item.quantity * (item.unit_price || 0);
                                             return (
                                                 <div key={item.product._id} className="flex items-center gap-3 mb-2">
-                                                    <Image
-                                                        src={item.selected_variant?.image?.url}
-                                                        width={70}
-                                                        height={70}
-                                                        preview={false}
-                                                        className="rounded"
-                                                    />
+                                                    {item.selected_variant?.image?.url ? (
+                                                        <Image
+                                                            src={item.selected_variant.image.url}
+                                                            width={70}
+                                                            height={70}
+                                                            preview={false}
+                                                            className="rounded"
+                                                        />
+                                                        ) : (
+                                                        <div className="w-[70px] h-[70px] bg-gray-100 flex items-center justify-center text-xs text-gray-500 rounded">
+                                                            No image
+                                                        </div>
+                                                    )}
                                                     <div>
                                                         <p className="font-medium text-sm">
                                                             {item.product.name} - x{item.quantity} - 
@@ -101,7 +104,7 @@ const HomeAuth = () => {
                                                             </span>
                                                         </p>
                                                         <p className="text-gray-600 text-sm">
-                                                            Unit price: {item.price?.toLocaleString()}₫
+                                                            Unit price: {item.unit_price?.toLocaleString()}₫
                                                         </p>
                                                     </div>
                                                 </div>

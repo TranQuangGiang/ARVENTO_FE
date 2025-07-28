@@ -188,7 +188,6 @@ const ProductList = () => {
                     />
                   </div>
                 </div>
-
                 <div className="flex space-x-4 items-center">
                   <Input
                     placeholder="Search products..."
@@ -197,6 +196,37 @@ const ProductList = () => {
                     allowClear
                     className="w-64"
                   />
+                  <div className="relative group">
+                    <Button className="px-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm hover:bg-gray-100 transition">
+                      Action
+                    </Button>
+                    <ul className="w-44 z-50 top-[45px] absolute transition-all duration-300 opacity-0 invisible shadow-lg group-hover:opacity-100 group-hover:visible group-hover:-translate-y-2.5">
+                      <li>
+                        <Link
+                          to="/admin/listcolor"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        >
+                          List Option
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        >
+                          Import
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        >
+                          Export
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+
+
                   <Link to={`/admin/addProduct`}>
                     <Button type="primary" icon={<FiPlus />}>
                       Add New
