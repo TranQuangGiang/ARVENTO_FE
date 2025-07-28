@@ -48,7 +48,6 @@ const AddProduct = () => {
     formData.append('description', content);
     formData.append('category_id', values.category_id);
     formData.append('original_price', values.original_price);
-    formData.append('sale_price', values.sale_price);
     (values.tags || []).forEach((tag: string) => formData.append('tags[]', tag));
 
     values.images.forEach((file: any, index: number) => {
@@ -102,12 +101,12 @@ const AddProduct = () => {
     <div className="ml-6 mr-6 mt-6 mb-10 bg-white rounded-xl shadow-md p-6">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h2 className="text-2xl font-bold">🛍️ Thêm sản phẩm mới</h2>
-          <p className="text-gray-500">Nhập thông tin chi tiết để đăng bán sản phẩm</p>
+          <h2 className="text-2xl font-bold">🛍️ Add New Product</h2>
+          <p className="text-gray-500">Enter detailed information to publish the product</p>
         </div>
         <Link to="/admin/listProduct">
           <Button type="default" icon={<OrderedListOutlined />} style={{ height: 40 }}>
-            Danh sách sản phẩm
+            Product List
           </Button>
         </Link>
       </div>
@@ -134,16 +133,16 @@ const AddProduct = () => {
           {/* Tab 1: Thông tin */}
           <Tabs.TabPane tab="Product Information" key="1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Form.Item name="name" label="Tên sản phẩm" rules={[{ required: true }]}>
+              <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
                 <Input className="h-[40px]" />
               </Form.Item>
-              <Form.Item name="product_code" label="Mã sản phẩm" rules={[{ required: true }]}>
+              <Form.Item name="product_code" label="Product Code" rules={[{ required: true }]}>
                 <Input className="h-[40px]"  />
               </Form.Item>
               <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
                 <Input className="h-[40px]"  />
               </Form.Item>
-              <Form.Item name="category_id" label="Danh mục" rules={[{ required: true }]}>
+              <Form.Item name="category_id" label="Category" rules={[{ required: true }]}>
                 <Select style={{height: 40}} className="h-[40px]"  placeholder="Chọn danh mục" options={categoryOption} />
               </Form.Item>
               <Form.Item
@@ -158,28 +157,17 @@ const AddProduct = () => {
                 />
               </Form.Item>
               <Form.Item
-                label="Sale_Price (VND)"
-                name="sale_price"
-                className="font-semibold custom-input-number"
-                rules={[{ required: true, message: "Please enter the price" }]}
-              >
-                <InputNumber<number>
-                  min={0}
-                  style={{ width: "100%" }}
-                />
-              </Form.Item>
-              <Form.Item
                 name="tags" 
                 label="Tags"
               >
-                <Select style={{height: 40, width: 1150, display: "flex", alignItems: "center"}} mode="tags" className="placeholder:flex placeholder:items-center" placeholder="VD: sneaker, thời trang" />
+                <Select style={{height: 40, display: "flex", alignItems: "center"}} mode="tags" className="placeholder:flex placeholder:items-center" placeholder="VD: sneaker, thời trang" />
               </Form.Item>
             </div>
           </Tabs.TabPane>
 
           {/* Tab 2: Mô tả & Hình ảnh */}
           <Tabs.TabPane tab="Description and images" key="2">
-            <Form.Item name="description" label="Mô tả sản phẩm" rules={[{ required: true }]}>
+            <Form.Item name="description" label="Product Description" rules={[{ required: true }]}>
               <CKEditor
                 editor={ClassicEditor as any}
                 data={content}
@@ -192,7 +180,7 @@ const AddProduct = () => {
             </Form.Item>
             <Form.Item
               name="images"
-              label="Ảnh sản phẩm"
+              label="Product Images"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
               rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
@@ -208,11 +196,11 @@ const AddProduct = () => {
 
           {/* Tab 3: Thuộc tính */}
           <Tabs.TabPane tab="Properties" key="3">
-            <Form.Item label="Chọn thuộc tính">
+            <Form.Item label="	Select Attributes">
               <Select
                 mode="multiple"
                 size="large"
-                placeholder="Chọn thuộc tính"
+                placeholder="	Select Attributes"
                 value={selectedAttributes}
                 onChange={(values) => setSelectedAttributes(values)}
                 options={ATTRIBUTE_TYPES.map(type => ({
@@ -224,12 +212,12 @@ const AddProduct = () => {
             {ATTRIBUTE_TYPES.filter(attr => selectedAttributes.includes(attr)).map((type, index) => (
               <Card
                 key={type}
-                title={`Thuộc tính ${index + 1}: ${type === "color" ? "Màu sắc" : "Size"}`}
+                title={`Attribute ${index + 1}: ${type === "color" ? "Màu sắc" : "Size"}`}
                 className="shadow-sm border mt-4"
               >
                 <Form.Item
                   name={["attributes", type]}
-                  label={`Giá trị ${type === "color" ? "màu sắc" : "kích thước"}`}
+                  label={`Values ${type === "color" ? "Color" : "Size"}`}
                   rules={[{ required: true, message: `Nhập giá trị cho ${type}` }]}
                 >
                   <Select 

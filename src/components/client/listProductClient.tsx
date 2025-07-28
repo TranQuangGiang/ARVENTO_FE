@@ -3,6 +3,7 @@ import { faArrowRight, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { useList, useListClient } from '../../hooks/useList';
 import BannerClient from '../../layout/client/banner';
+import { useEffect, useState } from 'react'; // Import useState and useEffect
 
 const ListProductClient = () => {
   const location = useLocation();
@@ -16,11 +17,38 @@ const ListProductClient = () => {
   });
 
   const products = allProductData?.data?.docs || [];
-  console.log(products);
-  
   const categoryProducts = categoryProductData?.data?.docs || [];
-  
-  const formatPrice = (price:any) => {
+
+  // State để lưu trữ variants của từng sản phẩm
+  const [productVariants, setProductVariants] = useState<{ [productId: string]: any[] }>({});
+
+  // Fetch variants for each product
+  useEffect(() => {
+    const fetchVariants = async () => {
+      const newProductVariants: { [productId: string]: any[] } = {};
+      for (const product of [...products, ...categoryProducts]) {
+        if (!productVariants[product._id]) { // Only fetch if not already fetched
+          try {
+            // Sử dụng useListClient để gọi API lấy variants
+            const { data: variantsData } = await useListClient({
+              resource: `/variants/products/${product._id}/variants`, // API để lấy variants của sản phẩm
+            });
+            newProductVariants[product._id] = variantsData?.data || [];
+          } catch (error) {
+            console.error(`Failed to fetch variants for product ${product._id}:`, error);
+            newProductVariants[product._id] = []; // Set empty array on error
+          }
+        }
+      }
+      setProductVariants((prev) => ({ ...prev, ...newProductVariants }));
+    };
+
+    if (products.length > 0 || categoryProducts.length > 0) {
+      fetchVariants();
+    }
+  }, [products, categoryProducts]); // Re-run when products or categoryProducts change
+
+  const formatPrice = (price: any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
       return Number(price.$numberDecimal).toLocaleString();
     }
@@ -30,25 +58,52 @@ const ListProductClient = () => {
     return 'Liên hệ';
   };
 
+  const getVariantPrices = (productId: string) => {
+    const variants = productVariants[productId];
+    if (!variants || variants.length === 0) {
+      // Fallback to product's original_price if no variants or variants not yet loaded
+      const product = [...products, ...categoryProducts].find(p => p._id === productId);
+      if (product && product.original_price) {
+        return {
+          displayPrice: formatPrice(product.original_price),
+          originalPrice: formatPrice(product.original_price)
+        };
+      }
+      return { displayPrice: 'Liên hệ', originalPrice: 'Liên hệ' };
+    }
+
+    // Lấy giá của variant đầu tiên (hoặc variant bạn muốn hiển thị)
+    const firstVariant = variants[0];
+    const originalPrice = firstVariant.price;
+    const salePrice = firstVariant.sale_price;
+
+    // Áp dụng logic: nếu sale_price bằng 0 thì lấy price làm giá hiển thị
+    const displayPrice = (salePrice === 0 || salePrice === undefined || salePrice === null) ? originalPrice : salePrice;
+
+    return {
+      displayPrice: formatPrice(displayPrice),
+      originalPrice: formatPrice(originalPrice)
+    };
+  };
+
+
   const newestProducts = [...products]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 4);
-  
-    
-  const { data:categorys, refetch } = useList({
-    resource: `/categories/client`
-  }) ;
-  const category = categorys?.data; 
 
-  const { data:PostCLient } = useList({
+  const { data: categorys, refetch } = useList({
+    resource: `/categories/client`
+  });
+  const category = categorys?.data;
+
+  const { data: PostCLient } = useList({
     resource: `/posts/client`
   });
   const posts = PostCLient?.data?.docs || [];
-  
-  // lấy ra 2 bài viết mới nhất 
+
+  // lấy ra 2 bài viết mới nhất
   const latesPost = posts.slice(0, 2);
-  console.log(PostCLient);
-  
+
   return (
     <main>
       <div className=' w-[100%]'>
@@ -59,6 +114,8 @@ const ListProductClient = () => {
             newestProducts.map((product, index) => {
               const imageIndex = index % 2 === 0 ? 0 : 5;
               const imageUrl = product.images?.[imageIndex]?.url || "/default.png";
+              const { displayPrice, originalPrice } = getVariantPrices(product._id); // Lấy giá từ variants
+
               return (
                 <Link to={`/detailProductClient/${product._id}`} key={product._id}>
                   <div className='list-product-one overflow-hidden w-[201px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
@@ -75,11 +132,13 @@ const ListProductClient = () => {
                       </h4>
                       <div className='pt-1.5 flex items-center'>
                         <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                          {formatPrice(product.sale_price)}<sup>đ</sup>
+                          {displayPrice}<sup>đ</sup>
                         </p>
-                        <del className='text-[14px] ml-4 font-medium text-gray-400'>
-                          {formatPrice(product.original_price)}<sup>đ</sup>
-                        </del>
+                        {displayPrice !== originalPrice && ( // Chỉ hiển thị giá gốc nếu có sale
+                          <del className='text-[14px] ml-4 font-medium text-gray-400'>
+                            {originalPrice}<sup>đ</sup>
+                          </del>
+                        )}
                       </div>
                     </div>
                     <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
@@ -110,7 +169,7 @@ const ListProductClient = () => {
           <div className="w-full flex flex-wrap justify-between">
             {category?.map((item: any) => (
               <Link key={item._id} to={`/products?category=${item._id}`}>
-                <div  
+                <div
                   className="flex w-[115px] h-[130px] flex-col bg-white shadow-md hover:shadow-xl items-center cursor-pointer group p-2 transition-all duration-300"
                 >
                   <div className="w-16 h-16 overflow-hidden flex items-center justify-center mb-2">
@@ -175,39 +234,43 @@ const ListProductClient = () => {
             <div className='list-product w-[840px] flex items-center justify-between gap-[21px] mt-[40px]'>
               {isFetchingCategory && <p>Loading...</p>}
               {!isFetchingCategory &&
-              categoryProducts.map((product:any, index:any) => {
-                const imageIndex = index % 2 === 0 ? 0 : 5;
-                const imageUrl = product.images?.[imageIndex]?.url || "/default.png";
-                return (
-                  <Link to={`/detailProductClient/${product._id}`} key={product._id}>
-                    <div className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
-                      <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
-                        <img
-                          className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                          src={imageUrl}
-                          alt={product.name}
-                        />
-                      </div>
-                      <div className='content w-[80%] mt-[0px]'>
-                        <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
-                          {product.name}
-                        </h4>
-                        <div className='pt-1.5 flex items-center'>
-                          <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                            {formatPrice(product.sale_price)}<sup>đ</sup>
-                          </p>
-                          <del className='text-[14px] ml-4 font-medium text-gray-400'>
-                            {formatPrice(product.original_price)}<sup>đ</sup>
-                          </del>
+                categoryProducts.map((product: any, index: any) => {
+                  const imageIndex = index % 2 === 0 ? 0 : 5;
+                  const imageUrl = product.images?.[imageIndex]?.url || "/default.png";
+                  const { displayPrice, originalPrice } = getVariantPrices(product._id); // Lấy giá từ variants
+
+                  return (
+                    <Link to={`/detailProductClient/${product._id}`} key={product._id}>
+                      <div className='list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
+                        <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                          <img
+                            className='w-[220px] h-[230px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                            src={imageUrl}
+                            alt={product.name}
+                          />
+                        </div>
+                        <div className='content w-[80%] mt-[0px]'>
+                          <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
+                            {product.name}
+                          </h4>
+                          <div className='pt-1.5 flex items-center'>
+                            <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                              {displayPrice}<sup>đ</sup>
+                            </p>
+                            {displayPrice !== originalPrice && (
+                              <del className='text-[14px] ml-4 font-medium text-gray-400'>
+                                {originalPrice}<sup>đ</sup>
+                              </del>
+                            )}
+                          </div>
+                        </div>
+                        <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
+                          <p className='text-[11px]'>Select options</p>
                         </div>
                       </div>
-                      <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
-                        <p className='text-[11px]'>Select options</p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -223,9 +286,11 @@ const ListProductClient = () => {
           <div className='list-product w-full grid grid-cols-4 gap-[26px]'>
             {isFetchingAll && <p>Loading...</p>}
             {!isFetchingAll &&
-              products.map((product:any, index:any) => {
+              products.map((product: any, index: any) => {
                 const imageIndex = index % 2 === 0 ? 0 : 5;
                 const imageUrl = product.images?.[imageIndex]?.url || "/default.png";
+                const { displayPrice, originalPrice } = getVariantPrices(product._id); // Lấy giá từ variants
+
                 return (
                   <Link to={`/detailProductClient/${product._id}`} key={product._id}>
                     <div className='list-product-one w-[100%] h-[330px] bg-[#f2f2f2] overflow-hidden flex flex-col items-center justify-center cursor-pointer group'>
@@ -242,11 +307,13 @@ const ListProductClient = () => {
                         </h4>
                         <div className='pt-1.5 flex items-center'>
                           <p className='font-sans text-left font-medium text-[#0b1f4e] text-[15px]'>
-                            {formatPrice(product.sale_price)}<sup>đ</sup>
+                            {displayPrice}<sup>đ</sup>
                           </p>
-                          <del className='text-[15px] text-left ml-6 font-sans font-medium text-gray-400'>
-                            {formatPrice(product.original_price)}<sup>đ</sup>
-                          </del>
+                          {displayPrice !== originalPrice && (
+                            <del className='text-[15px] text-left ml-6 font-sans font-medium text-gray-400'>
+                              {originalPrice}<sup>đ</sup>
+                            </del>
+                          )}
                         </div>
                       </div>
                       <div className='mb-4 mt-1 w-[80%] mx-auto border-b-1 [&_p]:uppercase [&_p]:text-[13px] [&_p]:font-sans'>
@@ -286,11 +353,11 @@ const ListProductClient = () => {
         <div className='w-full h-full absolute inset-0 bg-black/70 flex flex-col items-center justify-center'>
           <h2 className='text-white font-bold font-sans text-[36px] uppercase w-[560px] text-center leading-9'>SIgn Up NEwsletter & Get 15% Off</h2>
           <form action="" className='flex items-center justify-center mt-[40px]'>
-            <input type="text" className='w-[420px] h-[55px] bg-white text-gray-400 pl-[25px] outline-0' placeholder='Email'/>
-            <button className='h-[56px] ml-[20px] text-white font-sans font-light w-[155px] bg-[#01225a] text-[15px]'><FontAwesomeIcon icon={faPaperPlane}/> Submit</button>
+            <input type="text" className='w-[420px] h-[55px] bg-white text-gray-400 pl-[25px] outline-0' placeholder='Email' />
+            <button className='h-[56px] ml-[20px] text-white font-sans font-light w-[155px] bg-[#01225a] text-[15px]'><FontAwesomeIcon icon={faPaperPlane} /> Submit</button>
           </form>
         </div>
-        </div>
+      </div>
     </main>
   );
 };

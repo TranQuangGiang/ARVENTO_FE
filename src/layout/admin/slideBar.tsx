@@ -128,7 +128,7 @@ const AdminSidebar = () => {
                         <button
                             onClick={() => setOpenProducts(!openProducts)}
                             className={`flex w-full items-center justify-between group gap-2 cursor-pointer p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct/", "/admin/detailProductAdmin"])
+                                isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct/", "/admin/detailProductAdmin", "/admin/listVariants", "/admin/editVariants"])
                                 ? "bg-[#FEE2E2] text-red-500"
                                 : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
                             }`}
@@ -136,7 +136,7 @@ const AdminSidebar = () => {
                             <span className="flex items-center">
                                 <Package 
                                     className={`mr-[15px] transition-all duration-300 ${
-                                        isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct", "/admin/detailProductAdmin"])
+                                        isPathMatch(["/admin/listProduct", "/admin/addProduct", "/admin/editProduct", "/admin/detailProductAdmin", "/admin/listVariants", "/admin/editVariants"])
                                         ? "text-red-500"
                                         : "group-hover:text-red-500"
                                     }`}

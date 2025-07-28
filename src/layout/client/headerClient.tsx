@@ -1,60 +1,52 @@
-
 import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-// import Login from '../../components/client/auth/Login';
-// import Register from '../../components/client/auth/Register';
 import { AuthContexts } from '../../components/contexts/authContexts';
 import { Badge } from 'antd';
 import { useCart } from '../../components/contexts/cartContexts';
 import Login from '../../components/client/auth/Login';
 import Register from '../../components/client/auth/Register';
-import { useList, useListClient } from '../../hooks/useList';
+import { useListClient } from '../../hooks/useList';
 import axios from 'axios';
-
 
 const HeaderClient = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [showModal, setShowModal] = useState<string | null>(null);
   const { user, logout } = useContext(AuthContexts);
-  const [searchParams] = useSearchParams(); 
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const nav = useNavigate();
 
   const modalParam = searchParams.get("modal");
-    useEffect(() => {
+
+  useEffect(() => {
     if (modalParam) {
       setShowModal(modalParam);
     }
   }, [modalParam]);
 
   const { state: { cartItemCount } } = useCart();
-  const { data} = useListClient({
+  const { data } = useListClient({
     resource: `/categories/client`
-  })
+  });
   const category = data?.data;
-  console.log(category);
-  
+
   const handleSearchChange = async (value: string) => {
     setSearchTerm(value);
-
     if (!value) {
       setSuggestions([]);
       return;
     }
-
     try {
       const res = await axios.get(`http://localhost:3000/api/products/search?keyword=${value}`);
       const docs = res?.data?.data?.docs;
       setSuggestions(docs);
-      console.log(res?.data);
-      
     } catch (error) {
-      console.error("Lỗi tìm kiếm:", error);
+      console.error("Search error:", error);
     }
-  }
+  };
 
   const formatPrice = (price: any) => {
     if (typeof price === 'object' && price?.$numberDecimal) {
@@ -63,7 +55,7 @@ const HeaderClient = () => {
     if (typeof price === 'number') {
       return price.toLocaleString();
     }
-    return 'Liên hệ';
+    return 'Contact us';
   };
 
   return (
@@ -86,10 +78,7 @@ const HeaderClient = () => {
               <ul className="absolute top-full left-0 z-20 min-w-[200px] mt-2 rounded-md bg-white shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                 {category?.map((cat: any) => (
                   <li key={cat._id} className="px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
-                    <Link
-                      to={`/products?category=${cat._id}`}
-                      className="text-[#0b1f4e] block"
-                    >
+                    <Link to={`/products?category=${cat._id}`} className="text-[#0b1f4e] block">
                       {cat.name}
                     </Link>
                   </li>
@@ -97,22 +86,21 @@ const HeaderClient = () => {
               </ul>
             </div>
             <a href="">Pages</a>
-            <Link to={`/listBlogClient`}>Blog New</Link>
+            <Link to={`/listBlogClient`}>Blog News</Link>
             <a href="">Contact</a>
           </nav>
 
           {/* Search Section */}
           <div className='relative flex items-center ml-5'>
-            {/* Search Input */}
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  setSuggestions([]);       // Xóa gợi ý
-                  setSearchTerm("");        // Xóa ô tìm kiếm
-                  setSearchOpen(false); 
+                  setSuggestions([]);
+                  setSearchTerm("");
+                  setSearchOpen(false);
                   nav(`/searchProduct?keyword=${encodeURIComponent(searchTerm)}`);
                 }
               }}
@@ -122,61 +110,50 @@ const HeaderClient = () => {
               }`}
               style={{ overflow: 'hidden' }}
             />
-            {/* Icon luôn hiển thị */}
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
               className="absolute text-[18px] right-3 font-extrabold text-black cursor-pointer"
               onClick={() => setSearchOpen(prev => !prev)}
             />
-            {
-              searchTerm && Array.isArray(suggestions) && suggestions.length > 0 && (
-                <div className="absolute top-full mt-2 bg-white rounded w-[350px] z-40 shadow-lg drop-shadow-xl ring-1 ring-gray-200">
-                  <h3 className='font-bold font-sans text-[18px] text-gray-800 text-center mt-3.5 mb-2 up'>Kết quả tìm kiếm </h3>
-                  {suggestions.map((product:any) => (
-                    <Link to={`/detailProductClient/${product._id}`} key={product._id} className="flex items-center gap-2 p-3 hover:bg-gray-100">
-                      <img src={product?.images?.[0].url} alt={product.name} className="w-12 h-12 object-cover" />
-                      <div className="text-sm">
-                        <p>{product.name}</p>
-                        <span className='flex items-center gap-3'>
-                          <p className="text-red-500 text-[15px]">{formatPrice(product.sale_price)}đ</p>
-                          <del className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}đ</del>
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )
-            }
+            {searchTerm && Array.isArray(suggestions) && suggestions.length > 0 && (
+              <div className="absolute top-full mt-2 bg-white rounded w-[350px] z-40 shadow-lg drop-shadow-xl ring-1 ring-gray-200">
+                <h3 className='font-bold font-sans text-[18px] text-gray-800 text-center mt-3.5 mb-2'>Search results</h3>
+                {suggestions.map((product: any) => (
+                  <Link to={`/detailProductClient/${product._id}`} key={product._id} className="flex items-center gap-2 p-3 hover:bg-gray-100">
+                    <img src={product?.images?.[0].url} alt={product.name} className="w-12 h-12 object-cover" />
+                    <div className="text-sm">
+                      <p>{product.name}</p>
+                      <span className='flex items-center gap-3'>
+                        <p className="text-red-500 text-[15px]">{formatPrice(product.sale_price)}₫</p>
+                        <del className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}₫</del>
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Icons */}
+        {/* User + Cart Icons */}
         <section className='header-person flex gap-4'>
           <div className='group relative'>
             <FontAwesomeIcon className='text-[19px] font-sans cursor-pointer' icon={faUser} />
-            { user ? (
+            {user ? (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
                 [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
                 p-2.5 transition-all duration-300
-                ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
-              >
+                ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible' : 'opacity-0 invisible'}`}>
                 <Link to={'/detailAuth/homeAuth'}>
-                  <button
-                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
-                  >
-                    My account
+                  <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
+                    My Account
                   </button>
                 </Link>
-                <button 
-                  onClick={logout}  
-                  className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'
-                >
+                <button onClick={logout} className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'>
                   Log Out
                 </button>
                 <Link to={`/admin`}>
-                  <button
-                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
-                  >
+                  <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
                     Admin Access
                   </button>
                 </Link>
@@ -185,24 +162,15 @@ const HeaderClient = () => {
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
                 [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
                 p-2.5 transition-all duration-300
-                ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300' : 'opacity-0 invisible transition-all duration-300'}`}
-              >
-                <button
-                  onClick={() => setShowModal("login")}
-                  className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'
-                >
-                Sign In
+                ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible' : 'opacity-0 invisible'}`}>
+                <button onClick={() => setShowModal("login")} className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'>
+                  Sign In
                 </button>
-                <button 
-                  onClick={() => setShowModal("register")}  
-                  className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'
-                >
+                <button onClick={() => setShowModal("register")} className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'>
                   Register
                 </button>
                 <Link to={`/admin`}>
-                  <button
-                    className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'
-                  >
+                  <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
                     Admin Access
                   </button>
                 </Link>
@@ -215,9 +183,9 @@ const HeaderClient = () => {
             </Link>
           </Badge>
         </section>
+
         <Login isOpen={showModal === "login"} onClose={() => setShowModal(null)} switchToRegister={() => setShowModal("register")} />
         <Register isOpen={showModal === "register"} onClose={() => setShowModal(null)} switchToLogin={() => setShowModal("login")} />
-        
       </div>
     </div>
   );
