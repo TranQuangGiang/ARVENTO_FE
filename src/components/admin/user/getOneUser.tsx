@@ -83,13 +83,12 @@ const UserDetail = () => {
                             <Descriptions.Item label="ID">{user?._id}</Descriptions.Item>
                             <Descriptions.Item label="Name">{user?.name}</Descriptions.Item>
                             <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>
-                            <Descriptions.Item label="Phone">{user?.phone || "N/A"}</Descriptions.Item>
                             <Descriptions.Item label="Role">
                                 <Select
-                                value={user?.role}
-                                style={{ width: 150, height: 40 }}
-                                onChange={handleChangeRole}
-                                loading={updating}
+                                    value={user?.role}
+                                    style={{ width: 150, height: 40 }}
+                                    onChange={handleChangeRole}
+                                    loading={updating}
                                 >
                                 <Select.Option value="user">
                                     <Tag color="blue">User</Tag>

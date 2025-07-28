@@ -87,7 +87,6 @@ const EditProduct = () => {
     formData.append('description', content);
     formData.append('category_id', String(values.category_id));
     formData.append('original_price', String(values.original_price));
-    formData.append('sale_price', String(values.sale_price));
   
     (values.tags || []).forEach((tag: string) => {
       formData.append('tags[]', tag);
@@ -185,25 +184,14 @@ const EditProduct = () => {
                     style={{ width: "100%" }}
                   />
                 </Form.Item>
-                <Form.Item
-                  label="Sale_Price (VND)"
-                  name="sale_price"
-                  className="font-semibold"
-                  rules={[{ required: true, message: "Please enter the price" }]}
-                >
-                  <InputNumber<number>
-                    min={0}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
 
                 <Form.Item label="Tags" name="tags">
-                  <Select mode="tags" style={{ width: 1150, height: 40 }} placeholder="Enter tags" />
+                  <Select mode="tags" style={{ height: 40 }} placeholder="Enter tags" />
                 </Form.Item>
               </div>
           </Tabs.TabPane>
           <Tabs.TabPane tab="Description and images" key="2">
-            <Form.Item label="Description" name="description">
+            <Form.Item label="Product Description" name="description">
               <CKEditor
                 editor={ClassicEditor as any}
                 data={content}

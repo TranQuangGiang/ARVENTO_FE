@@ -8,6 +8,7 @@ import { useDelete } from "../../../hooks/useDelete";
 import { useListReview } from "../../../hooks/useListReview";
 import { useToggleReviewStatus } from "../../../hooks/useToggleReviewStatus";
 import { useApproveReview } from "../../../hooks/useUpdateAction";
+import type { ColumnsType } from "antd/es/table";
 
 const { Option } = Select;
 
@@ -79,7 +80,6 @@ const ListReview = () => {
   const handleDelete = (id: string) => {
     deleteReview.mutate(id, {
       onSuccess: () => {
-        message.success("Review deleted successfully");
         refetchReview();
       },
       onError: () => message.error("Failed to delete review"),
@@ -98,7 +98,7 @@ const ListReview = () => {
     }
   };
 
-  const columns = [
+  const columns: ColumnsType<any> = [
     {
       title: "Phê duyệt",
       render: (_: any, record: any) => (

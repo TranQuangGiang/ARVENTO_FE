@@ -15,7 +15,8 @@ const UpdateVariants = () => {
     resource: `/variants/products/${productId}/variants`,
     _id: id
   });
-
+  console.log(variants);
+  
   const { data:product } = useOneData({
     resource: `/products`,
     _id: productId
@@ -26,9 +27,20 @@ const UpdateVariants = () => {
       const currentIndex = product.data.images.findIndex(
         (img:any) => img.url === variants.data.image?.url
       )
+      
+      let currentSalePrice = 0; // Mặc định là 0
+      if (variants.data.sale_price && typeof variants.data.sale_price.$numberDecimal === 'string') {
+        const parsedSalePrice = parseFloat(variants.data.sale_price.$numberDecimal);
+        if (!isNaN(parsedSalePrice)) {
+          currentSalePrice = parsedSalePrice;
+        }
+      }
+
       form.setFieldsValue({
         imageIndex: currentIndex !== -1 ? currentIndex : undefined,
-        stock: variants.data.stock
+        stock: variants.data.stock,
+        price: parseFloat(variants.data.price || 0),
+        sale_price: currentSalePrice,
       });
     }    
   }, [variants , product, form])
@@ -49,7 +61,9 @@ const UpdateVariants = () => {
       }))
     }
       formData.append('imageIndex', String(values.imageIndex));
-    formData.append('stock', values.stock);
+      formData.append('stock', values.stock);
+      formData.append('price', values.price);
+      formData.append('sale_price', values.sale_price);
     mutate(formData, {
       onSuccess: () => {
         nav(`/admin/listVariants/${productId}`);
@@ -107,6 +121,12 @@ const UpdateVariants = () => {
               value: index
             }))}
           />
+        </Form.Item>
+        <Form.Item label="Price" name="price">
+          <InputNumber style={{width: "100%"}} disabled />
+        </Form.Item>
+        <Form.Item label="Sale_Price" name="sale_price" >
+          <InputNumber style={{width: "100%"}} min={0} placeholder='0đ' />
         </Form.Item>
         <Form.Item label="Variant stock" name="stock" rules={[{required: true}]}>
           <InputNumber style={{width: "100%"}} />

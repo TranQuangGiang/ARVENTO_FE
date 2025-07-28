@@ -33,6 +33,8 @@ const Cart = () => {
   const items = cart?.items || [];
   const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = Number(cart?.subtotal || 0);
+  
+  
 
   useEffect(() => {
     if (!voucherApplied) {
@@ -55,13 +57,13 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    navigate('/checkout', { 
-      state: { 
-        cart,  
-        finalAmount, 
-        discountAmount, 
-        appliedCoupon 
-      } 
+    navigate('/checkout', {
+      state: {
+        cart,
+        finalAmount,
+        discountAmount,
+        appliedCoupon,
+      },
     });
   };
 
@@ -82,7 +84,7 @@ const Cart = () => {
     try {
       setSelectedVoucher(code);
       setSelectedVoucherCode(code);
-      const res = await applyVoucherToCart(code); // <== LẤY DATA Ở ĐÂY
+      const res = await applyVoucherToCart(code);
       const payload = res.data.data;
 
       if (payload?.isValid) {
@@ -91,9 +93,7 @@ const Cart = () => {
         setAppliedCoupon(payload.coupon || null);
         setVoucherApplied(true);
         setVoucherError(false);
-        message.success("Áp dụng mã giảm giá thành công");
-      } else {
-        throw new Error("Mã không hợp lệ hoặc đã hết hạn");
+        message.success("Voucher applied successfully");
       }
     } catch (error) {
       setVoucherError(true);
@@ -102,15 +102,14 @@ const Cart = () => {
       setSelectedVoucher(null);
       setAppliedCoupon(null);
       setVoucherApplied(false);
-      message.error("Mã không hợp lệ hoặc đã hết hạn");
     }
   };
 
   return (
     <div className="w-full bg-white text-gray-900 min-h-screen font-inter mb-16">
       <div className="w-full border-t border-t-gray-200 px-4 md:px-10 lg:px-[180px]">
-        <h2 className="text-4xl font-bold text-gray-900 mt-16">🛒 GIỎ HÀNG CỦA BẠN</h2>
-        <p className="text-[17px] ml-2 text-gray-700 mt-2">Tổng cộng {cartItemCount} sản phẩm đã thêm</p>
+        <h2 className="text-4xl font-bold text-gray-900 mt-16">🛒 YOUR CART</h2>
+        <p className="text-[17px] ml-2 text-gray-700 mt-2">Total {cartItemCount} products added</p>
       </div>
 
       <div className="w-[78%] mt-6 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -124,11 +123,11 @@ const Cart = () => {
                   className="w-[120px] h-[120px] mt-[18px] object-contain bg-slate-50"
                 />
                 <div className="flex-1 p-4">
-                  <Link to={`/detailProduct/${item.product?._id}`}>
+                  <Link to={`/detailProductClient/${item.product?._id}`}>
                     <h3 className="text-[16px] cursor-pointer font-sans font-semibold">{item.product?.name}</h3>
                   </Link>
                   <p className="text-[15px] font-sans text-gray-600 mt-1">
-                    Mã hàng: {item.selected_variant?.sku || item.product?.name}
+                    SKU: {item.selected_variant?.sku || item.product?.name}
                   </p>
                   {item.selected_variant?.size && (
                     <p className="text-[14px] font-sans text-gray-600">Size: {item.selected_variant.size}</p>
@@ -154,10 +153,10 @@ const Cart = () => {
                     {(item.total_price || item.quantity * item.unit_price).toLocaleString()}₫
                   </span>
                   <Popconfirm
-                    title="Bạn có chắc muốn xoá sản phẩm này?"
+                    title="Are you sure you want to remove this item?"
                     onConfirm={() => handleRemove(item.product._id, item.selected_variant?.size, item.selected_variant?.color)}
-                    okText="Xoá"
-                    cancelText="Huỷ"
+                    okText="Remove"
+                    cancelText="Cancel"
                   >
                     <DeleteOutlined
                       style={{ color: 'red' }}
@@ -171,16 +170,16 @@ const Cart = () => {
         </div>
 
         <div className="p-6 ml-5 w-full rounded-lg shadow-md bg-slate-50 sticky top-8 h-fit">
-          <h4 className="text-2xl font-sans font-bold mb-4">TÓM TẮT ĐƠN HÀNG</h4>
+          <h4 className="text-2xl font-sans font-bold mb-4">ORDER SUMMARY</h4>
 
           <div className="flex justify-between mb-2 text-[15px]">
-            <span className="text-gray-700">Tạm tính ({totalQuantity} sản phẩm)</span>
+            <span className="text-gray-700">Subtotal ({totalQuantity} items)</span>
             <span className="font-medium">{subtotal.toLocaleString()}₫</span>
           </div>
 
           <div className="flex justify-between mb-2 text-[15px]">
-            <span className="text-gray-700">Phí giao hàng</span>
-            <span className="font-medium text-green-600">Miễn phí</span>
+            <span className="text-gray-700">Shipping fee</span>
+            <span className="font-medium text-green-600">Free</span>
           </div>
 
           <div className="mt-6">
@@ -189,8 +188,8 @@ const Cart = () => {
               onClick={() => setShowVouchers(!showVouchers)}
               className="text-[16px] font-semibold font-sans mb-2 flex items-center gap-2 text-left cursor-pointer"
             >
-              🎁 Chọn mã giảm giá
-              <span className="text-sm text-blue-500">{showVouchers ? "(Ẩn mã)" : "(Hiện mã)"}</span>
+              🎁 Apply discount code
+              <span className="text-sm text-blue-500">{showVouchers ? "(Hide)" : "(Show)"}</span>
             </button>
 
             {showVouchers && (
@@ -222,17 +221,17 @@ const Cart = () => {
           {discountAmount > 0 && appliedCoupon && (
             <div className="mt-5 border-t pt-5 text-[15px] text-green-600">
               <div className="flex justify-between mb-1">
-                <span>Giảm giá ({appliedCoupon.code})</span>
+                <span>Discount ({appliedCoupon.code})</span>
                 <span>-{discountAmount.toLocaleString()}₫</span>
               </div>
               <div className="text-sm text-gray-600">
-                ({appliedCoupon.discount_type === 'percentage' ? `Giảm ${appliedCoupon.discount_value}%` : `Giảm ${appliedCoupon.discount_value.toLocaleString()}₫`})
+                ({appliedCoupon.discount_type === 'percentage' ? `Discount ${appliedCoupon.discount_value}%` : `Discount ${appliedCoupon.discount_value.toLocaleString()}₫`})
               </div>
             </div>
           )}
 
           <div className="flex pt-1 justify-between text-lg font-sans font-bold">
-            <span>Tổng cộng:</span>
+            <span>Total:</span>
             <span>{finalAmount.toLocaleString()}₫</span>
           </div>
 
@@ -241,7 +240,7 @@ const Cart = () => {
             disabled={items.length === 0}
             className="w-full mt-8 mb-3.5 cursor-pointer text-white py-3 rounded-md bg-black hover:bg-gray-800 transition font-semibold font-sans"
           >
-            THANH TOÁN →
+            CHECKOUT →
           </button>
         </div>
       </div>

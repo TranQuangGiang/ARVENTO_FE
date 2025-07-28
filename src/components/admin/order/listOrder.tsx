@@ -72,14 +72,14 @@ const ListOrder = () => {
         `/orders/${orderId}/status`,
         { 
           status: newStatus,
-          note: `Cập nhập trạng thái thành công ${newStatus}`
+          note: `Status updated successfully ${newStatus}`
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      message.success("Cập nhật trạng thái thành công!");
+      message.success("Status updated successfully!");
       refetch();
     } catch {
-      message.error("Cập nhật trạng thái thất bại.");
+      message.error("Failed to update status.");
     } finally {
       setLoadingOrderId(null);
     }
@@ -122,7 +122,7 @@ const ListOrder = () => {
       render: (_: any, __: any, index: number) => index + 1,
     },
     {
-      title: "Mã đơn",
+      title: "Order ID",
       dataIndex: "_id",
       key: "_id",
       
@@ -138,12 +138,12 @@ const ListOrder = () => {
       key: "email",
     },
     {
-      title: "Địa chỉ",
+      title: "Shipping Address",
       dataIndex: ["address", "address"],
       key: "address",
     },
     {
-      title: "Trạng thái",
+      title: "Order Status",
       dataIndex: "status",
       key: "status",
       render: (status: string, record: any) => (
@@ -198,15 +198,7 @@ const ListOrder = () => {
 
             {/* Nút xử lý yêu cầu trả hàng */}
             {isDelivered && hasReturnRequest && returnReason && (
-              <div className="flex items-center gap-2 mt-1 bg-yellow-50 border border-yellow-300 rounded-lg px-3 py-2">
-                <Tag
-                  color="warning"
-                  icon={<ExclamationCircleOutlined />}
-                  className="m-0"
-                  style={{ fontWeight: 500 }}
-                >
-                  Duyệt yêu cầu trả hàng
-                </Tag>
+              <div className="flex items-center gap-2 mt-1 bg-yellow-50 border border-yellow-300 rounded-lg px-2 py-1.5">
                 <Popconfirm
                   title={
                     <>
@@ -218,8 +210,8 @@ const ListOrder = () => {
                   cancelText="Cancel"
                   onConfirm={() => handleComfirm(record._id)}
                 >
-                  <Button type="primary" size="small">
-                    Xử lý
+                  <Button icon={<ExclamationCircleOutlined />} style={{border: 0, color: "#eab308", background: 0}} className="text-yellow-500" size="small">
+                    Review return request
                   </Button>
                 </Popconfirm>
               </div>
