@@ -46,14 +46,14 @@ const AccountInformation = () => {
         <div className='w-full'>
             <div className='w-full rounded-[15px] bg-white p-6'>
                 <div className='flex justify-between items-center'>
-                    <h4 className='text-[17px] font-bold font-[Product Sans]'>Thông tin cá nhân</h4>
+                    <h4 className='text-[17px] font-bold font-[Product Sans]'>Personal information</h4>
                     <Button
                         style={{ border: 0, color: "blue" }}
                         icon={<EditOutlined />}
                         onClick={() => setShowModal('updateAccount')}
                        
                     >
-                        Cập nhật thông tin
+                        Update information
                     </Button>
                 </div>
 
@@ -84,10 +84,10 @@ const AccountInformation = () => {
 
                 <div className="w-[100%] bg-white mt-8 rounded-[15px]">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-[17px] font-bold font-[Product Sans]">Sổ địa chỉ</h4>
+                        <h4 className="text-[17px] font-bold font-[Product Sans]">Address book</h4>
                         
                             <Button type='primary' onClick={() =>  setShowModal("addAddresses")} className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
-                                <PlusOutlined className="mr-1" /> Thêm địa chỉ
+                                <PlusOutlined className="mr-1" /> Add address
                             </Button>
                         
                     </div>
@@ -110,7 +110,7 @@ const AccountInformation = () => {
                                 <div className="flex flex-col items-end gap-2">
                                 {address.isDefault ? (
                                     <span className="text-blue-600 font-semibold text-sm flex items-center gap-1">
-                                    <CheckOutlined /> Địa chỉ mặc định
+                                    <CheckOutlined /> Default address
                                     </span>
                                 ) : (
                                     <Button
@@ -136,7 +136,7 @@ const AccountInformation = () => {
                                             }
                                         }}
                                     >
-                                        Đặt làm mặc định
+                                        Set as default
                                     </Button>
                                 )}
 
@@ -161,7 +161,7 @@ const AccountInformation = () => {
                                 <img className="w-[170px]" src="/cartD.png" alt="empty-address" />
                             </span>
                             <p className="mt-2 text-[13px] font-medium font-sans text-blue-950">
-                                Bạn chưa có địa chỉ nào được tạo!
+                                You do not have any addresses created yet!
                             </p>
                         </div>
                     )}
