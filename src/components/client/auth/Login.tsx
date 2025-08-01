@@ -26,8 +26,11 @@ const Login = ({ isOpen, onClose, switchToRegister }: any) => {
   function onFinish(values:any) {
     mutate(values, {
       onSuccess: (data:any) => {
-        message.success("Đăng nhập thành công");
+        message.success("Login successful");
         login(data);
+        if (!data.data.user.verified) {
+          message.warning("Account not verified.");
+        }
         onClose();
         nav('/');
       },
