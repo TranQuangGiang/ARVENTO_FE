@@ -9,7 +9,7 @@ import { cartReducer, initialState } from "../reducers/carReducers";
 type CartContextType = {
     state: CartState;
     addToCart: (item: CartItem) => Promise<void>;
-    updateCart: (product_id: string, size: string, color: { name: string, hex: string }, quantity: number) => Promise<void>;
+    updateCart: (product_id: string, size: string, color: { name: string, hex: string}, sku: string, price: number, image: { url: string, alt: string, id: string, _id: string } , stock: number, quantity: number) => Promise<void>;
     removeFromCart: (product_id: string, size: string, color: { name: string, hex: string }) => Promise<void>;
     clearCart: () => Promise<void>;
     fetchCart: () => Promise<void>;
@@ -71,6 +71,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
         fetchCart();
     }, []);
 
@@ -98,7 +100,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         product_id: string,
         size: string,
         color: { name: string; hex: string },
-        quantity: number
+        sku: string,
+        price: number,
+        image: { url: string, alt: string, id: string, _id: string },
+        stock: number,
+        quantity: number,
     ) => {
         try {
             const token = localStorage.getItem("token") || "";
@@ -106,7 +112,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                 `/carts/items`,
                 {
                     product_id,
-                    selected_variant: { size, color },
+                    selected_variant: { 
+                        size, 
+                        color,
+                        sku,
+                        price,
+                        image,
+                        stock, 
+                    },
                     quantity,
                 },
                 {

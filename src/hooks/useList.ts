@@ -4,6 +4,9 @@ import { getList, getListClient } from "../providers/data/dataProviders"
 
 type useListParams = {
     resource: string,
+    params?: object,
+    config?: object,
+    responseType?: string,
 }
 
 export const useList = ({resource}: useListParams) => {

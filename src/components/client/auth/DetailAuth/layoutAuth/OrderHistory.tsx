@@ -209,8 +209,7 @@ const OrderHistory = () => {
     }
     // Return request function
     const handleRequestReturn = (orderId: string) => {
-        let reason = "";
-
+        let reasonRef  = { current: ""};
         Modal.confirm({
             width: 600,
             height: 300,
@@ -221,7 +220,7 @@ const OrderHistory = () => {
                     <Input.TextArea
                         rows={4}
                         maxLength={500}
-                        onChange={(e) => { reason = e.target.value; }}
+                        onChange={(e) => { reasonRef.current = e.target.value; }}
                         placeholder="Enter the reason for return (max 500 characters)"
                         style={{
                             borderRadius: 8,
@@ -248,12 +247,17 @@ const OrderHistory = () => {
                 }
             },
             onOk: async () => {
+                const trimmedReason = (reasonRef.current || "").trim();
+                if (!trimmedReason) {
+                    message.error("Please enter a reason before sending the return request.");
+                    return Promise.reject(); // Ngăn modal tự đóng
+                }
                 try {
                     const token = localStorage.getItem("token");
                     await axios.patch(`http://localhost:3000/api/orders/${orderId}/request-return`,
                         {
                             is_return_requested: true,
-                            note: reason || ""
+                            note: trimmedReason || ""
                         },
                         {
                             headers: {

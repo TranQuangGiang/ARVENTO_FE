@@ -51,6 +51,7 @@ const DetailOrder = () => {
     );
   }
 
+  
   return (
     <motion.div
       className="bg-gray-50 min-h-screen px-6 py-10"
@@ -103,7 +104,7 @@ const DetailOrder = () => {
                   title={
                     <div className="flex items-center justify-between">
                       <div>
-                        <Text strong>{item.product.name}</Text>
+                        <Text strong>{item.product?.name}</Text>
                         <span className="ml-2 text-gray-500">x{item.quantity}</span>
                         {item.selected_variant?.color?.name && (
                           <p className="text-sm">Color: <strong>{item.selected_variant.color.name}</strong></p>
@@ -218,6 +219,7 @@ const DetailOrder = () => {
 
         {/* Back Button */}
         <div className="text-right mt-4">
+          
           <Button type="default" onClick={() => navigate("/admin/listorder")}>Back to Order List</Button>
         </div>
       </div>

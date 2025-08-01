@@ -99,7 +99,7 @@ const DeltaiProduct = () => {
       if (selectedVariant) {
         const original = Number(selectedVariant.price?.$numberDecimal || 0);
         const sale = Number(selectedVariant.sale_price?.$numberDecimal || 0);
-
+      
         setVariantOriginalPrice(original);
         setVariantSalePrice(sale);
 
@@ -371,8 +371,9 @@ const DeltaiProduct = () => {
     }
   };
 
-
-
+  // tính phần trăm giảm giá
+  const percentDiscount = Math.round(((variantOriginalPrice - variantSalePrice) / variantOriginalPrice) * 100);
+  console.log(percentDiscount);
 
   if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
 
@@ -433,7 +434,7 @@ const DeltaiProduct = () => {
           {/* Thông tin chi tiết */}
           <div className="w-full flex flex-col">
             <h4 className="text-lg md:text-[22px] font-bold text-[#01225a] mb-2">
-              {product.name}
+              {product.name} - {selectedColor} 
             </h4>
             <span className="flex items-center mt-1">
               <p className="border-b text-[14px] font-sans uppercase gap-2 border-b-gray-300">
@@ -460,6 +461,7 @@ const DeltaiProduct = () => {
                     {formatPrice(variantOriginalPrice)}
                     <sup>đ</sup>
                   </del>
+                  <span className="ml-6 w-12 h-9 justify-center bg-blue-900 text-white font-sans font-semibold rounded text-[17px] flex items-center">{percentDiscount + "%"}</span>
                 </>
               ) : (
                 <p className="ml-4 font-sans text-[17px] font-medium">
@@ -548,9 +550,58 @@ const DeltaiProduct = () => {
                 </Button>
                 <Button
                   type="text"
-                  icon={isFavorite ? <HeartFilled style={{ color: "red", fontSize: 24 }} /> : <HeartOutlined style={{ fontSize: 24 }} />}
+                  className="relative flex items-center justify-center p-0"
                   onClick={handleToggleFavorite}
-                />
+                >
+                  <AnimatePresence 
+                    mode="wait" initial={false}
+                  >
+                    { isFavorite ? (
+                      <motion.div
+                        key="heartFilled"
+                        initial={{opacity: 0, scale: 0.5}}
+                        animate={{opacity: 1, scale: 1}}
+                        exit={{opacity: 0, scale: 0.5}}
+                        transition={{type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{
+                          scale: [1, 1.2, 1],
+                          opacity: [1, 0.3, 1],
+                          transition: {
+                              duration: 0.7, // Tăng thời gian để hiệu ứng mượt hơn
+                              ease: "easeInOut",
+                              repeat: Infinity, // Lặp lại vô hạn
+                              repeatType: "loop" // Lặp lại từ đầu mỗi lần
+                          }
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        className="absolute group"
+                      >
+                        <HeartFilled style={{color: "red", fontSize: 24, }} />
+                      </motion.div>
+                    ): (
+                      <motion.div
+                        key="heartOutlined"
+                        initial={{opacity: 0, scale: 0.5}}
+                        animate={{opacity: 1, scale: 1}}
+                        exit={{ opacity: 0, scale: 1 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{
+                          scale: [1, 1.2, 1],
+                          transition: {
+                              duration: 0.8, // Tăng thời gian để hiệu ứng mượt hơn
+                              ease: "easeInOut",
+                              repeat: Infinity, // Lặp lại vô hạn
+                              repeatType: "loop" // Lặp lại từ đầu mỗi lần
+                          }
+                        }}
+                        whileTap={{ scale: 0.9 }}
+                        className="absolute"
+                      >
+                        <HeartOutlined style={{ fontSize: 24 }} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
               </div>
 
               {/* Thông tin bảo hành/giao hàng */}

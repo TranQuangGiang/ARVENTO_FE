@@ -39,7 +39,6 @@ import HomeAuth from './components/client/auth/DetailAuth/layoutAuth/homeAuth'
 import OrderHistory from './components/client/auth/DetailAuth/layoutAuth/OrderHistory'
 import AccountInformation from './components/client/auth/DetailAuth/layoutAuth/accountInformation'
 import DiscountCode from './components/client/auth/DetailAuth/layoutAuth/discountCode'
-import AddColor from './components/admin/color/addColor'
 import Checkout from './components/client/checkout'
 import Thanhtoan from './components/client/thanhtoan'
 
@@ -77,8 +76,6 @@ import ChinhSachMuaHang from './components/client/chinhsachmh'
 import DoiTra from './components/client/chinhsachdoitra'
 import ChonSize from './components/client/chonsize'
 import KhuyenMai from './components/client/khuyenmai'
-
-
 
 
 
