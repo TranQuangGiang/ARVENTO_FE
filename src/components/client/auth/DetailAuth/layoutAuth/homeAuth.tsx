@@ -3,6 +3,7 @@ import { useList } from '../../../../../hooks/useList';
 import { Button, Card, Image, Popconfirm } from 'antd';
 import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const HomeAuth = () => {
     const getOrderStatusLabel = (status: string) => {
@@ -57,9 +58,13 @@ const HomeAuth = () => {
     const { data:orderData, refetch } = useList({
         resource: `/orders/my`
     });
+    console.log(">>> orderData:", orderData);
+    useEffect(() => {
+        refetch();
+    }, [orderData, refetch])
     const orders = (orderData?.data.orders || [])
     .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 2); // Lấy 2 đơn mới nhất
+    .slice(0, 3);
     return (
         <div className='w-full'>
             <div className='w-full h-14 border border-blue-500 rounded-[7px] flex items-center mb-3 bg-[#ebf3fe]'>
@@ -72,7 +77,7 @@ const HomeAuth = () => {
                 <div className='w-3/4 flex flex-col items-center gap-4'>
                     { orders.length > 0 ? (
                         orders.map((order:any) => (
-                            <Card key={order._id} bordered className="shadow-sm ">
+                            <Card key={order._id} bordered className="shadow-sm w-full">
                                 <div className="w-full flex justify-between gap-4">
                                     <div>
                                         <p className="text-gray-500 text-[12px] mb-1">
@@ -82,7 +87,7 @@ const HomeAuth = () => {
                                         {order.items?.map((item: any) => {
                                         const itemTotal = item.quantity * (item.unit_price || 0);
                                             return (
-                                                <div key={item.product._id} className="flex items-center gap-3 mb-2">
+                                                <div key={item?.product?._id} className="flex items-center gap-3 mb-2">
                                                     {item.selected_variant?.image?.url ? (
                                                         <Image
                                                             src={item.selected_variant.image.url}
@@ -98,7 +103,7 @@ const HomeAuth = () => {
                                                     )}
                                                     <div>
                                                         <p className="font-medium text-sm">
-                                                            {item.product.name} - x{item.quantity} - 
+                                                            {item?.product?.name} - x{item.quantity} - 
                                                             <span className="text-red-600 font-semibold ml-1">
                                                                 {itemTotal.toLocaleString()}₫
                                                             </span>
@@ -126,7 +131,7 @@ const HomeAuth = () => {
                                             <Button type="primary" className='text-[17px]' style={{height: 40}}>View order details</Button>
                                         </Link>
                                         {
-                                            order.status === "pending" || order.status === "confirmed" && (
+                                            (order.status === "pending" || order.status === "confirmed") && (
                                                 <Popconfirm title="Bạn không thể hủy tại đây !" okText="Ok" cancelText="Hủy" >
                                                     <Button
                                                         danger

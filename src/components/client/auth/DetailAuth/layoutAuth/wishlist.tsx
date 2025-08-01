@@ -3,6 +3,8 @@ import { useList } from '../../../../../hooks/useList'
 import { Heart } from 'lucide-react';
 import { useDelete } from '../../../../../hooks/useDelete';
 import { Link } from 'react-router-dom';
+import { AnimatePresence,motion } from 'framer-motion';
+import { HeartFilled } from '@ant-design/icons';
 
 
 const formatPrice = (price: any) => {
@@ -36,10 +38,29 @@ const Wishlist = () => {
                 className='relative list-product-one overflow-hidden w-[220px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center rounded cursor-pointer group'
               >
                 {/* Icon trái tim (yêu thích) */}
-                <div className='absolute top-2 right-2 z-10'>
-                  <Heart size={20} onClick={() => delWishlist(product._id)} className='text-red-500 fill-red-500 transition-all duration-300 hover:text-white hover:fill-red-300' />
-                </div>
-
+                <AnimatePresence>
+                  <motion.div
+                    initial={{opacity: 0, scale: 0.5}}
+                    animate={{opacity: 1, scale: 1}}
+                    exit={{opacity: 0, scale: 0.5}}
+                    transition={{type: "spring", stiffness: 300, damping: 20 }}
+                    whileHover={{
+                      scale: [1, 1.2, 1],
+                      opacity: [1, 0.3, 1],
+                      transition: {
+                          duration: 0.7, // Tăng thời gian để hiệu ứng mượt hơn
+                          ease: "easeInOut",
+                          repeat: Infinity, // Lặp lại vô hạn
+                          repeatType: "loop" // Lặp lại từ đầu mỗi lần
+                      }
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                    className="absolute top-[10px] right-[10px] z-10"
+                  >
+                    <HeartFilled style={{color: "red", fontSize: 24, }} onClick={() => delWishlist(product._id)}  />
+                  </motion.div>
+                </AnimatePresence>
+                
                 {/* Hình ảnh sản phẩm */}
                 <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
                   <img
@@ -54,15 +75,29 @@ const Wishlist = () => {
                   <h4 className='w-full text-[15px] font-semibold text-black'>
                     {product?.name}
                   </h4>
+                  
                   <div className='pt-1.5 flex items-center'>
-                    <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                      {formatPrice(product.original_price)}
-                      <sup>đ</sup>
-                    </p>
-                    <del className='text-[14px] ml-4 font-medium text-gray-400'>
-                      {formatPrice(product.sale_price)}
-                      <sup>đ</sup>
-                    </del>
+                   {Number(product.sale_price) > 0 ? (
+                      <div>
+                        <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                          {formatPrice(product.sale_price)}
+                          <sup>đ</sup>
+                        </p>
+                        <del className='text-[14px] ml-4 font-medium text-gray-400'>
+                          {formatPrice(product.original_price)}
+                          <sup>đ</sup>
+                        </del>
+                      </div>
+                      
+                    ): (
+                      <div>
+                        <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                          {formatPrice(product.original_price)}
+                          <sup>đ</sup>
+                        </p>
+                      </div>
+                    )}
+                    
                   </div>
                 </div>
 
