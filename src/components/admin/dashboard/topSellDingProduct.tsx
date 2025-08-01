@@ -1,38 +1,149 @@
+import React, { useEffect } from 'react';
 import { useList } from '../../../hooks/useList';
-import { useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { Star, Tickets } from 'lucide-react';
+import { Tabs } from 'antd';
+import TabPane from 'antd/es/tabs/TabPane';
+import { HeartFilled } from '@ant-design/icons';
 
 const TopSellingProducts = () => {
-  const { data: topProducts, refetch } = useList({
-    resource: `/dashboard/products/top-selling?limit=5`
+  // top sản phẩm bán chạy
+  const { data: topProducts, refetch:refetchTopProducts } = useList({
+    resource: `/dashboard/best-sellers`
   });
+  // top sản phẩm được yêu thích nhất
+  const { data: topProductFavorites } = useList ({
+    resource: `/favorites/admin/popular-products`
+  });
+  console.log(topProductFavorites);
+
+  // top mã khuyến mãi được dùng nhiều nhất
+  const { data:topConpon, refetch:refetchCoupon } = useList({
+    resource: `/dashboard/coupons/top-discount-used`
+  });
+  console.log(topConpon);
+  
+  // top sản phẩm bán ế
+  const { data:topUnsoldProducts, refetch:refetchUnsoldProducts} = useList({
+    resource: `/dashboard/coupons/stock-warning`
+  });
+  console.log(topUnsoldProducts);
+  
 
   useEffect(() => {
-    refetch();
+    refetchTopProducts();
+    refetchCoupon();
+    refetchUnsoldProducts();
   }, []);
 
   return (
-    <div className="mt-[40px] w-[100%]">
-      <h2 className="text-xl font-bold font-sans mb-4">🔥 Sản phẩm bán chạy</h2>
-      <div className="bg-white border border-gray-200 rounded p-4 shadow-sm">
-        {topProducts?.data?.length > 0 ? (
-          topProducts.data.map((item:any, index:any) => (
-            <div key={item._id} className="flex justify-between items-center py-3 border-b last:border-none">
-              <div className="flex items-center gap-4">
-                <img src={item?.image} alt={item?.name} className="w-[50px] h-[50px] object-cover rounded-md" />
-                <div>
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-gray-500">Đã bán: {item.totalSold} sản phẩm</p>
+    <div className="mt-10 w-full px-4 sm:px-0"> 
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg"> 
+        <Tabs defaultActiveKey='1'>
+          <Tabs.TabPane tab="List of best selling products" key="1">
+            {topProducts?.data?.length > 0 ? (
+              <div className="space-y-4"> 
+                {topProducts.data.map((item: any, index: any) => (
+                  <div
+                    key={item._id}
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-none
+                              hover:bg-gray-50 transition-all duration-300 ease-in-out rounded-lg px-3 -mx-3 cursor-pointer" 
+                  >
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                      {/* Image with fallback */}
+                      <img
+                        src={item?.image?.url || `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`}
+                        alt={item?.name || "Product image"}
+                        className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                        onError={(e: any) => { e.target.onerror = null; e.target.src = `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`; }} 
+                      />
+                      <div className="flex-grow">
+                        <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item.name}</p> 
+                        <p className="text-sm text-gray-600 mt-1">Sold: <span className="font-medium">{item.quantity}</span> product</p> 
+                      </div>
+                    </div>
+                    <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
+                      <Star size={18} className="mr-1 fill-current text-yellow-500" /> 
+                      #{index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-center py-8">No best selling product data available.</p>
+            )}
+          </Tabs.TabPane>
+          <Tabs.TabPane
+            tab="List of most favorite products" key="2"
+          >
+            {
+              topProductFavorites?.data.length > 0 ? (
+                <div className='space-y-4'>
+                  {topProductFavorites.data.map((item: any, index: any) => (
+                    <div
+                      key={item._id}
+                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-none
+                              hover:bg-gray-50 transition-all duration-300 ease-in-out rounded-lg px-3 -mx-3 cursor-pointer" 
+                    >
+                      <div className="flex items-center gap-4 w-full sm:w-auto">
+                        {/* Image with fallback */}
+                        <img
+                          src={item?.product?.images[0]?.url || `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`}
+                          alt={item?.name || "Product image"}
+                          className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                          onError={(e: any) => { e.target.onerror = null; e.target.src = `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`; }} 
+                        />
+                        <div className="flex-grow">
+                          <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item?.product.name}</p> 
+                          <p className="text-sm text-gray-600 mt-1 flex items-center gap-1.5"><HeartFilled className='mt-0.5' style={{color: "red", fontSize: 16, }} /> <span className="font-medium">{item.count}</span> </p> 
+                        </div>
+                      </div>
+                      <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
+                        <Star size={18} className="mr-1 fill-current text-yellow-500" /> 
+                        #{index + 1}
+                      </div>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-gray-400 text-center py-8">There is no favorite product data.</p>
+              )}
+          </Tabs.TabPane>
+          <TabPane tab="List of unsold products" key="3">
+
+          </TabPane>
+          <TabPane tab="List of most used promotions" key="4">
+            {
+             topConpon?.data.length > 0 ? (
+              <div className='space-y-4'>
+              {topConpon.data.map((item: any, index: any) => (
+                <div
+                  key={item._id}
+                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-none
+                          hover:bg-gray-50 transition-all duration-300 ease-in-out rounded-lg px-3 -mx-3 cursor-pointer" 
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className='icon'>
+                      <Tickets />
+                    </div>
+                    {/* Image with fallback */}
+                    <div className="flex-grow">
+                      <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item?.code}</p> 
+                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-1.5">Number of uses: <span className="font-medium">{item.count}</span> </p> 
+                    </div>
+                  </div>
+                  <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
+                    <Star size={18} className="mr-1 fill-current text-yellow-500" /> 
+                    #{index + 1}
+                  </div>
+                </div>
+              ))}
               </div>
-              <div className="flex items-center text-yellow-500 font-bold">
-                <Star size={18} className="mr-1" /> #{index + 1}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-400">Không có dữ liệu</p>
-        )}
+            ) : (
+              <p className="text-gray-400 text-center py-8">There are no promo codes available.</p>
+            ) 
+          }
+          </TabPane>
+        </Tabs>
       </div>
     </div>
   );

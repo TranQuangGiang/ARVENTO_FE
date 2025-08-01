@@ -1,4 +1,6 @@
 /* trong file .css hoặc file module */
+
+
 .clip-diagonal {
   clip-path: polygon(65% 0, 100% 0, 100% 100%, 0% 100%);
 }
@@ -51,4 +53,13 @@ body {
 
 .banner-shine:hover::before {
   animation: shine 0.8s ease-in-out;
+}
+/* In a separate CSS file or a style block */
+.custom-tag {
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px; /* A higher border-radius for pill-like shape */
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }

@@ -2,10 +2,16 @@ import React from 'react';
 
 import { Moon, ChevronDown,Search,Bell,Mail, UserRound, MessagesSquare, Power, Undo2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useList } from '../../hooks/useList';
 
 
 
 const HeaderAdmin = () => {
+  const { data } = useList({
+    resource:  `/users/me`
+  });
+  console.log(data);
+  
   return (
     <div className="header w-[82%] h-[90px] fixed flex items-center justify-between bg-white border-b border-b-[#E0E4ED] px-10 z-50">
       {/* Search box */}
@@ -49,7 +55,7 @@ const HeaderAdmin = () => {
               className="w-[40px] h-[40x] rounded-full object-cover border border-gray-300"
             />
             <span className="text-black font-medium text-[16px] flex items-center gap-2">
-              Quang Giang
+              {data?.data.name}
               <ChevronDown className="text-gray-400 text-sm" />
             </span>
           </div>

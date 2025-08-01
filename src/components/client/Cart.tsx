@@ -44,11 +44,11 @@ const Cart = () => {
 
   const { data: vouchers } = useList({ resource: '/coupons/admin/coupons' });
 
-  const handleQuantityChange = (product_id: string, size: string, color: { name: string; hex: string }, quantity: number) => {
+  const handleQuantityChange = (product_id: string, size: string, color: { name: string; hex: string }, sku: string, price: number, image: { url: string, alt: string, id: string, _id: string }, stock: number , quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(product_id, size, color);
     } else {
-      updateCart(product_id, size, color, quantity);
+      updateCart(product_id, size, color, sku, price, image , stock ,quantity);
     }
   };
 
@@ -134,14 +134,14 @@ const Cart = () => {
                   )}
                   <div className="mt-4 flex items-center gap-3">
                     <button
-                      onClick={() => handleQuantityChange(item.product._id, item.selected_variant?.size, item.selected_variant?.color, item.quantity - 1)}
+                      onClick={() => handleQuantityChange(item.product._id, item.selected_variant?.size, item.selected_variant?.color, item.selected_variant?.sku, item.selected_variant?.price, item.selected_variant?.image, item.selected_variant?.stock , item.quantity - 1)}
                       className="px-2.5 py-0.5 border rounded-md hover:bg-gray-100"
                     >
                       -
                     </button>
                     <span className="w-8 h-8 leading-8 text-center bg-gray-100 rounded-md">{item.quantity}</span>
                     <button
-                      onClick={() => handleQuantityChange(item.product._id, item.selected_variant?.size, item.selected_variant?.color, item.quantity + 1)}
+                      onClick={() => handleQuantityChange(item.product._id, item.selected_variant?.size, item.selected_variant?.color, item.selected_variant?.sku, item.selected_variant?.price, item.selected_variant?.image, item.selected_variant?.stock, item.quantity + 1)}
                       className="px-2 py-0.5 border rounded-md hover:bg-gray-100"
                     >
                       +

@@ -1,22 +1,76 @@
-import React, { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Table, Select, Button, Input, message, Card, Typography, Tag, Popconfirm } from "antd";
 import { useList } from "../../../hooks/useList";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import { ExclamationCircleOutlined, EyeOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from 'framer-motion';
+import ExportOrderList from "./exportOrderList";
+import axios from "axios";
 
 const { Option } = Select;
 const { Title } = Typography;
 
 const ListOrder = () => {
+  const [showModal, setShowModal] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const modalParam = searchParams.get("modal");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
   const [activeStatusTab, setActiveStatusTab] = useState<string>("all");
+  const [allOrders, setAllOrders] = useState<any[]>([]);
+  const [isLoadingAll, setIsLoadingAll] = useState(true);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
   const nav = useNavigate();
 
   const { data, refetch } = useList({ resource: "/orders" });
+  
+  const fetchAllOrders = async () => {
+    setIsLoadingAll(true);
+    let ordersData: any[] = [];
+    let page =  1;
+    let totalPages = 1;
+    const limit = 20;
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`http://localhost:3000/api/orders?page=${page}&limit=${limit}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const { orders, total } = res.data.data;
+      ordersData = [...orders];
+      totalPages = Math.ceil(total / limit);
+      
+      if (totalPages > 1) {
+        for (let i = 2; i <= totalPages; i++ ) {
+          const res = await axios.get(`http://localhost:3000/api/orders?page=${i}&limit=${limit}`, {
+            headers : {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          ordersData = [...ordersData, ...res.data.data.orders];
+        }
+      }
+      setAllOrders(ordersData);
+    } catch (error) {
+      console.error("Failed to fetch all orders:", error);
+      return [];
+    }
+    finally {
+      setIsLoadingAll(false);
+    }
+  }
+  
+  
+  useEffect(() => {
+    fetchAllOrders();
+  }, [data]);
 
   const statusOptions = [
     "pending", "confirmed", "processing", "shipping",
@@ -77,7 +131,7 @@ const ListOrder = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       message.success("Status updated successfully!");
-      refetch();
+      await fetchAllOrders();
     } catch {
       message.error("Failed to update status.");
     } finally {
@@ -86,7 +140,7 @@ const ListOrder = () => {
   };
 
   const filteredData = useMemo(() => {
-    const orders = data?.data?.orders || [];
+    const orders = allOrders;
 
     return [...orders]
       .filter((item) => {
@@ -104,13 +158,13 @@ const ListOrder = () => {
         const dateB = new Date(b.createdAt).getTime();
         return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
       });
-  }, [data?.data?.orders, searchTerm, sortOrder, activeStatusTab]);
+  }, [allOrders, searchTerm, sortOrder, activeStatusTab]);
 
   const handleComfirm = (orderID:string) => {
     try {
       nav(`/admin/orderDetail/${orderID}`)
-    } catch (error) {
-      
+    } catch (error:any) {
+      message.error(error || "Đã xảy ra lỗi")
     }
   }
 
@@ -119,8 +173,9 @@ const ListOrder = () => {
       title: "STT",
       dataIndex: "index",
       key: "index",
-      render: (_: any, __: any, index: number) => index + 1,
-    },
+      render: (_: any, __: any, index: number) =>
+        (pagination.current - 1) * pagination.pageSize + index + 1,
+      },
     {
       title: "Order ID",
       dataIndex: "_id",
@@ -222,7 +277,9 @@ const ListOrder = () => {
     }
 
   ];
-
+  const Export = async () => {
+    
+  }
   return (
     <AnimatePresence>
       <motion.div
@@ -279,23 +336,41 @@ const ListOrder = () => {
                     <Option value="desc">Mới nhất</Option>
                   </Select>
                 </div>
-                <Input
-                  placeholder="Tìm theo ID hoặc email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  allowClear
-                  style={{ width: 250 }}
-                />
+                <div className="flex items-center gap-3">
+                  <Input
+                    placeholder="Tìm theo ID hoặc email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    allowClear
+                    style={{ width: 250 }}
+                  />
+                  <Button type="primary" onClick={() => setShowModal("exportPDF")}>Export to PDF file</Button>
+                </div>
+                
               </div>
-
+              
               <Table
                 dataSource={filteredData}
                 columns={columns}
                 rowKey="_id"
                 bordered
-                pagination={{ pageSize: 10 }}
+                loading={isLoadingAll}
+                pagination={{
+                  current: pagination.current,
+                  pageSize: pagination.pageSize,
+                  total: filteredData.length,
+                  onChange: (page, pageSize) => {
+                    setPagination({ current: page, pageSize });
+                  },
+                }}
               />
             </Card>
+            <ExportOrderList 
+              isOpen={showModal === "exportPDF"}
+              onClose={async () => {
+                setShowModal("");
+              }}
+            />
           </div>
         </motion.div>
       </motion.div>

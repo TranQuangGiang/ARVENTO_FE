@@ -271,7 +271,7 @@ const AdminSidebar = () => {
                     {/* Statistics */}
                     <li>
                         <Link
-                            to="/dashboard/statistics"
+                            to="/admin/statistical/revenue"
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
                                 location.pathname === '/admin/statistics'
                                 ? 'bg-[#FEE2E2] text-red-500'

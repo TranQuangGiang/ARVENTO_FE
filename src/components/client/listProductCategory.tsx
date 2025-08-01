@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useList } from '../../hooks/useList';
-import { Checkbox, Spin } from 'antd';
+import { Checkbox, Pagination, Spin } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useOneData } from '../../hooks/useOne';
 
@@ -21,7 +21,8 @@ const sizeFilters = [
 ];
 
 const ListProductCategory = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
   const categoryId = searchParams.get('category') || undefined;
 
   const { data: categoryList, refetch, isLoading } = useList({
@@ -32,12 +33,21 @@ const ListProductCategory = () => {
     resource: `/categories/admin`,
     _id: categoryId,
   });
+  console.log(singleCategory);
+  
 
   const { data: productData, refetch: refetchProducts } = useList({
     resource: `/products`,
+    config: {
+      pagination: {
+        current: page,
+        pageSize: 12, // limit 12 per BE
+      },
+    },
   });
 
-  const allProducts = productData?.data.docs;
+  const allProducts = productData?.data.docs || [];
+  const totalProducts = productData?.data.totalDocs || 0;
   const categories = categoryList?.data || [];
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -237,6 +247,23 @@ const ListProductCategory = () => {
               <p className="col-span-4 text-center text-gray-500 text-[16px]">
                 No matching products found.
               </p>
+            )}
+            {totalProducts > 12 && (
+              <div className='mt-8 text-center'>
+                <Pagination
+                  current={page}
+                  pageSize={12}
+                  total={totalProducts}
+                  onChange={(newPage) => {
+                    setSearchParams((params) => {
+                      params.set("page", newPage.toString());
+                      return params;
+                    })
+                  }}
+                >
+
+                </Pagination>
+              </div>
             )}
           </div>
         </div>
