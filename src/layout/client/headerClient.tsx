@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+ import { useContext, useEffect, useState } from 'react';
 import { faMagnifyingGlass, faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -28,10 +28,21 @@ const HeaderClient = () => {
   }, [modalParam]);
 
   const { state: { cartItemCount } } = useCart();
-  const { data } = useListClient({
+  const { data: data } = useListClient({
     resource: `/categories/client`
   });
   const category = data?.data;
+
+
+    const { data: postData } = useListClient({
+  resource: `/posts/client/category/blog-client`
+});
+const categoryPost = Array.isArray(postData?.data?.docs)
+  ? [...postData.data.docs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  : [];
+
+  console.log("📌 categoryPost:", categoryPost); // 👈 THÊM DÒNG NÀY
+
 
   const handleSearchChange = async (value: string) => {
     setSearchTerm(value);
@@ -85,7 +96,22 @@ const HeaderClient = () => {
                 ))}
               </ul>
             </div>
-            <a href="">Pages</a>
+            <div className="relative group">
+                <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Pages</span>
+                <ul className="absolute top-full left-0 z-20 min-w-[200px] mt-2 rounded-md bg-white shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  {Array.isArray(categoryPost) &&
+                    categoryPost
+                      .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                      .map((post: any) => (
+                        <li key={post._id} className="px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
+                          <Link to={`/${post.slug}`} className="text-[#0b1f4e] block">
+                            {post.title}
+                          </Link>
+                        </li>
+                  ))}
+                </ul>
+            </div>
+
             <Link to={`/listBlogClient`}>Blog News</Link>
             <a href="">Contact</a>
           </nav>
