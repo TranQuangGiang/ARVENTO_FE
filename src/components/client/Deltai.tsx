@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Button, Image, message, Rate, Upload, Input, Popconfirm } from "antd";
-import { HeartFilled, HeartOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Image, message, Rate, Popconfirm, Select, Input } from "antd";
+import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -296,6 +296,8 @@ const DeltaiProduct = () => {
       message.error("Xóa đánh giá thất bại!");
     }
   };
+  
+  
 
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -374,6 +376,21 @@ const DeltaiProduct = () => {
   // tính phần trăm giảm giá
   const percentDiscount = Math.round(((variantOriginalPrice - variantSalePrice) / variantOriginalPrice) * 100);
   console.log(percentDiscount);
+
+  const { Option } = Select;
+const { TextArea } = Input;
+
+  const [ratingFilter, setRatingFilter] = useState(null);
+  const [filteredReviews, setFilteredReviews] = useState([]);
+
+  useEffect(() => {
+    if (ratingFilter === null) {
+      setFilteredReviews(reviews);
+    } else {
+      setFilteredReviews(reviews.filter((r) => r.rating === ratingFilter));
+    }
+  }, [reviews, ratingFilter]);
+
 
   if (!product) return <p className="text-center mt-10">Đang tải sản phẩm...</p>;
 
@@ -636,89 +653,96 @@ const DeltaiProduct = () => {
           dangerouslySetInnerHTML={{ __html: product.description }}
         />
       </div>
-      <div className="content-product w-[70%] mx-auto">
+       <div className="content-product w-[70%] mx-auto">
+      {/* Review Section */}
+      <div className="mt-10 bg-gray-100 pt-8 px-6 pb-6 rounded-lg shadow-sm">
+        <h2 className="text-lg font-semibold  uppercase tracking-wide text-[#01225a] bg-gray-100 py-3 border-b-2 border-[#01225a]">
+          Product Reviews
+        </h2> <br />
+        {/* Lọc đánh giá */}
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          {[5, 4, 3, 2, 1].map((star) => {
+            const count = reviews.filter((r) => r.rating === star).length;
+            const isActive = ratingFilter === star;
+            return (
+              <button
+                key={star}
+                onClick={() => setRatingFilter(star === ratingFilter ? null : star)}
+                className={`flex items-center gap-1 px-3 py-1 border rounded-full transition-all duration-200
+                  ${isActive ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+                `}
+              >
+                <Rate disabled defaultValue={star} count={1} />
+                {star} ({count})
+              </button>
+            );
+          })}
+          <button
+            onClick={() => setRatingFilter(null)}
+            className={`px-3 py-1 border rounded-full transition-all duration-200
+              ${ratingFilter === null ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+            `}
+          >
+            Tất cả ({reviews.length})
+          </button>
+        </div>
 
-        {/* Review Section */}
-        <div className="mt-10 border-t pt-8">
-          <h3 className="text-xl font-bold text-[#01225a] mb-5">Đánh giá sản phẩm</h3>
-
-          {reviews.length === 0 ? (
-            <p className="text-gray-600">Chưa có đánh giá nào.</p>
-          ) : (
-            reviews.map((r, idx) => (
-              <div key={idx} className="mb-6 border-b pb-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center mb-3">
-                    <div className="w-9 h-9 rounded-full bg-[#2d0d0d] text-white flex items-center justify-center text-sm font-sans font-semibold">
-                      {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
-                    </div>
-                    <span className="font-semibold text-[#01225a] ml-2">
-                      {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-                    </span>
+        {filteredReviews.length === 0 ? (
+          <p className="text-gray-600">Chưa có đánh giá nào.</p>
+        ) : (
+          filteredReviews.map((r, idx) => (
+            <div key={idx} className="mb-6 border-b border-gray-300 pb-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center mb-3">
+                  <div className="w-9 h-9 rounded-full bg-[#2d0d0d] text-white flex items-center justify-center text-sm font-sans font-semibold">
+                    {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
                   </div>
-
-                  <div className="flex gap-2 items-center">
-                    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
-                    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                      <Popconfirm
-                        title="Bạn chắc chắn muốn xóa đánh giá này?"
-                        onConfirm={() => handleDeleteReview(r._id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                      >
-                        <Button size="small" danger>Xóa</Button>
-                      </Popconfirm>
-                    )}
-                  </div>
+                  <span className="font-semibold text-[#01225a] ml-2">
+                    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+                  </span>
                 </div>
 
-                <Rate disabled defaultValue={r.rating} className="mt-1" />
-                <p className="mt-2 text-gray-700">{r.comment}</p>
-
-                {r.images?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {r.images.map((img: any, i: any) => (
-                      <img
-                        key={i}
-                        src={img}
-                        className="w-16 h-16 rounded border object-cover"
-                        alt={`review-img-${i}`}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {/* Nếu có phản hồi từ admin */}
-                {r.reply && (
-                  <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
-                    <strong>Phản hồi từ Admin:</strong> {r.reply}
-                  </div>
-                )}
+                <div className="flex gap-2 items-center">
+                  <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+                  {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                    <Popconfirm
+                      title="Bạn chắc chắn muốn xóa đánh giá này?"
+                      onConfirm={() => handleDeleteReview(r._id)}
+                      okText="Xóa"
+                      cancelText="Hủy"
+                    >
+                      <Button size="small" danger>Xóa</Button>
+                    </Popconfirm>
+                  )}
+                </div>
               </div>
-            ))
-          )}
 
+              <Rate disabled defaultValue={r.rating} className="mt-1" />
+              <p className="mt-2 text-gray-700">{r.comment}</p>
 
-          <div className="mt-8 p-5 bg-gray-50 rounded-md">
-            <h4 className="text-lg font-semibold text-[#01225a] mb-3">Viết đánh giá</h4>
-            <div className="mb-3">
-              <label className="block text-sm mb-1">Đánh giá của bạn:</label>
-              <Rate onChange={setUserRating} value={userRating} />
+              {r.images?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {r.images.map((img: any, i: any) => (
+                    <img
+                      key={i}
+                      src={img}
+                      className="w-16 h-16 rounded object-cover"
+                      alt={`review-img-${i}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {r.reply && (
+                <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
+                  <strong>Phản hồi từ Admin:</strong> {r.reply}
+                </div>
+              )}
             </div>
-            <div className="mb-3">
-              <label className="block text-sm mb-1">Nhận xét:</label>
-              <Input.TextArea rows={4} value={userComment} onChange={(e) => setUserComment(e.target.value)} />
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm mb-1">Hình ảnh:</label>
-              <Upload {...uploadProps} listType="picture-card" multiple>
-                <Button icon={<UploadOutlined />}>Tải ảnh</Button>
-              </Upload>
-            </div>
-            <Button type="primary" onClick={handleSubmitReview} style={{ background: "#01225a", borderColor: "#01225a" }}>Gửi đánh giá</Button>
-          </div>
-        </div>
+          ))
+        )}
       </div>
+    </div> <br />
     </div>
   );
 };

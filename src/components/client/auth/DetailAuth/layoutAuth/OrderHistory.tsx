@@ -400,6 +400,18 @@ const OrderHistory = () => {
                                                     </Popconfirm>
                                                 )
                                             }
+                                            {order.status === "completed" && (
+                                                <Link to={`/review/${order._id}`}>
+                                                    <Button
+                                                        type="default"
+                                                        style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
+                                                        className="text-[16px]"
+                                                    >
+                                                        📝 Đánh giá sản phẩm
+                                                    </Button>
+                                                </Link>
+                                            )}
+
                                         </div>
                                     </div>
                                 </div>
