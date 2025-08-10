@@ -19,7 +19,7 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
   function onFinish(values: any) {
     mutate(values, {
       onSuccess: () => {
-        message.success(`Đăng ký tài khoản thành công`);
+        message.success(`Account registration successful`);
         switchToLogin();
       },
       onError: (err: any) => {
