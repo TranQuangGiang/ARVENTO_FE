@@ -1,0 +1,170 @@
+[33m33e6833[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/review[m[33m, [m[1;31morigin/feature/review[m[33m)[m Merge branch 'feature/review' of https://github.com/TranQuangGiang/ARVENTO_FE into feature/review
+[33m3551b97[m[33m ([m[1;32mdev[m[33m)[m update product
+[33mcc13e8a[m Merge branch 'dev' into feature/review
+[33m1b98f31[m fix review
+[33m50b28bb[m Merge pull request #101 from TranQuangGiang/feature/verifyEmail
+[33mcb6e9e8[m add code module verify-email
+[33m19be7d0[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mmain[m[33m)[m Upadte headerClien
+[33mbc77443[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #99 from TranQuangGiang/dev
+[33me59e837[m[33m ([m[1;31morigin/feature/verifyEmail[m[33m)[m Merge pull request #98 from TranQuangGiang/feature/dashboardModule
+[33m74082bb[m[33m ([m[1;31morigin/feature/dashboardModule[m[33m)[m add code module dashboard
+[33m812de0c[m Merge pull request #97 from TranQuangGiang/dev
+[33m50efb08[m[33m ([m[1;31morigin/feature/statistical[m[33m)[m Merge pull request #96 from TranQuangGiang/feature/payment-successful
+[33mfe7e6cd[m[33m ([m[1;31morigin/feature/fix-code-language[m[33m)[m add code
+[33m0c74662[m Merge pull request #94 from TranQuangGiang/dev
+[33mdb42c84[m[33m ([m[1;31morigin/feature/cancel-order[m[33m)[m Merge pull request #93 from TranQuangGiang/feature/returnRequest
+[33m637ad12[m[33m ([m[1;31morigin/feature/returnRequest[m[33m)[m add code returnRequest
+[33md224c43[m Merge pull request #92 from TranQuangGiang/dev
+[33m30b4d69[m Merge pull request #91 from TranQuangGiang/blogClient
+[33m946f52f[m[33m ([m[1;31morigin/blogClient[m[33m, [m[1;32mblogClient[m[33m)[m Các Trang chính sách của web
+[33md33b13d[m Merge pull request #90 from TranQuangGiang/dev
+[33md6c8abc[m Merge pull request #89 from TranQuangGiang/blogClient
+[33m7160b53[m các trang bài viết về chính sách của web
+[33m272ebb5[m Merge pull request #88 from TranQuangGiang/dev
+[33mc4f3008[m Merge pull request #87 from TranQuangGiang/feature/shipping
+[33m33f6910[m[33m ([m[1;31morigin/feature/shipping[m[33m)[m  add code shiping
+[33m9af15ba[m Merge pull request #86 from TranQuangGiang/dev
+[33mba9e3b8[m Merge pull request #85 from TranQuangGiang/feature/searchProduct
+[33m2c1a164[m[33m ([m[1;31morigin/feature/searchProduct[m[33m)[m add code search product
+[33mc7c4243[m Merge pull request #84 from TranQuangGiang/dev
+[33ma031e54[m Merge pull request #83 from TranQuangGiang/feature/dashboard
+[33m733d5d1[m[33m ([m[1;31morigin/feature/dashboard[m[33m)[m Merge branch 'dev' into feature/dashboard
+[33m625bca9[m  add code product category, list blog client & dashboad admin
+[33mf3d3e37[m Merge pull request #82 from TranQuangGiang/dev
+[33md1ae105[m Quản Trị Color và Size
+[33m9086627[m Merge pull request #81 from TranQuangGiang/dev
+[33m85b5ba2[m Merge pull request #80 from TranQuangGiang/feature/update-addresses
+[33m4c85f2a[m Merge pull request #79 from TranQuangGiang/feature/update-addresses
+[33mdf37316[m[33m ([m[1;31morigin/feature/update-addresses[m[33m)[m add code address
+[33m303688d[m Merge pull request #78 from TranQuangGiang/dev
+[33m69b1bfd[m Merge pull request #77 from TranQuangGiang/feature/wishlist-product
+[33mc8326e6[m[33m ([m[1;31morigin/feature/wishlist-product[m[33m)[m  add code wishlist and my account
+[33m477d02a[m Merge pull request #76 from TranQuangGiang/dev
+[33m916ed50[m Merge pull request #75 from TranQuangGiang/feature/list-orderClient
+[33m9f99547[m[33m ([m[1;31morigin/feature/list-orderClient[m[33m)[m Merge branch 'dev' into feature/list-orderClient
+[33m2b05187[m  list-order & fix code address & add code loginAdmin check auth
+[33maa8011e[m Merge pull request #74 from TranQuangGiang/dev
+[33maf74d98[m Merge pull request #73 from TranQuangGiang/checkout
+[33mfd3c5c4[m[33m ([m[1;31morigin/checkout[m[33m, [m[1;32mcheckout[m[33m)[m Update Checout ListOrder
+[33m2386763[m Merge pull request #72 from TranQuangGiang/dev
+[33mfbb9f22[m Merge pull request #71 from TranQuangGiang/feature/checkout
+[33m7770e8d[m[33m ([m[1;31morigin/feature/checkout[m[33m)[m update code checkout and addresses
+[33m04f3705[m Merge pull request #70 from TranQuangGiang/dev
+[33m4bbc7b1[m Merge pull request #69 from TranQuangGiang/feature/address-client
+[33med4257b[m[33m ([m[1;31morigin/feature/address-client[m[33m)[m Merge branch 'dev' into feature/address-client
+[33mc4f6d3e[m  add code module addresses
+[33m9f8a160[m Merge pull request #68 from TranQuangGiang/dev
+[33maba3d0c[m Merge pull request #67 from TranQuangGiang/main
+[33m3fc20ad[m  update code client & admin
+[33m203cfdb[m Merge pull request #66 from TranQuangGiang/dev
+[33m2a6603c[m[33m ([m[1;31morigin/feature/module-orders-client[m[33m)[m Merge pull request #65 from TranQuangGiang/checkout
+[33m2d37029[m update Checkout vs qtri orderAdmin
+[33mc7a4517[m Merge pull request #64 from TranQuangGiang/dev
+[33mf7ad1f4[m Merge pull request #63 from TranQuangGiang/feature/cart
+[33m2017ef2[m[33m ([m[1;31morigin/feature/cart[m[33m)[m update code module carts
+[33m7a94112[m Merge pull request #62 from TranQuangGiang/feature/cart
+[33m50db726[m Merge pull request #61 from TranQuangGiang/main
+[33m2aed3a6[m Merge pull request #60 from TranQuangGiang/dev
+[33m4ce96eb[m Merge pull request #59 from TranQuangGiang/feature/module-users
+[33m180c5b9[m[33m ([m[1;31morigin/feature/module-users[m[33m)[m Merge branch 'dev' into feature/module-users
+[33m3be1b5b[m update code user
+[33m2a489f3[m Merge pull request #58 from TranQuangGiang/dev
+[33me340bdd[m Merge pull request #57 from TranQuangGiang/favorite
+[33m0a5747e[m[33m ([m[1;31morigin/favorite[m[33m, [m[1;32mfavorite[m[33m)[m favorite
+[33m1fc0b8e[m Merge pull request #56 from TranQuangGiang/dev
+[33m8c4607a[m Merge branch 'main' into dev
+[33m30ed734[m Merge pull request #55 from TranQuangGiang/feature/review
+[33m05f075f[m Merge branch 'dev' into feature/review
+[33m5be7a26[m code review
+[33m84d13eb[m Merge pull request #54 from TranQuangGiang/dev
+[33m49622f3[m Merge pull request #53 from TranQuangGiang/feature/module-users
+[33m325f6c6[m  add module user client & admin
+[33m0fb4d8c[m Merge pull request #52 from TranQuangGiang/dev
+[33m15e589e[m Merge pull request #51 from TranQuangGiang/feature/module-products
+[33m3564409[m[33m ([m[1;31morigin/feature/module-products[m[33m)[m Merge branch 'dev' into feature/module-products
+[33m9c7f67a[m update module products 2
+[33mb5104dc[m Merge pull request #49 from TranQuangGiang/dev
+[33mc8dc165[m[33m ([m[1;31morigin/feature/userOne[m[33m)[m Merge pull request #48 from TranQuangGiang/feature/cart
+[33m34e2b50[m add module cart client
+[33mbcbb2c7[m detailProduct in admin
+[33m0666951[m Merge pull request #47 from TranQuangGiang/dev
+[33m76c772b[m Merge pull request #46 from TranQuangGiang/checkout
+[33mf8a1896[m Giao diện checkout
+[33m7f0a279[m Merge pull request #45 from TranQuangGiang/dev
+[33mcbf63de[m Merge pull request #44 from TranQuangGiang/feature/detailAuth
+[33m657bbac[m[33m ([m[1;31morigin/feature/detailAuth[m[33m)[m update code
+[33m375df10[m Merge pull request #43 from TranQuangGiang/dev
+[33mabc37e4[m Merge pull request #42 from TranQuangGiang/feature/detailAuth
+[33m7208b9d[m update detail auth
+[33me368d63[m Merge pull request #41 from TranQuangGiang/dev
+[33m9ff42bf[m Merge pull request #40 from TranQuangGiang/feature/detailAuth
+[33m8e31208[m detail Auth
+[33m9e244d6[m Merge pull request #39 from TranQuangGiang/dev
+[33m413a509[m call api product trangchu
+[33m684271b[m Merge pull request #38 from TranQuangGiang/dev
+[33mb71ccb0[m Merge pull request #36 from TranQuangGiang/feature/module-products
+[33m094f290[m Merge branch 'dev' into feature/module-products
+[33m6f963c5[m mupdate module-product
+[33mdce546e[m add module-products
+[33m494b02b[m Merge pull request #35 from TranQuangGiang/dev
+[33m1e9826a[m Merge pull request #34 from TranQuangGiang/couponAdmin
+[33mbdbb7dd[m[33m ([m[1;31morigin/couponAdmin[m[33m)[m update2 CRUD couponAdmin
+[33m5547529[m Merge pull request #33 from TranQuangGiang/dev
+[33m2b49ef3[m Merge pull request #32 from TranQuangGiang/couponAdmin
+[33m2959c3d[m update CRUD CouponAdmin
+[33m48b7b93[m Merge pull request #31 from TranQuangGiang/dev
+[33m4db8598[m Merge pull request #30 from TranQuangGiang/feature/forgot-password
+[33m535619c[m[33m ([m[1;31morigin/feature/forgot-password[m[33m)[m add forgot-passwordsword
+[33m4408660[m Merge pull request #29 from TranQuangGiang/dev
+[33md019d6f[m Merge pull request #28 from TranQuangGiang/feature-product
+[33m074879b[m[33m ([m[1;31morigin/feature-product[m[33m)[m Product interface
+[33medca0b9[m Merge pull request #27 from TranQuangGiang/dev
+[33m9fb7463[m Merge pull request #26 from TranQuangGiang/CategoryAdmin
+[33maa477a6[m[33m ([m[1;31morigin/CategoryAdmin[m[33m)[m update CRUD CategoryAdmin
+[33mab2ff01[m Merge pull request #25 from TranQuangGiang/dev
+[33mc199c1a[m Merge pull request #24 from TranQuangGiang/feature/blog-new
+[33m8f44163[m[33m ([m[1;31morigin/feature/blog-new[m[33m)[m add categoryBlog and blog new
+[33m7589e32[m Merge pull request #22 from TranQuangGiang/dev
+[33m08d58a2[m Update Config
+[33m3ae5e28[m Resolve merge conflict from main
+[33mc41c0ca[m Merge pull request #23 from TranQuangGiang/SlideAdmin
+[33m66e719c[m[33m ([m[1;31morigin/SlideAdmin[m[33m)[m Update2 CRUD Banner
+[33mfcab2f5[m Update2 CRUD Banner
+[33mc778c87[m Merge pull request #21 from TranQuangGiang/SlideAdmin
+[33mbe907c6[m resolve conflict
+[33m42b9965[m Update CRUD Banner
+[33m6dc17fd[m Merge pull request #20 from TranQuangGiang/dev
+[33m6e5e6df[m Merge pull request #19 from TranQuangGiang/feature/login-register
+[33m79e21f0[m[33m ([m[1;31morigin/feature/login-register[m[33m)[m add login & register
+[33mdd13da4[m add register & login
+[33m71ce10a[m Resolve merge conflicts in header.tsx and slideBar.tsx
+[33ma63841a[m Merge pull request #17 from TranQuangGiang/dev
+[33m04fd002[m Merge pull request #16 from TranQuangGiang/CategoryAdmin
+[33m9ca6654[m Update Form CategoryAdmin
+[33m4cfc5b8[m Merge pull request #15 from TranQuangGiang/dev
+[33me6a3495[m Merge pull request #14 from TranQuangGiang/SlideAdmin
+[33m1e27735[m Update FormBanner
+[33m2af715f[m Merge pull request #13 from TranQuangGiang/dev
+[33m9c4fd2f[m Merge pull request #12 from TranQuangGiang/SlideAdmin
+[33m5abbcbb[m update BannerAdmin
+[33mf4a98c8[m Merge pull request #11 from TranQuangGiang/dev
+[33mdb2a0dc[m Merge pull request #10 from TranQuangGiang/Home-Admin
+[33m6a4bdd8[m[33m ([m[1;31morigin/Home-Admin[m[33m)[m update code & fix conflict in navigation link
+[33mb6ecf11[m update code home admin
+[33mab2f78e[m WIP: temporary commit before switching branch
+[33m218d062[m Merge pull request #9 from TranQuangGiang/dev
+[33m512477e[m Merge pull request #8 from TranQuangGiang/main
+[33m980b7e4[m Merge pull request #7 from TranQuangGiang/dev
+[33m5d5522b[m Merge pull request #6 from TranQuangGiang/main
+[33mfe274b1[m Merge pull request #5 from TranQuangGiang/dev
+[33m0556272[m Merge pull request #4 from TranQuangGiang/CategoryAdmin
+[33ma43af36[m Merge pull request #3 from TranQuangGiang/SlideAdmin
+[33m0b96225[m categoryAdmin
+[33m5c9988a[m SlideAdmin
+[33mfe17739[m Merge pull request #2 from TranQuangGiang/dev
+[33m7a6e01c[m Merge pull request #1 from TranQuangGiang/Home-Admin
+[33mdcfbe24[m new home admin
+[33m6f5fe65[m init FB NEW
+[33m84321ab[m Tạm commit code của mình
+[33m3d56fc6[m giaodien
+[33m4052494[m init FE

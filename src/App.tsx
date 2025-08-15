@@ -77,6 +77,9 @@ import DoiTra from './components/client/chinhsachdoitra'
 import ChonSize from './components/client/chonsize'
 import KhuyenMai from './components/client/khuyenmai'
 import Review from './components/client/review'
+import EmailVerificationNotice from './components/client/auth/VerifyEmail'
+import ResendVerification from './components/client/auth/resendVerification'
+import EmailVerificationSuccess from './components/client/auth/htEmailVerificationSuccess'
 
 
 
@@ -89,6 +92,9 @@ function App() {
       {path: 'register', element: <Register/>},
       {path: 'login', element: <Login/>},
       {path: 'resetPassword', element: <ResetPassword/>},
+      {path: 'verifyEmail', element: <EmailVerificationNotice/>},
+      {path: 'resend-verification', element: <ResendVerification />},
+      {path: 'EmailVerificationSuccess', element: <EmailVerificationSuccess />},
       {path: 'detailAuth', element: <DetailAuth/>, children: [
         {path: 'homeAuth', element: <HomeAuth />},
         {path: 'orderHistory', element: <OrderHistory />},

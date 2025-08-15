@@ -1,11 +1,14 @@
 import { FileText, Heart, House, LogOut, Mail, MapPin, Receipt, RotateCcw, ScrollText, Settings, ShoppingBag, Tickets } from 'lucide-react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useUserMe } from '../../../../hooks/useOne'
 import { useEffect } from 'react'
+import { Button } from 'antd'
+import { CheckCircleTwoTone } from '@ant-design/icons'
 
 
 const DetailAuth = () => {
     const location = useLocation();
+    const nav = useNavigate();
     const { data:UserMe, refetch } = useUserMe({
         resource: `/users/me`
     })
@@ -35,6 +38,27 @@ const DetailAuth = () => {
                         <p className="text-[15px] font-sans text-gray-800">
                             {maskEmail(UserMe?.data.email)}
                         </p>
+                        {!UserMe?.data?.verified ? (
+                            <div style={{ marginTop: 8 }}>
+                                <Button
+                                type="primary"
+                                size="small"
+                                onClick={() => nav("/resend-verification")}
+                                >
+                                Xác thực tài khoản
+                                </Button>
+                                <span style={{ marginLeft: 8, fontSize: "14px", color: "red" }}>
+                                    (Chưa xác thực)
+                                </span>
+                            </div>
+                        ) : (
+                            <span
+                                className="flex items-center gap-2 bg-green-50 border border-green-400 text-green-700 text-[14px] px-2.5 py-0.5 rounded-full shadow-sm mt-1.5"
+                            >
+                                <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: "18px" }} />
+                                Đã xác thực
+                            </span>
+                        )}
                     </span>
                 </div>
                 <div className='flex items-center flex-col h-full'>

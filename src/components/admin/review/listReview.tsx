@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, MessageOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Switch, message, Input, Select, Table, Rate } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
@@ -22,24 +22,19 @@ const ListReview = () => {
   const {
     data: reviews,
     refetch: refetchReview,
-    isLoading,
-    isError,
   } = useListReview({ resource: "/reviews/admin/reviews" });
 
   const [localReviews, setLocalReviews] = useState<any[]>([]);
   const toggleReviewStatus = useToggleReviewStatus();
-  const deleteReview = useDelete({ resource: "/reviews/admin/reviews" });
   const approveReview = useApproveReview();
   const [hasShownSuccess, setHasShownSuccess] = useState(false);
 
-  // Gán reviews ban đầu
   useEffect(() => {
     if (Array.isArray(reviews)) {
       setLocalReviews(reviews);
     }
   }, [reviews]);
 
-  // Cập nhật nếu có review được sửa từ trang edit
   useEffect(() => {
     const updated = location.state?.updatedReview;
     if (updated) {
@@ -77,14 +72,6 @@ const ListReview = () => {
     );
   };
 
-  const handleDelete = (id: string) => {
-    deleteReview.mutate(id, {
-      onSuccess: () => {
-        refetchReview();
-      },
-      onError: () => message.error("Failed to delete review"),
-    });
-  };
 
   const handleSelectApproval = (reviewId: string, value: boolean) => {
     if (value === true) {
@@ -182,22 +169,10 @@ const ListReview = () => {
             type="default"
             className="border-blue-500 text-blue-500 hover:!bg-blue-50"
             onClick={() => navigate(`/admin/editreview/${record._id}`)}
+            icon={<MessageOutlined />}
           >
-            Update
+            Reply Review
           </Button>
-          <Popconfirm
-            title="Are you sure you want to delete this review?"
-            okText="Delete"
-            cancelText="Cancel"
-            onConfirm={() => handleDelete(record._id)}
-          >
-            <Button
-              icon={<DeleteOutlined />}
-              className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Delete
-            </Button>
-          </Popconfirm>
         </div>
       ),
     },
