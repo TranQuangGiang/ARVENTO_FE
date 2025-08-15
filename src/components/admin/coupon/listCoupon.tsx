@@ -36,10 +36,10 @@ const ListCoupon: React.FC = () => {
 
  const { mutate: toggleCouponStatus, isPending: isToggling } = useMutation({
   mutationFn: async (id: string) => {
-  const token = localStorage.getItem("token"); // hoặc từ context/store
+  const token = localStorage.getItem("token"); 
   const res = await axiosInstance.put(
     `/coupons/admin/${id}/toggle`,
-    {}, // body rỗng
+    {}, 
     {
       headers: {
             Authorization: `Bearer ${token}`,

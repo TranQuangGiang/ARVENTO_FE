@@ -1,6 +1,5 @@
-// ✅ UpdateReview.tsx
 import React, { useEffect } from "react";
-import { Form, Input, Button, Upload, Switch, Rate, message, Select } from "antd";
+import { Form, Input, Button, Upload, Switch, Rate, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import { useOneData } from "../../../hooks/useOne";
@@ -8,10 +7,10 @@ import { useUpdate } from "../../../hooks/useUpdate";
 
 const UpdateReview = () => {
   const [form] = Form.useForm();
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
 
-  const { data: review } = useOneData({ resource: `/reviews/admin/reviews`, _id: id });
+  const { data: review } = useOneData({ resource: `/reviews`, _id: id });
   const { mutate } = useUpdate({ resource: "/reviews", _id: id });
 
   useEffect(() => {
@@ -24,68 +23,36 @@ const UpdateReview = () => {
       }));
 
       form.setFieldsValue({
-        hidden: review.data.hidden,
-        comment: review.data.comment,
-        reply: review.data.reply,
-        rating: review.data.rating,
-        status: review.data.status || "pending",
-        images: files,
-      });
+      hidden: !review.data.hidden, 
+      comment: review.data.comment,
+      reply: review.data.reply,
+      rating: review.data.rating,
+      status: review.data.status || "pending",
+      images: files,
+    });
+
     }
   }, [review, form]);
 
-  const onFinish = (values: any) => {
-    const images = (values.images || [])
-      .map((file: any) => (file?.url ? file.url : file?.originFileObj))
-      .filter(Boolean);
-
-    const hasFile = images.some(img => img instanceof File);
-
-    if (hasFile) {
-      const formData = new FormData();
-      formData.append("hidden", values.hidden);
-      formData.append("comment", values.comment);
-      formData.append("reply", values.reply);
-      formData.append("rating", values.rating);
-      formData.append("status", values.status);
-      images.forEach((img: string | File) => {
-        formData.append("images", img);
-      });
-
-      mutate(formData, {
-        onSuccess: (data) => {
-          nav("/admin/listreview", {
-            state: {
-              updatedReview: data, // ✅ gửi dữ liệu mới
-            },
-          });
-        },
-      });
-    } else {
-      const payload = {
-        ...values,
-        images,
-      };
-
-     mutate(payload, {
-  onSuccess: (res) => {
-    navigate("/admin/reviews", {
-      state: {
-        updatedReview: res.data, // Gửi review vừa cập nhật
-        successMessage: "Đánh giá đã được cập nhật!",
-      },
-    });
-  },
- 
-});
-
-    }
+ const onFinish = (values: any) => {
+  const payload = {
+    ...review.data,          // giữ nguyên dữ liệu cũ
+    reply: values.reply,     // cập nhật reply mới
   };
+  mutate(payload, {
+    onSuccess: (res) => {
+      navigate("/admin/listreview", {
+        state: { updatedReview: res.data },
+      });
+    },
+  });
+};
+
 
   return (
     <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
       <h3 className="text-2xl font-semibold mb-1">UPDATE REVIEW</h3>
-      <p className="text-sm text-gray-500 mb-6">Edit review content and status</p>
+      <p className="text-sm text-gray-500 mb-6">Edit reply to review</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
       <Form layout="vertical" onFinish={onFinish} form={form} className="space-y-4">
@@ -102,33 +69,29 @@ const UpdateReview = () => {
         </Form.Item>
 
         <Form.Item name="hidden" label="Ẩn / Hiện" valuePropName="checked">
-          <Switch />
+          <Switch disabled />
         </Form.Item>
 
         <Form.Item name="status" label="Phê duyệt">
-          <Select>
+          <Select disabled>
             <Select.Option value="pending">Chờ duyệt</Select.Option>
             <Select.Option value="approved">Đã duyệt</Select.Option>
           </Select>
         </Form.Item>
 
         <Form.Item name="rating" label="Rating">
-          <Rate />
+          <Rate disabled />
         </Form.Item>
 
-        <Form.Item name="comment" label="Comment" rules={[{ required: true }]}>
-          <Input.TextArea rows={3} />
-        </Form.Item>
-
-        <Form.Item name="reply" label="Reply">
-          <Input.TextArea rows={2} />
+        <Form.Item name="comment" label="Comment">
+          <Input.TextArea rows={3} disabled />
         </Form.Item>
 
         <Form.Item
           name="images"
           label="Images"
           valuePropName="fileList"
-          getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList}
+          getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
         >
           <Upload
             name="file"
@@ -136,17 +99,23 @@ const UpdateReview = () => {
             multiple
             accept="image/*"
             beforeUpload={() => false}
+            disabled
           >
-            <Button icon={<UploadOutlined />}>Upload</Button>
+            <Button icon={<UploadOutlined />} disabled>Upload</Button>
           </Upload>
         </Form.Item>
 
-        <Form.Item>
-          <div className="flex justify-end space-x-3">
-            <Button type="primary" htmlType="submit">Update Review</Button>
-            <Button onClick={() => form.resetFields()}>Cancel</Button>
-          </div>
+        <Form.Item name="reply" label="Reply">
+          <Input.TextArea rows={2} />
         </Form.Item>
+
+        <Form.Item>
+  <div className="flex justify-end space-x-3">
+    <Button type="primary" htmlType="submit">Reply Review</Button>
+    <Button onClick={() => navigate("/admin/listreview")}>Cancel</Button>
+  </div>
+</Form.Item>
+
       </Form>
     </div>
   );
