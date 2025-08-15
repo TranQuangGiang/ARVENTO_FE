@@ -6,9 +6,11 @@ import { useDelete } from "../../../hooks/useDelete";
 import { useDebounce } from "use-debounce"; // npm install use-debounce
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useMemo, useState } from "react";
-import { Button, Image, Input, Popconfirm, Select, Table } from "antd";
+import { Button, Image, Input, message, Popconfirm, Select, Switch, Table } from "antd";
 import { AppstoreAddOutlined, BgColorsOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { FiPlus } from "react-icons/fi";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "../../../utils/axiosInstance";
 const { Option } = Select;
 
 const ProductList = () => {
@@ -24,7 +26,7 @@ const ProductList = () => {
   });
   const products = Array.isArray(productData?.data?.docs) ? productData.data.docs : [];
 
-  const { data: cateData } = useList({
+  const { data: cateData, refetch } = useList({
     resource: "/categories/admin",
   });
   const categories = cateData?.data || [];
@@ -62,7 +64,31 @@ const ProductList = () => {
     value: cat._id,
   }));
 
-  // Cấu hình bảng columns
+  const { mutate: toggleProductStatus, isPending: isToggling } = useMutation({
+  mutationFn: async (id: string) => {
+  const token = localStorage.getItem("token"); 
+  const res = await axiosInstance.patch(
+    `/products/${id}/status`,
+    {}, 
+    {
+      headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+    }
+  );
+  return res.data;
+},
+
+  onSuccess: () => {
+    message.success("Cập nhật trạng thái thành công");
+    refetch();
+  },
+  onError: (error: any) => {
+    message.error("Cập nhật thất bại: " + error.message);
+  }
+});
+
   const columns: ColumnsType<any> = [
     {
       title: "#",
@@ -70,6 +96,18 @@ const ProductList = () => {
       render: (_: any, __: any, index: number) => (currentPage - 1) * itemsPerPage + index + 1,
       align: "center",
     },
+    {
+          title: "Active",
+          dataIndex: "isActive",
+          key: "isActive",
+          render: (isActive: boolean, record: any) => (
+            <Switch
+              checked={isActive}
+              loading={isToggling}
+              onChange={() => toggleProductStatus(record._id)}
+            />
+          ),
+        },
     {
       title: "Image",
       dataIndex: "images",
