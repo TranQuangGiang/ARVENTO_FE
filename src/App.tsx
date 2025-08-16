@@ -76,6 +76,7 @@ import ChinhSachMuaHang from './components/client/chinhsachmh'
 import DoiTra from './components/client/chinhsachdoitra'
 import ChonSize from './components/client/chonsize'
 import KhuyenMai from './components/client/khuyenmai'
+import Review from './components/client/review'
 import EmailVerificationNotice from './components/client/auth/VerifyEmail'
 import ResendVerification from './components/client/auth/resendVerification'
 import EmailVerificationSuccess from './components/client/auth/htEmailVerificationSuccess'
@@ -124,6 +125,7 @@ function App() {
       {path: 'chinh-sach-doi-tra-arvaneto', element: <DoiTra />},
       {path: 'huong-dan-chon-size-giay-arvento', element: <ChonSize />},
       {path: 'chuong-trinh-khuyen-mai-arvento', element: <KhuyenMai />},
+      {path: 'review/:id', element: <Review />},
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

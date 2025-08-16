@@ -22,8 +22,9 @@ const ListProductClient = () => {
     resource: '/products?category_id=6843e798c4fb85b25844b4a2',
   });
 
-  const products = allProductData?.data?.docs || [];
-  const categoryProducts = categoryProductData?.data?.docs || [];
+const products = (allProductData?.data?.docs || []).filter(p => p.isActive);
+const categoryProducts = (categoryProductData?.data?.docs || []).filter(p => p.isActive);
+
 
   // State để lưu trữ variants của từng sản phẩm
   const [productVariants, setProductVariants] = useState<{ [productId: string]: any[] }>({});
