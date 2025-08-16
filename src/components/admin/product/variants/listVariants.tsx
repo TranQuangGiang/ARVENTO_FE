@@ -34,7 +34,7 @@ const ListVariants = () => {
             align: "center",
         },
         {
-            title: "Image",
+            title: "Ảnh",
             dataIndex: "image",
             key: "image",
             align: "center",
@@ -43,7 +43,7 @@ const ListVariants = () => {
             }
         },
         {
-            title: "Price",
+            title: "Giá gốc",
             dataIndex: "price",
             key: "price",
             align: "center",
@@ -53,7 +53,7 @@ const ListVariants = () => {
             }
         },
         {
-            title: "Sale_Price",
+            title: "Giá khuyến mãi",
             dataIndex: "sale_price",
             key: "sale_price",
             align: "center",
@@ -63,7 +63,7 @@ const ListVariants = () => {
             }
         },
         {
-            title: "Color",
+            title: "Màu",
             dataIndex: "color",
             key: "color",
             render: (color: {name: string}) => (
@@ -80,20 +80,20 @@ const ListVariants = () => {
             align: "center",
         },
         {
-            title: "Stock",
+            title: "Số lượng",
             dataIndex: "stock",
             key: "stock",
             align: "center",
         },
         {
-            title: "CreateAt",
+            title: "Ngày tạo",
             dataIndex: "createdAt",
             key: "createdAt",
             render: (text: string) => dayjs(text).format('DD/MM/YYYY'),
             align: "center",
         },
         {
-            title: "Action",
+            title: "Hành động",
             key: "action",
             align: "center",
             render: (_:any, record: any) => (
@@ -110,9 +110,9 @@ const ListVariants = () => {
                     </Link>
 
                     <Popconfirm
-                        title="Are you sure you want to delete this product?"
-                        okText="Delete"
-                        cancelText="Cancel"
+                        title="Bạn có chắc chắn muốn xóa ?"
+                        okText="Xóa"
+                        cancelText="Hủy"
                         onConfirm={() => deleteVariant(record._id)}
                     >
                         <Button danger icon={<DeleteOutlined />} />
@@ -140,7 +140,7 @@ const ListVariants = () => {
                             <div className="bg-white p-6 rounded-2xl border border-gray-200 mt-10">
                               
                                     <h2 className="text-[22px] font-bold text-gray-800 mb-5">
-                                        <AppstoreAddOutlined className="pr-2" /> Variants List
+                                        <AppstoreAddOutlined className="pr-2" /> Danh sách biến thể của sản phẩm
                                     </h2>
                                     
                                 

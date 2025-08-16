@@ -1,14 +1,17 @@
 import { FileText, Heart, House, LogOut, Mail, MapPin, Receipt, RotateCcw, ScrollText, Settings, ShoppingBag, Tickets } from 'lucide-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useUserMe } from '../../../../hooks/useOne'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { Button } from 'antd'
 import { CheckCircleTwoTone } from '@ant-design/icons'
+import { AuthContexts } from '../../../contexts/authContexts'
 
 
 const DetailAuth = () => {
     const location = useLocation();
     const nav = useNavigate();
+
+    const {logout} = useContext(AuthContexts);
     const { data:UserMe, refetch } = useUserMe({
         resource: `/users/me`
     })
@@ -27,8 +30,8 @@ const DetailAuth = () => {
         return `${visible}${masked}@${domain}`;
     }
     return (
-        <main className='w-full m-0 min-h-screen flex flex-col bg-[#e4e4e7]'>
-            <div className='mt-[20px] w-[90%] mx-auto flex items-center gap-5 h-[140px] bg-white rounded-[15px]'>
+        <main className='w-full m-0 min-h-screen flex flex-col bg-[#EEEEEE]'>
+            <div className='mt-[20px] w-[90%] mx-auto flex items-center gap-5 h-[140px] bg-[white] rounded-[15px]'>
                 <div className='flex items-center gap-3.5 ml-8 w-1/3'>
                     <span className='w-[75px] h-[75px] flex flex-col items-center justify-center rounded-[50%] bg-gradient-to-b from-white to-blue-200'>
                         <img className='w-14 h-14' src="/tho.png" alt="" />
@@ -70,7 +73,7 @@ const DetailAuth = () => {
                             </span>
                             <span className='[&_h2]:font-bold [&_h2]:uppercase [&_h2]:font-sans [&_h2]:text-[18px]'>
                                 <h2>0</h2>
-                                <p className='text-[16px] font-sans text-gray-800'>Total orders purchased</p>
+                                <p className='text-[16px] font-sans text-gray-800'>Tổng số đơn hàng đã mua</p>
                             </span>
                         </div>
                         <span className='border-[2px] ml-14 rounded h-[85%] border-blue-500'></span>
@@ -80,14 +83,14 @@ const DetailAuth = () => {
                             </span>
                             <span className='[&_h2]:font-bold [&_h2]:uppercase [&_h2]:font-sans [&_h2]:text-[18px]'>
                                 <h2>0 đ</h2>
-                                <p className='text-[16px] font-sans text-gray-800'>Total accumulated money</p>
+                                <p className='text-[16px] font-sans text-gray-800'>Tổng số điểm tích lũy</p>
                             </span>
                         </div>
                     </div>
                     <div className='mt-1.5 ml-6 w-xl flex items-center h-8 rounded-[12px] bg-[#f4f4f7]'>
                         <span className='flex items-center pl-2'>
                             <ScrollText width={16} color='#000' />
-                            <p className='text-[13px] ml-2 text-black font-sans'>Total money and number of orders are calculated from ARVENTO</p>
+                            <p className='text-[13px] ml-2 text-black font-sans'>Tổng số điểm và số lượng đơn hàng được tính từ ARVENTO</p>
                         </span>
                     </div>
                 </div>
@@ -99,7 +102,7 @@ const DetailAuth = () => {
                             <Tickets style={{ width: 20, color: "#162456" }} />
                         </span>
                         <Link to={`/detailAuth/discountCode`}>
-                            <p className='text-[15px] ml-3 text-blue-950'> My discount codes</p>
+                            <p className='text-[15px] ml-3 text-blue-950'> Mã giảm giá của tôi</p>
                         </Link>
                     </span>
                     <span className='flex items-center cursor-pointer'>
@@ -107,7 +110,7 @@ const DetailAuth = () => {
                             <ScrollText style={{ width: 20, color: "#162456" }} />
                         </span>
                         <Link to={`/detailAuth/orderHistory`}>
-                            <p className='text-[15px] ml-3 text-blue-950'> Order History</p>
+                            <p className='text-[15px] ml-3 text-blue-950'> Lịch sử đặt hàng</p>
                         </Link>
                     </span>
                     <span className='flex items-center cursor-pointer'>
@@ -115,7 +118,7 @@ const DetailAuth = () => {
                             <MapPin style={{ width: 20, color: "#162456" }} />
                         </span>
                         <Link to={`/detailAuth/accountInformation`}>
-                            <p className='text-[15px] ml-3 text-blue-950'> Address Book</p>
+                            <p className='text-[15px] ml-3 text-blue-950'> Danh sách địa chỉ</p>
                         </Link>
                         
                     </span>
@@ -134,7 +137,7 @@ const DetailAuth = () => {
                         >
                             <Link to="/detailAuth/homeAuth" className="flex items-center w-full">
                                 <House className="mr-2.5" style={{ width: 20 }} />
-                                Overview
+                                Tổng quan
                             </Link>
                         </li>
 
@@ -148,7 +151,7 @@ const DetailAuth = () => {
                             >
                             <Link to="/detailAuth/orderHistory" className="flex items-center w-full">
                                 <ScrollText className="mr-2.5" style={{ width: 20 }} />
-                                Order History
+                                Lịch sử đặt hàng
                             </Link>
                         </li>
                         <li
@@ -160,13 +163,13 @@ const DetailAuth = () => {
                         >
                             <Link to="/detailAuth/accountInformation" className="flex items-center w-full">
                                 <Settings className="mr-2.5" style={{ width: 20 }} />
-                                Account Information
+                                Thông tin tài khoản
                             </Link>
                         </li>
 
                         <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                             <FileText className="mr-2.5" style={{ width: 20 }} />
-                            Warranty Policy
+                            Chính sách bảo hành
                         </li>
 
                         <li
@@ -178,7 +181,7 @@ const DetailAuth = () => {
                         >
                             <Link to="/detailAuth/discountCode" className="flex items-center w-full">
                                 <Tickets className="mr-2.5" style={{ width: 20 }} />
-                                My Promotions
+                                Khuyến mãi của tôi
                             </Link>
                         </li>
 
@@ -189,22 +192,22 @@ const DetailAuth = () => {
                                         : "hover:bg-blue-200 hover:text-blue-900"
                                     }`}>
                                 <Heart className="mr-2.5" style={{ width: 20 }} />
-                                Wishlist
+                                Sản phẩm yêu thích
                             </li>
                         </Link>    
                         <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                             <Mail className="mr-2.5" style={{ width: 20 }} />
-                            Feedback - Support
+                            Phản hồi - Hỗ trợ
                         </li>
 
-                        <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
+                        <li onClick={logout} className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                             <LogOut className="mr-2.5" style={{ width: 20 }} />
-                            Logout
+                            Đăng xuất
                         </li>
                         <Link to={`/`}>
                             <li className="px-6 py-3.5 hover:bg-blue-200 hover:text-blue-900 font-sans font-semibold text-[16.5px] transition-all duration-300 flex items-center">
                                 <RotateCcw className="mr-2.5" style={{ width: 20 }} />
-                                Return to website
+                                Quay lại trang chủ
                             </li>
                         </Link>
                     </ul>

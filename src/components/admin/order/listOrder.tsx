@@ -7,6 +7,8 @@ import { ExclamationCircleOutlined, EyeOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from 'framer-motion';
 import ExportOrderList from "./exportOrderList";
 import axios from "axios";
+import ApproveReturnRequest from "./approveReturnRequest";
+import RefundRequestDetail from "./RequestRefund";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -25,10 +27,19 @@ const ListOrder = () => {
     current: 1,
     pageSize: 10,
   });
-  const nav = useNavigate();
-
+  const [showReturnRequestModal, setShowReturnRequestModal] = useState(false);
+  const [showRequestRefundModal, setShowRequestRefundModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  console.log(selectedOrder);
+  
   const { data, refetch } = useList({ resource: "/orders" });
   
+  useEffect(() => {
+    if (setShowModal === null) {
+      refetch();
+    }
+    
+  }, [setShowModal]);
   const fetchAllOrders = async () => {
     setIsLoadingAll(true);
     let ordersData: any[] = [];
@@ -59,7 +70,7 @@ const ListOrder = () => {
       }
       setAllOrders(ordersData);
     } catch (error) {
-      console.error("Failed to fetch all orders:", error);
+      console.error("Không thể lấy được tất cả các đơn hàng:", error);
       return [];
     }
     finally {
@@ -73,10 +84,29 @@ const ListOrder = () => {
   }, [data]);
 
   const statusOptions = [
-    "pending", "confirmed", "processing", "shipping",
-    "delivered", "completed", "cancelled", "returning" , "returned",
+    { key: "all", label: "Tất cả" },
+    { key: "pending", label: "Chờ xác nhận" },
+    { key: "confirmed", label: "Đã xác nhận" },
+    { key: "processing", label: "Đang xử lý" },
+    { key: "shipping", label: "Đang giao hàng" },
+    { key: "delivered", label: "Đã giao hàng" },
+    { key: "completed", label: "Hoàn thành" },
+    { key: "cancelled", label: "Đã hủy" },
+    { key: "returning", label: "Đang trả hàng" },
+    { key: "returned", label: "Đã trả hàng" },
   ];
 
+  const statusLabels: Record<string, string> = {
+      pending: "Chờ xác nhận",
+      confirmed: "Đã xác nhận",
+      processing: "Đang xử lý",
+      shipping: "Đang giao hàng",
+      delivered: "Đã giao hàng",
+      completed: "Hoàn thành",
+      cancelled: "Đã hủy",
+      returning: "Đang trả hàng",
+      returned: "Đã trả hàng",
+  };
   const statusColors: Record<string, string> = {
     pending: "#faad14",
     confirmed: "#1677ff",
@@ -90,28 +120,30 @@ const ListOrder = () => {
   };
 
   const getSelectableStatuses = (currentStatus: string) => {
-    const currentIndex = statusOptions.indexOf(currentStatus);
+    const statusLabels  = statusOptions.filter(opt => opt.key !== "all");
+    const currentIndex = statusLabels.findIndex(option => option.key === currentStatus);
 
-    return statusOptions.map((status, index) => {
+    return statusLabels.map((status, index) => {
       let isDisabled = false;
 
       // Không cho phép chọn 'cancelled' từ FE
-      if (status === "cancelled") {
+      if (status.key === "cancelled") {
         isDisabled = true;
       }
 
       // Chỉ cho phép chọn 'returned' nếu đang ở trạng thái 'returning'
-      if (status === "returned" && currentStatus !== "returning") {
+      if (status.key === "returned" && currentStatus !== "returning") {
         isDisabled = true;
       }
 
       // Không cho quay lại trạng thái trước (ngoại trừ trạng thái hiện tại)
-      if (index <= currentIndex && status !== currentStatus && status !== "returned") {
+      if (index <= currentIndex && status.key !== currentStatus && status.key !== "returned") {
         isDisabled = true;
       }
 
       return {
-        value: status,
+        value: status.key,
+        label: status.label,
         disabled: isDisabled,
       };
     });
@@ -126,14 +158,14 @@ const ListOrder = () => {
         `/orders/${orderId}/status`,
         { 
           status: newStatus,
-          note: `Status updated successfully ${newStatus}`
+          note: `Cập nhập thành công trạng thái ${newStatus}`
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      message.success("Status updated successfully!");
+      message.success("Cập nhập trạng thái thành công!");
       await fetchAllOrders();
     } catch {
-      message.error("Failed to update status.");
+      message.error("Cập nhập trạng thái thất bại");
     } finally {
       setLoadingOrderId(null);
     }
@@ -141,7 +173,6 @@ const ListOrder = () => {
 
   const filteredData = useMemo(() => {
     const orders = allOrders;
-
     return [...orders]
       .filter((item) => {
         const matchesSearch =
@@ -160,14 +191,17 @@ const ListOrder = () => {
       });
   }, [allOrders, searchTerm, sortOrder, activeStatusTab]);
 
-  const handleComfirm = (orderID:string) => {
-    try {
-      nav(`/admin/orderDetail/${orderID}`)
-    } catch (error:any) {
-      message.error(error || "Đã xảy ra lỗi")
-    }
-  }
+  const handleComfirm = (record: any) => {
+    // Thay đổi tham số truyền vào từ orderID thành cả record để lấy lý do
+    setSelectedOrder(record);
+    setShowReturnRequestModal(true);
+  };
 
+  const RequestRefund = (record:any) => {
+    setSelectedOrder(record)
+    setShowRequestRefundModal(true)
+  }
+  // xác nhận đã nhận hàng hoàn
   const columns = [
     {
       title: "STT",
@@ -177,28 +211,24 @@ const ListOrder = () => {
         (pagination.current - 1) * pagination.pageSize + index + 1,
       },
     {
-      title: "Order ID",
+      title: "Mã đơn hàng",
       dataIndex: "_id",
       key: "_id",
       
     },
     {
-      title: "User",
+      title: "Khách hàng",
       dataIndex: ["user", "name"],
       key: "user",
     },
+    
     {
-      title: "Email",
-      dataIndex: ["user", "email"],
-      key: "email",
-    },
-    {
-      title: "Shipping Address",
+      title: "Địa chỉ giao hàng",
       dataIndex: ["address", "address"],
       key: "address",
     },
     {
-      title: "Order Status",
+      title: "Trạng thái đơn hàng",
       dataIndex: "status",
       key: "status",
       render: (status: string, record: any) => (
@@ -226,7 +256,7 @@ const ListOrder = () => {
                   opacity: option.disabled && option.value !== status ? 0.5 : 1,
                 }}
               >
-                {option.value.charAt(0).toUpperCase() + option.value.slice(1)}
+                {statusLabels[option.value]}
               </span>
             </Option>
           ))}
@@ -234,21 +264,23 @@ const ListOrder = () => {
       ),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_: any, record: any) => {
-        const isDelivered = record.status === "delivered";
-        const hasReturnRequest = record.is_return_requested;
+        const { status, is_return_requested, timeline } = record;
+        const isDelivered = status === "delivered";
+        const hasReturnRequest = is_return_requested;
 
-        // Tìm lý do trả hàng từ timeline cuối cùng
-        const lastTimeline = record.timeline?.[record.timeline.length - 1];
-        const returnReason = lastTimeline?.note;
+        const returnRequestTimeline = timeline?.findLast((item:any) => item.note); 
+        const returnReason = returnRequestTimeline?.note;
+
+        const isReturning = status === "returning";
 
         return (
           <div className="flex flex-col gap-2">
             {/* Nút xem chi tiết */}
             <Link to={`/admin/orderDetail/${record._id}`}>
-              <Button icon={<EyeOutlined />}>Details</Button>
+              <Button icon={<EyeOutlined />} style={{width: 160, height: 35}}>Chi tiết</Button>
             </Link>
 
             {/* Nút xử lý yêu cầu trả hàng */}
@@ -263,23 +295,40 @@ const ListOrder = () => {
                   }
                   okText="Ok"
                   cancelText="Cancel"
-                  onConfirm={() => handleComfirm(record._id)}
+                  onConfirm={() => handleComfirm(record)}
                 >
                   <Button icon={<ExclamationCircleOutlined />} style={{border: 0, color: "#eab308", background: 0}} className="text-yellow-500" size="small">
-                    Review return request
+                    Yêu cầu trả hàng
                   </Button>
                 </Popconfirm>
               </div>
             )}
+            {
+              isReturning && (
+                <div className="flex items-center gap-2 mt-1 bg-green-50 border border-green-300 rounded-lg px-2 py-1.5">
+                  <Popconfirm
+                    title="Chắc chắn muốn xác nhận"
+                    okText="Xác nhận"
+                    cancelText="Hủy"
+                    onConfirm={() => RequestRefund(record)}
+                  >
+                    <Button 
+                      icon={<ExclamationCircleOutlined />} 
+                      style={{border: 0, color: "#52c41a", background: 0}} className="text-yellow-500" size="small"
+                       
+                    >
+                      Đã nhận hàng hoàn
+                    </Button>
+                  </Popconfirm>
+                </div>
+              )
+            }
           </div>
         );
       },
     }
 
   ];
-  const Export = async () => {
-    
-  }
   return (
     <AnimatePresence>
       <motion.div
@@ -303,23 +352,21 @@ const ListOrder = () => {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               }}
             >
-              <Title level={3}>Order List</Title>
+              <Title level={3}>Danh sách đơn hàng</Title>
 
               {/* Tabs Trạng Thái */}
               <div className="flex gap-8 mb-6 border-b pb-2 overflow-x-auto">
-                {["all", ...statusOptions].map((status) => (
+                {statusOptions.map((status) => (
                   <button
-                    key={status}
-                    onClick={() => setActiveStatusTab(status)}
+                    key={status.key}
+                    onClick={() => setActiveStatusTab(status.key)}
                     className={`text-[15px] font-semibold pb-1 border-b-2 ${
-                      activeStatusTab === status
+                      activeStatusTab === status.key
                         ? "text-red-600 border-red-600"
                         : "text-gray-500 border-transparent hover:text-black"
                     } transition`}
                   >
-                    {status === "all"
-                      ? "All"
-                      : status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status.label}
                   </button>
                 ))}
               </div>
@@ -370,6 +417,24 @@ const ListOrder = () => {
               onClose={async () => {
                 setShowModal("");
               }}
+            />
+            <ApproveReturnRequest
+              isOpen={showReturnRequestModal}
+              onClose={() => {
+                setShowReturnRequestModal(false);
+                setSelectedOrder(null);
+              }}
+              selectedOrder={selectedOrder}
+              onApproved={fetchAllOrders}
+            />
+            <RefundRequestDetail 
+              isOpen={showRequestRefundModal}
+              onClose={() => {
+                setShowRequestRefundModal(false);
+                setSelectedOrder(null)
+              }}
+              selectedOrder={selectedOrder}
+              onApproved={fetchAllOrders}
             />
           </div>
         </motion.div>

@@ -19,7 +19,7 @@ const EmailVerificationSuccess = () => {
         setLoading(true);
         try {
             await axios.get(`http://localhost:3000/api/auth/verify-email?token=${token}`);
-            message.success("Email verification successful!");
+            message.success("Xác thực email thành công");
             setIsVerified(true);
         } catch (error: any) {
             message.error(error?.message || "Email verification failed");
@@ -52,10 +52,10 @@ const EmailVerificationSuccess = () => {
                     <>
                         <MailTwoTone twoToneColor="#1890ff" style={{ fontSize: 64 }} />
                         <Typography.Title level={3} style={{ marginTop: 20 }}>
-                            Verify your email address
+                            Xác minh địa chỉ email của bạn
                         </Typography.Title>
                         <Paragraph>
-                            Click the button below to verify your email and activate your account.
+                            Nhấp vào nút bên dưới để xác minh email và kích hoạt tài khoản của bạn.
                         </Paragraph>
                         <Button
                             type="primary"
@@ -64,28 +64,26 @@ const EmailVerificationSuccess = () => {
                             loading={loading}
                             style={{ marginTop: 20, borderRadius: 8 }}
                         >
-                            <Pointer className="hand-motion" />  Verify Email
+                            <Pointer className="hand-motion" />  Xác minh Email
                         </Button>
                     </>
                 ) : (
                     <>
                         <Result
                             icon={<MailTwoTone twoToneColor="#52c41a" style={{ fontSize: '4rem' }} />}
-                            title="Email verified successfully!"
-                            subTitle="Your account has been successfully verified. You can now log in and start exploring our features."
+                            title="Xác thực email thành công"
+                            subTitle="Tài khoản của bạn đã được xác minh thành công. Bây giờ bạn có thể đăng nhập và bắt đầu khám phá các tính năng của chúng tôi."
                             extra={[
-                                <Button type="primary" key="login">
-                                    Log In Now
-                                </Button>,
+                                
                                 <Link to={`/`} key="home">
                                     <Button>
-                                        Back to Home
+                                        Quay lại trang chủ
                                     </Button>
                                 </Link>
                             ]}
                         />
                         <Paragraph type="secondary" style={{ marginTop: '2rem', fontSize: '12px' }}>
-                            If you encounter any issues, please contact our support team.
+                            Nếu bạn gặp bất kỳ vấn đề nào, vui lòng liên hệ với nhóm hỗ trợ của chúng tôi.
                         </Paragraph>
                     </>
                 )}

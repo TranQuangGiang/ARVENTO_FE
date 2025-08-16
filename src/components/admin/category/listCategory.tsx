@@ -47,7 +47,7 @@ const ListCategory = () => {
       ellipsis: true,
     },
     {
-      title: "Title",
+      title: "Tên danh mục",
       dataIndex: "name",
       key: "name",
     },
@@ -57,13 +57,13 @@ const ListCategory = () => {
       key: "slug",
     },
     {
-      title: "Description",
+      title: "Mô tả",
       dataIndex: "description",
       key: "description",
       render: (text: string) => text || "-",
     },
     {
-      title: "Image",
+      title: "Ảnh",
       dataIndex: "image",
       key: "image",
       render: (image: any) =>
@@ -80,31 +80,28 @@ const ListCategory = () => {
         ),
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: any) => (
         <div className="flex space-x-2">
           <Link to={`/admin/editCategory/${record._id}`}>
             <Button
-              type="default"
               icon={<EditOutlined />}
-            >
-              Edit
-            </Button>
+              type="primary"
+            />
           </Link>
           <Popconfirm
-            title="Are you sure to delete?"
-            okText="Yes"
-            cancelText="No"
+            title="Bạn có chắc chắn muốn xóa danh mục này?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => deleteCategory(record._id)}
           >
             <Button
               type="default"
               icon={<DeleteOutlined />}
+              danger
               className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Delete
-            </Button>
+            />
           </Popconfirm>
         </div>
       ),
@@ -128,7 +125,7 @@ const ListCategory = () => {
           <div className="w-full px-6 bg-gray-50 min-h-screen">
             <div className="w-full h-auto px-6 py-5 bg-white mt-10 rounded-lg border border-gray-200">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <ChartColumnStacked style={{width: 35}} className="pr-2" /> Category List
+                <ChartColumnStacked style={{width: 35}} className="pr-2" /> Danh sách danh mục sản phẩm
               </h2>
               <div className="flex flex-wrap items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -155,14 +152,14 @@ const ListCategory = () => {
                     }}
                     style={{ width: 120 }}
                   >
-                    <Option value="asc">Oldest first</Option>
-                    <Option value="desc">Newest first</Option>
+                    <Option value="asc">Cũ nhất</Option>
+                    <Option value="desc">Mới nhất</Option>
                   </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="Search..."
+                    placeholder="Tìm kiếm..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear

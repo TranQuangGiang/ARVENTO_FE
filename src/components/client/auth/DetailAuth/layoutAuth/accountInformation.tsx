@@ -46,21 +46,21 @@ const AccountInformation = () => {
         <div className='w-full'>
             <div className='w-full rounded-[15px] bg-white p-6'>
                 <div className='flex justify-between items-center'>
-                    <h4 className='text-[17px] font-bold font-[Product Sans]'>Personal information</h4>
+                    <h4 className='text-[17px] font-bold font-[Product Sans]'>Thông tin cá nhân</h4>
                     <Button
                         style={{ border: 0, color: "blue" }}
                         icon={<EditOutlined />}
                         onClick={() => setShowModal('updateAccount')}
                        
                     >
-                        Update information
+                        Cập nhập thông tin
                     </Button>
                 </div>
 
                 <div className='grid grid-cols-2 mt-4 gap-4'>
                     <div className='flex flex-col gap-3'>
                         <div className='flex justify-between border-b pb-2'>
-                            <p className='text-gray-500 text-[14px]'>Full name:</p>
+                            <p className='text-gray-500 text-[14px]'>Họ tên:</p>
                             <p className='text-[14px] font-sans font-medium'>{UserMe?.data.name}</p>
                         </div>
                         <div className='flex justify-between '>
@@ -70,11 +70,11 @@ const AccountInformation = () => {
                     </div>
                     <div className='flex flex-col gap-3'>
                         <div className='flex justify-between border-b pb-2'>
-                            <p className='text-gray-500 text-[14px]'>Phone:</p>
+                            <p className='text-gray-500 text-[14px]'>Số điện thoại:</p>
                             <p className='text-[14px] font-sans font-medium'>{sortedAddresses.find(addr => addr.isDefault)?.phone || "NAN"}</p>
                         </div>
                         <div className='flex justify-between'>
-                            <p className='text-gray-500 text-[14px]'>Default address:</p>
+                            <p className='text-gray-500 text-[14px]'>Địa chỉ mặc định:</p>
                             <p className='text-[14px] font-sans font-medium'>
                                 {sortedAddresses.find(addr => addr.isDefault)?.fullAddress || "NAN"}
                             </p>
@@ -84,10 +84,10 @@ const AccountInformation = () => {
 
                 <div className="w-[100%] bg-white mt-8 rounded-[15px]">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-[17px] font-bold font-[Product Sans]">Address book</h4>
+                        <h4 className="text-[17px] font-bold font-[Product Sans]">Danh sách địa chỉ</h4>
                         
                             <Button type='primary' onClick={() =>  setShowModal("addAddresses")} className="text-[15px] text-blue-500 cursor-pointer font-[Product Sans]">
-                                <PlusOutlined className="mr-1" /> Add address
+                                <PlusOutlined className="mr-1" /> Thêm địa chỉ
                             </Button>
                         
                     </div>
@@ -102,7 +102,7 @@ const AccountInformation = () => {
                                 }`}
                             >
                                 <div>
-                                    <p className="font-semibold text-[15px] text-gray-800">{address.label}</p>
+                                    <p className="font-semibold text-[15px] text-gray-800">{address.label === "home" ? "Nhà riêng" : "Văn phòng"}</p>
                                     <p className="text-sm text-gray-700 mt-1">{address.fullAddress}</p>
                                     <p className="text-sm text-gray-700 mt-1">SĐT: {address.phone}</p>
                                 </div>
@@ -110,7 +110,7 @@ const AccountInformation = () => {
                                 <div className="flex flex-col items-end gap-2">
                                 {address.isDefault ? (
                                     <span className="text-blue-600 font-semibold text-sm flex items-center gap-1">
-                                    <CheckOutlined /> Default address
+                                    <CheckOutlined /> Địa chỉ mặc định
                                     </span>
                                 ) : (
                                     <Button
@@ -136,7 +136,7 @@ const AccountInformation = () => {
                                             }
                                         }}
                                     >
-                                        Set as default
+                                        Đặt làm mặc định
                                     </Button>
                                 )}
 
@@ -161,7 +161,7 @@ const AccountInformation = () => {
                                 <img className="w-[170px]" src="/cartD.png" alt="empty-address" />
                             </span>
                             <p className="mt-2 text-[13px] font-medium font-sans text-blue-950">
-                                You do not have any addresses created yet!
+                                Bạn chưa tạo bất kỳ địa chỉ nào!
                             </p>
                         </div>
                     )}

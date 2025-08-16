@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Input, Button } from "antd";
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { useForgotPassword } from "../../../hooks/useForgotPassword";
 
 const ForgotPassword = ({ onClose }: { onClose?: () => void }) => {
@@ -35,17 +35,23 @@ const ForgotPassword = ({ onClose }: { onClose?: () => void }) => {
                     animate={{scale:1, opacity: 1}}
                     exit={{scale: 0.9, opacity: 0}}
                     transition={{duration: 0.3}}
-                    className="flex flex-col lg:flex-row w-2xl mx-auto rounded-2xl shadow-lg overflow-hidden bg-white"
+                    className="flex relative flex-col lg:flex-row w-2xl mx-auto rounded-2xl shadow-lg overflow-hidden bg-white"
                     key="modal"
                 >
+                    <button
+                        onClick={onClose}
+                        className="absolute px-1.5 py-1.5 z-20 top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:rounded-[50%] flex items-center justify-center transition-all duration-300"
+                    >
+                        <X />
+                    </button>
                     <div className="p-6 w-full">
                         {
                             !isSuccess ? (
                                 <>
-                                    <h2 className="text-xl font-bold font-sans mb-4 text-center">Forgot Password</h2>
+                                    <h2 className="text-xl font-bold font-sans mb-4 text-center">Quên mật khẩu</h2>
                                     <Form onFinish={onFinish} layout="vertical">
                                         <Form.Item
-                                            label="Email address"
+                                            label="Địa chỉ email"
                                             name="email"
                                             rules={[{ required: true, message: "Vui lòng nhập email" }, { type: "email", message: "Email không hợp lệ" }]}
                                         >
@@ -53,7 +59,7 @@ const ForgotPassword = ({ onClose }: { onClose?: () => void }) => {
                                         </Form.Item>
                                         <Form.Item>
                                             <Button loading={loading} type="primary" className="mt-2.5" style={{height: 40}} htmlType="submit" block>
-                                                Send an email
+                                                Gửi email
                                             </Button>
                                         </Form.Item>
                                         <span className="w-full text-center">

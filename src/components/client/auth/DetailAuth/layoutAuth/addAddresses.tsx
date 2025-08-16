@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCreate } from "../../../../../hooks/useCreate";
 import { useList } from "../../../../../hooks/useList";
+import { X } from "lucide-react";
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -75,10 +76,16 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="bg-white rounded-2xl shadow-xl w-full max-w-3xl h-[470px] p-6"
+            className="bg-white rounded-2xl shadow-xl w-full max-w-[800px] h-[470px] p-6 relative"
           >
+            <button
+              onClick={onClose}
+              className="absolute px-1.5 py-1.5 z-20 top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:rounded-[50%] flex items-center justify-center transition-all duration-300"
+            >
+              <X />
+            </button>
             {showModal === "addAddress" && (
-              <div className="flex w-full justify-center">
+              <div className="flex w-[95%] justify-center">
                 <Card
                   className="w-full max-w-[1217px] shadow-md border rounded-xl"
                   bodyStyle={{ padding: "32px 40px", maxHeight: "400px", overflowY: "auto" }}
@@ -241,7 +248,7 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
                     </Form.Item>
 
                     <Form.Item
-                      label="Label"
+                      label="Loại địa chỉ"
                       name="label"
                       rules={[{ required: true, message: "Vui lòng chọn loại địa chỉ" }]}
                     >

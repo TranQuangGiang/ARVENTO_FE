@@ -6,6 +6,7 @@ type useListParams = {
     resource: string,
     params?: object,
     config?: object,
+    options?: object,
     responseType?: string,
 }
 

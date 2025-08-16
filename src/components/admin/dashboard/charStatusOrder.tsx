@@ -43,15 +43,15 @@ const CharStatusOrder = () => {
     };
 
     const statusLabels: Record<string, string> = {
-        shipping: 'Shipping',
-        completed: 'Completed',
-        pending: 'Pending',
-        confirmed: 'Confirmed',
-        cancelled: 'Cancelled',
-        returning: 'Returning',
-        delivered: 'Delivered',
-        returned: 'Returned',
-        processing: 'Processing' // Thêm nếu có trạng thái này
+        shipping: 'Đang giao hàng',
+        completed: 'Hoàn thành',
+        pending: 'Chờ xác nhận',
+        confirmed: 'Đã xác nhận',
+        cancelled: 'Hủy đơn',
+        returning: 'Đang trả hàng',
+        delivered: 'Đã giao hàng',
+        returned: 'Đã trả hàng',
+        processing: 'Đang xử lý' // Thêm nếu có trạng thái này
     };
 
     useEffect(() => {
@@ -85,7 +85,7 @@ const CharStatusOrder = () => {
     }
     return (
         <div className='bg-white p-6 rounded-lg shadow-md w-full'>
-            <Title level={4} className='text-center mb-4'>Order statistics by status</Title>
+            <Title level={4} className='text-center mb-4'>Thống kê đơn hàng theo trạng thái</Title>
             <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                     <Pie

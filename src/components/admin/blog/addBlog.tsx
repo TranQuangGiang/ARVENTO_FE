@@ -53,11 +53,11 @@ const AddBlog:React.FC = () => {
                 <div className='w-[90%] mx-auto mt-[30px] shadow-md bg-white rounded mb-[40px]'>
                     <div className='flex items-center justify-between m-5 pt-[20px]'>
                         <span className='[&_h3]:text-xl w-full [&_h3]:font-semibold [&_h3]:mb-1 [&_h3]:uppercase'>
-                            <h3>POST NEW</h3>
+                            <h3>Thêm mới bài viết</h3>
                         </span>
                         <span>
                             <Link to={`/admin/listBlog`}>
-                                <Button className='text-[16px] font-sans' style={{height: 45, width: 150}} type='primary'><OrderedListOutlined /> LIST BLOG</Button>
+                                <Button className='text-[16px] font-sans' style={{height: 45, width: 150}} type='primary'><OrderedListOutlined /> Danh sách</Button>
                             </Link>
                         </span>
                     </div>
@@ -81,21 +81,21 @@ const AddBlog:React.FC = () => {
                         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'>
                         <div className='w-full flex'>
                             <span className='max-w-[700px]'>
-                                <Form.Item label="Title" name="title" className="font-semibold" rules={[{required: true}]}>
+                                <Form.Item label="Tiêu đề" name="title" className="font-semibold" rules={[{required: true}]}>
                                     <Input style={{width: 700}}/>
                                 </Form.Item>
-                                <Form.Item label="Slug" name="slug" className="font-semibold" rules={[{required: true}]}>
+                                <Form.Item label="Đường dẫn" name="slug" className="font-semibold" rules={[{required: true}]}>
                                     <Input style={{width: 700}}/>
                                 </Form.Item>
                             </span>
                             <span className='ml-12'>
-                                <Form.Item label='Category' name="category" className="font-semibold" rules={[{required: true}]}>
+                                <Form.Item label='Danh mục bài viết' name="category" className="font-semibold" rules={[{required: true}]}>
                                     <Select style={{height: 40, width: 335}} options={categoryOptions} placeholder="Chọn danh mục bài viết" />
                                 </Form.Item>
                             </span>
                         </div>
                         <span className='flex items-center gap-40'>
-                            <Form.Item name='thumbnail' className="font-semibold" label="Thumbnail" rules={[{required: true}]}>
+                            <Form.Item name='Thumbnail' className="font-semibold" label="Ảnh" rules={[{required: true}]}>
                                 {thumbnail && (
                                     <img src={typeof thumbnail === 'string'
                                         ? thumbnail.startsWith('http')
@@ -113,18 +113,18 @@ const AddBlog:React.FC = () => {
                                         return false; // Ngăn Upload tự động gửi
                                     }}
                                 >
-                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                    <Button icon={<UploadOutlined />}>Tải lên</Button>
                                 </Upload>
                             </Form.Item>
-                            <Form.Item className="font-semibold" label="Status" name="status" rules={[{required: true}]}> 
+                            <Form.Item className="font-semibold" label="Trạng thái" name="status" rules={[{required: true}]}> 
                                 <Radio.Group>
-                                    <Radio value="draft">Draft</Radio>
-                                    <Radio value="published">Published</Radio>
-                                    <Radio value="archived">Archived</Radio>
+                                    <Radio value="draft">Bản nháp</Radio>
+                                    <Radio value="published">Đã xuất bản</Radio>
+                                    <Radio value="archived">Đã lưu trữ</Radio>
                                 </Radio.Group>
                             </Form.Item>
                         </span>
-                        <Form.Item label="Content" className='min-h-96 font-semibold' name="content" rules={[{required: true}]}>
+                        <Form.Item label="Nội dung" className='min-h-96 font-semibold' name="content" rules={[{required: true}]}>
                             <CKEditor
                                 data={content}
                                 editor={ClassicEditor as any}
@@ -132,10 +132,10 @@ const AddBlog:React.FC = () => {
                             >
                             </CKEditor>
                         </Form.Item>
-                        <Form.Item className="font-semibold" label="Excerpt" name="excerpt" rules={[{required: true}]}>
+                        <Form.Item className="font-semibold" label="Mô tả ngắn" name="excerpt" rules={[{required: true}]}>
                             <Input />
                         </Form.Item>
-                        <Form.Item className="font-semibold" label="Tags" name="tags" rules={[{ required: true }]}>
+                        <Form.Item className="font-semibold" label="Thẻ" name="tags" rules={[{ required: true }]}>
                             <Select mode="tags" style={{ width: '100%', height: 40}} placeholder="Nhập thẻ (nhấn Enter để thêm)">
                                 {/* Không cần options vì người dùng tự gõ */}
                             </Select>
@@ -146,7 +146,7 @@ const AddBlog:React.FC = () => {
                             type='primary'
                             className='mt-[10px] mb-[20px]'
                         >
-                            Submit
+                            Thêm mới
                         </Button>
                         <Button
                             style={{width: 170, height: 40}}
@@ -154,7 +154,7 @@ const AddBlog:React.FC = () => {
                             danger
                             className='mt-[10px] mb-[20px] ml-3.5'
                         >
-                            Cancel
+                            Hủy
                         </Button>
                     </Form>
                 </div>

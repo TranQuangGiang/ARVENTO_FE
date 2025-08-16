@@ -37,13 +37,13 @@ const AddBanner = () => {
       },
       {
         onSuccess: () => {
-          message.success("Banner added successfully");
+          message.success("Thêm mới banner thành công");
           form.resetFields();
           setLoading(true),
           navigate("/admin/listbanner", { state: { shouldRefetch: true } });
         },
         onError: (err: any) => {
-          message.error(err.response?.data?.message || "Failed to add banner");
+          message.error(err.response?.data?.message || "Thêm banner thất bại");
           setLoading(false)
         },
       }
@@ -55,14 +55,14 @@ const AddBanner = () => {
       <Card className="shadow-lg rounded-2xl border border-gray-200">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Add New Banner</h2>
-            <p className="text-sm text-gray-500">Fill in the details to add a new banner.</p>
+            <h2 className="text-2xl font-bold text-gray-800">Thêm Banner mới</h2>
+            <p className="text-sm text-gray-500">Điền thông tin để thêm banner mới.</p>
           </div>
           <Button
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/admin/listbanner")}
           >
-            Back to List
+            Quay lại danh sách
           </Button>
         </div>
 
@@ -75,20 +75,20 @@ const AddBanner = () => {
           {/* Left Section */}
           <div className="space-y-6">
             <Form.Item
-              label="Title"
+              label="Tiêu đề"
               name="title"
-              rules={[{ required: true, message: "Please enter the title" }]}
+              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
             >
-              <Input placeholder="Enter banner title" className="text-[15px] w-[700px] h-[40px]"  />
+              <Input placeholder="Vui lòng nhập tiêu đề" className="text-[15px] w-[700px] h-[40px]"  />
             </Form.Item>
 
-            <Form.Item label="Link" name="link">
-              <Input placeholder="Optional link when clicking banner" className="text-[15px] h-[40px]" />
+            <Form.Item label="Liên kết" name="link">
+              <Input placeholder="Liên kết tùy chọn khi nhấp vào banner" className="text-[15px] h-[40px]" />
             </Form.Item>
 
-            <Form.Item label="Position" name="position">
+            <Form.Item label="Vị trí" name="position">
               <InputNumber
-                placeholder="Optional position for sort order"
+                placeholder="Nhập vị trí cho banner"
                 className="text-[15px]"
                 style={{
                   width: "100%",
@@ -103,11 +103,11 @@ const AddBanner = () => {
           {/* Right Section */}
           <div className="space-y-6">
             <Form.Item
-              label="Banner Image"
+              label="Ảnh"
               name="image"
               valuePropName="file"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Please upload an image" }]}
+              rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
             >
               <Upload
                 beforeUpload={() => false}
@@ -117,13 +117,13 @@ const AddBanner = () => {
               >
                 <div>
                   <UploadOutlined />
-                  <div className="mt-1">Upload</div>
+                  <div className="mt-1">Tải lên</div>
                 </div>
               </Upload>
             </Form.Item>
 
             <Form.Item
-              label="Active"
+              label="Trang thái"
               name="is_active"
               valuePropName="checked"
               initialValue={true}
@@ -143,7 +143,7 @@ const AddBanner = () => {
               style={{height: 40}}
               className="h-[40px] w-[180px]"
             >
-              Add Banner
+              Thêm mới
             </Button>
             <Button 
               icon={<ReloadOutlined />}
@@ -154,7 +154,7 @@ const AddBanner = () => {
               className="h-[40px]"
               danger
             >
-              Cancel
+              Hủy 
             </Button>
           </div>
         </Form>

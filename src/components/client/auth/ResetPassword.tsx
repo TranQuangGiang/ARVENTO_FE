@@ -34,29 +34,29 @@ const ResetPassword = () => {
                         <img src="/resetpassword.jpg" alt="" />
                     </div>
                     <span className='w-[30%] mx-auto text-center pb-3.5'>
-                        <h2 className="text-xl font-bold font-sans mb-4 text-center leading-1">Forgot Password</h2>
-                        <p className='text-[15px] w-[60%] mx-auto text-gray-700 font-sans font-semibold mb-3.5'>Please enter your new password to complete the password reset process and access your account again.</p>    
+                        <h2 className="text-xl font-bold font-sans mb-4 text-center leading-1">Quên mật khẩu</h2>
+                        <p className='text-[15px] w-[60%] mx-auto text-gray-700 font-sans font-semibold mb-3.5'>Vui lòng nhập mật khẩu mới để hoàn tất quá trình đặt lại mật khẩu và truy cập lại vào tài khoản của bạn.</p>    
                     </span>
                     <Form layout="vertical" onFinish={onFinish}>
-                        <Form.Item label="New Password" name="password" hasFeedback rules={[{required: true, min: 6}]}>
+                        <Form.Item label="Mật khẩu mới" name="password" hasFeedback rules={[{required: true, min: 6}]}>
                             <Input.Password className="w-[300px] relative pl-24 h-[40px]" placeholder="password"/>    
                         </Form.Item>
-                        <Form.Item label="Confirm password" name="confirmPassword" dependencies={["password"]} hasFeedback
+                        <Form.Item label="Nhập lại mật khẩu" name="confirmPassword" dependencies={["password"]} hasFeedback
                             rules={[{required: true}, 
                                 ({getFieldValue}) => ({
                                     validator(_, value) {
                                         if (!value || getFieldValue("password") === value) {
                                             return Promise.resolve();
                                         } 
-                                        return Promise.reject(new Error("Passwords do not match"));
+                                        return Promise.reject(new Error("Mật khẩu không khớp"));
                                     }
                                 })
                             ]}
                         >
-                            <Input.Password className="w-[300px] relative pl-24 h-[40px]" placeholder="confirm password"/>
+                            <Input.Password className="w-[300px] relative pl-24 h-[40px]" placeholder="Nhập lại mật khẩu"/>
                         </Form.Item>   
                         <Form.Item className='w-full flex justify-center'>
-                            <Button className="mt-2.5 w-full mx-auto" type='primary' htmlType='submit' style={{height: 40,  width: 400}}>Submit</Button>    
+                            <Button className="mt-2.5 w-full mx-auto" type='primary' htmlType='submit' style={{height: 40,  width: 400}}>Đặt lại mật khẩu</Button>    
                         </Form.Item>                           
                     </Form>
                 </div>
