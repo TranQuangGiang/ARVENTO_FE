@@ -1,5 +1,5 @@
 /* trong file .css hoặc file module */
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 .clip-diagonal {
   clip-path: polygon(65% 0, 100% 0, 100% 100%, 0% 100%);
@@ -12,7 +12,12 @@
   clip-path: polygon(150% 0, 100% 100%, 0% 100%, 0% 70%);
 }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, .button {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600; /* hoặc 700 tùy vào nhu cầu */
 }
 .ck-editor__editable {
   min-height: 300px; /* Hoặc bạn set max-height hay height cụ thể */
@@ -77,4 +82,31 @@ body {
     /* Vị trí cuối, giống như đang "táp" xuống */
     transform: translateY(3px); 
   }
+}
+/* mô tả sản phẩm */
+.content-product {
+  font-size: 16px;
+  color: #01225a;
+  line-height: 1.6;
+}
+
+.content-product h3,
+.content-product strong {
+  display: block;       
+  margin-top: 24px;   
+  font-weight: 700;
+}
+
+.content-product strong {
+  font-weight: bold;
+}
+
+.content-product ul {
+  list-style: disc;
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+
+.content-product li {
+  margin-bottom: 6px;
 }
