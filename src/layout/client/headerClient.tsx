@@ -144,14 +144,13 @@ const HeaderClient = () => {
             />
             {searchTerm && Array.isArray(suggestions) && suggestions.length > 0 && (
               <div className="absolute top-full mt-2 bg-white rounded w-[350px] z-40 shadow-lg drop-shadow-xl ring-1 ring-gray-200">
-                <h3 className='font-bold font-sans text-[18px] text-gray-800 text-center mt-3.5 mb-2'>Kết quả tìm kiếm</h3>
+                <h3 className='font-bold text-[18px] text-gray-800 text-center mt-3.5 mb-2'>Kết quả tìm kiếm</h3>
                 {suggestions.map((product: any) => (
                   <Link to={`/detailProductClient/${product._id}`} key={product._id} className="flex items-center gap-2 p-3 hover:bg-gray-100">
                     <img src={product?.images?.[0].url} alt={product.name} className="w-12 h-12 object-cover" />
                     <div className="text-sm">
                       <p>{product.name}</p>
                       <span className='flex items-center gap-3'>
-                       
                         <p className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}₫</p>
                       </span>
                     </div>

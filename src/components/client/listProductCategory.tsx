@@ -150,7 +150,7 @@ const ListProductCategory = () => {
     <div className="w-full mt-0">
       <div className="w-[76%] mx-auto pt-4">
         <nav className="text-[14px] text-gray-600">
-          <Link to="/" className="hover:text-black">Home</Link>
+          <Link to="/" className="hover:text-black">Trang chủ</Link>
           <span className="mx-2">/</span>
           <span className="text-black font-medium">{singleCategory?.data.name}</span>
         </nav>
@@ -166,7 +166,7 @@ const ListProductCategory = () => {
               borderRadius: 8,
             }}
           >
-            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>
               Danh mục sản phẩm
             </div>
 
@@ -193,7 +193,7 @@ const ListProductCategory = () => {
               borderRadius: 8,
             }}
           >
-            <div className='border-b border-b-gray-300 h-[35px]' style={{ fontWeight: 'bold', marginBottom: 8 }}>
+            <div className='border-b border-b-gray-300 h-[35px]' style={{ fontWeight: 600, marginBottom: 8 }}>
               Lọc theo giá
             </div>
 
@@ -220,7 +220,7 @@ const ListProductCategory = () => {
               borderRadius: 8,
             }}
           >
-            <div className='border-b border-b-gray-300 h-[35px]' style={{ fontWeight: 'bold', marginBottom: 8 }}>
+            <div className='border-b border-b-gray-300 h-[35px]' style={{ fontWeight: 600, marginBottom: 8 }}>
               Size
             </div>
 
@@ -242,7 +242,7 @@ const ListProductCategory = () => {
 
         {/* Product List */}
         <div className='w-[80%] mx-auto'>
-          <div className='[&_h3]:text-[18px] [&_h3]:font-bold [&_h3]:font-sans mb-4'>
+          <div className='[&_h3]:text-[18px] [&_h3]:font-bold mb-4'>
             <h3>{singleCategory?.data.name}</h3>
           </div>
 
@@ -259,18 +259,18 @@ const ListProductCategory = () => {
                       />
                     </div>
                     <div className='content w-[80%] mt-[0px]'>
-                      <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
+                      <h4 className='w-full text-[15px] font-semibold font-sans text-[black] leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
                         {product.name}
                       </h4>
                       <div className='pt-1.5 flex items-center'>
-                        <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                        <p className=' font-semibold text-[#0b1f4e] text-[14px]'>
                           {formatPrice(product.original_price)}<sup>₫</sup>
                         </p>
                        
                       </div>
                     </div>
-                    <div className='mt-2 text-[13px] uppercase font-sans w-[80%] mx-auto border-b-1'>
-                      <p className='text-[11px]'>Select options</p>
+                    <div className='mt-2 text-[13px] uppercase w-[80%] mx-auto border-b-1'>
+                      <p>Select options</p>
                     </div>
                   </div>
                 </Link>
