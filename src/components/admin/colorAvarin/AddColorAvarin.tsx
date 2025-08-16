@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useCreate } from "../../../hooks/useCreate";
+import { useList } from "../../../hooks/useList"; // Thêm hook để lấy danh sách thuộc tính hiện có
 
 const { Option } = Select;
 
@@ -17,13 +18,28 @@ const AddColorAvarin = () => {
   const [loading, setLoading] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | undefined>();
 
+  // Lấy danh sách các thuộc tính hiện có từ API
+  const { data: existingOptions } = useList({
+    resource: "/options",
+  });
+
   const { mutate } = useCreate<any>({
     resource: "/options/batch",
   });
 
   const onFinish = (values: any) => {
-    let formattedValues = [];
+    // Kiểm tra xem thuộc tính đã tồn tại chưa
+    const isKeyExists = existingOptions?.data?.some((option: any) => option.key === values.key);
 
+    if (isKeyExists) {
+      // Nếu đã tồn tại, hiển thị lỗi và không gọi API
+      message.error(`Thuộc tính "${values.key}" đã tồn tại. Vui lòng chọn thuộc tính khác.`);
+      return;
+    }
+
+    setLoading(true);
+
+    let formattedValues = [];
     if (values.key === "color") {
       formattedValues =
         values.values?.map((v: any) => ({
@@ -44,15 +60,15 @@ const AddColorAvarin = () => {
       {
         onSuccess: () => {
           setLoading(false);
+          message.success("Thêm tùy chọn thành công");
           nav("/admin/listcolor");
         },
         onError: () => {
           setLoading(false);
-          message.error("Failed to add option");
+          message.error("Không thêm được tùy chọn");
         },
       }
     );
-    setLoading(true);
   };
 
   return (
@@ -61,9 +77,9 @@ const AddColorAvarin = () => {
         className="w-full mt-6 shadow-md rounded-2xl border border-gray-200"
         bodyStyle={{ padding: "2rem" }}
       >
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Add Option</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Thêm mới thuộc tính</h2>
         <p className="text-sm text-gray-500 mb-6">
-          Fill in the details to add a new option.
+          Điền thông tin chi tiết để thêm tùy chọn mới.
         </p>
 
         <Form
@@ -73,20 +89,19 @@ const AddColorAvarin = () => {
           initialValues={{ values: [{}] }}
         >
           <Form.Item
-            label="Key"
+            label="Thuộc tính"
             name="key"
-            rules={[{ required: true, message: "Please select the key" }]}
+            rules={[{ required: true, message: "Vui lòng chọn thuộc tính" }]}
           >
             <Select
-              placeholder="Select option key"
+              placeholder="Chọn thuộc tính"
               size="large"
               onChange={(value) => {
                 setSelectedKey(value);
-                // Reset values khi đổi key
                 form.setFieldsValue({ values: value === "color" ? [{}] : [] });
               }}
             >
-              <Option value="color">Color</Option>
+              <Option value="color">Màu sắc</Option>
               <Option value="size">Size</Option>
             </Select>
           </Form.Item>
@@ -98,7 +113,7 @@ const AddColorAvarin = () => {
                 {
                   validator: async (_, names) => {
                     if (!names || names.length < 1) {
-                      return Promise.reject(new Error("At least 1 value"));
+                      return Promise.reject(new Error("Nhập ít nhất 1 giá trị"));
                     }
                   },
                 },
@@ -115,7 +130,7 @@ const AddColorAvarin = () => {
                       <Form.Item
                         {...restField}
                         name={[name, "name"]}
-                        rules={[{ required: true, message: "Name required" }]}
+                        rules={[{ required: true, message: "Vui lòng nhâp tên" }]}
                       >
                         <Input placeholder="Name (e.g., Red)" />
                       </Form.Item>
@@ -123,10 +138,10 @@ const AddColorAvarin = () => {
                         {...restField}
                         name={[name, "hex"]}
                         rules={[
-                          { required: true, message: "Hex required" },
+                          { required: true, message: "Mã không để trống" },
                           {
                             pattern: /^#[0-9A-Fa-f]{6}$/,
-                            message: "Hex must be valid (e.g., #ffffff)",
+                            message: "Mã phải hợp lệ (e.g., #ffffff)",
                           },
                         ]}
                       >
@@ -142,7 +157,7 @@ const AddColorAvarin = () => {
                       block
                       icon={<PlusOutlined />}
                     >
-                      Add Value
+                      Thêm mới
                     </Button>
                   </Form.Item>
                 </>
@@ -152,14 +167,14 @@ const AddColorAvarin = () => {
 
           {selectedKey === "size" && (
             <Form.Item
-              label="Values"
+              label="Giá trị"
               name="values"
               rules={[{ required: true, message: "Please enter at least one value" }]}
             >
               <Select
                 mode="tags"
                 style={{ width: "100%" }}
-                placeholder="Press Enter to add each size (e.g., S, M, L)"
+                placeholder="Nhấn Enter để thêm từng kích thước (e.g., S, M, L)"
                 size="large"
                 tokenSeparators={[","]}
               />
@@ -175,7 +190,7 @@ const AddColorAvarin = () => {
               style={{ height: 40 }}
               type="primary"
             >
-              Save Option
+              Thêm mới
             </Button>
             <Button
               htmlType="button"
@@ -184,7 +199,7 @@ const AddColorAvarin = () => {
               style={{ height: 40 }}
               icon={<ArrowLeftOutlined />}
             >
-              Back
+              Quay lại
             </Button>
           </div>
         </Form>

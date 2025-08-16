@@ -89,7 +89,7 @@ const Checkout = () => {
         setDefaultAddress(null);
       }
     } catch (err) {
-      console.error("Error fetching default address:", err);
+      console.error("Lỗi khi tìm địa chỉ mặc định:", err);
       setDefaultAddress(null);
     } finally {
       setLoadingAddress(false);
@@ -119,13 +119,18 @@ const Checkout = () => {
         name: user.name || "",
         email: user.email || "",
       }));
+      setShippingInfo(prev => ({
+        ...prev,
+        recipient: user.name || "",
+      }));
     }
+    
   }, [userData]);
 
   useEffect(() => {
     if (!loadingAddress) {
       if (!defaultAddress) {
-        message.warning("You don't have a default address yet. Please add an address.");
+        message.warning("Bạn chưa có địa chỉ mặc định. Vui lòng thêm địa chỉ.");
         setShippingInfo({ id: "", recipient: "", fullAddress: "", note: "" });
         setCustomerInfo(prev => ({ ...prev, phone: "" }));
         setShowModal("addAddress");
@@ -135,7 +140,7 @@ const Checkout = () => {
           fullAddress: defaultAddress.fullAddress || "",
           note: defaultAddress.note || "",
           id: defaultAddress._id,
-          recipient: defaultAddress.recipient || "",
+          recipient: defaultAddress.recipient || customerInfo.name || "",
         }));
         setCustomerInfo(prev => ({
           ...prev,
@@ -160,7 +165,7 @@ const Checkout = () => {
       });
       
       if (!toDistrictId || !toWardCode) {
-        message.error("Shipping address is incomplete!");
+        message.error("Địa chỉ giao hàng chưa đầy đủ!");
         return;
       }
 
@@ -175,7 +180,7 @@ const Checkout = () => {
       console.log("Trọng lượng:", weight);
 
       if (!serviceId) {
-        message.error("No shipping service found.");
+        message.error("Không tìm thấy dịch vụ vận chuyển.");
         return;
       }
 
@@ -197,7 +202,7 @@ const Checkout = () => {
       setShippingFee(fee);
     } catch (error: any) {
       console.error("Error calculating GHN fee:", error?.response?.data || error);
-      message.error("Could not calculate shipping fee from GHN.");
+      message.error("Không thể tính phí vận chuyển từ GHN.");
     }
   };
 
@@ -217,7 +222,7 @@ const Checkout = () => {
 
   const handleContinue = () => {
     if (!shippingInfo.recipient || !shippingInfo.fullAddress || !customerInfo.phone) {
-      message.error("Please enter a valid phone number and complete shipping information!");
+      message.error("Vui lòng nhập số điện thoại hợp lệ và điền đầy đủ thông tin giao hàng!");
       return;
     }
 
@@ -236,16 +241,16 @@ const Checkout = () => {
   };
 
   return (
-    <Spin spinning={loadingAddress} tip="Loading address...">
+    <Spin spinning={loadingAddress} tip="Đang tải địa chỉ...">
       <div className="w-full bg-gray-100">
         <div className="max-w-3xl mx-auto p-4 space-y-4 text-sm">
           {/* Title */}
           <div className="flex">
             <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">
-              1. INFORMATION
+              1. THÔNG TIN
             </div>
             <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">
-              2. PAYMENT
+              2. THANH TOÁN
             </div>
           </div>
 
@@ -276,19 +281,25 @@ const Checkout = () => {
           </div>
 
           {/* Customer Information */}
-          <h3 className="text-base font-medium text-gray-600">CUSTOMER INFORMATION</h3>
+          <h3 className="text-base font-medium text-gray-600">THÔNG TIN KHÁCH HÀNG</h3>
           <div className="p-4 bg-white shadow-sm rounded-xl space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <FloatingInput label="Name" name="name" value={customerInfo.name} onChange={handleCustomerChange} />
-              <FloatingInput label="Email (optional)" name="email" value={customerInfo.email} onChange={handleCustomerChange} />
-              <FloatingInput label="Phone Number" name="phone" value={customerInfo.phone} onChange={handleCustomerChange} />
+              <FloatingInput label="Họ tên" name="name" value={customerInfo.name} onChange={handleCustomerChange} />
+              <FloatingInput label="Địa chỉ email (optional)" name="email" value={customerInfo.email} onChange={handleCustomerChange} />
+              <FloatingInput label="Số điện thoại" name="phone" value={customerInfo.phone} onChange={handleCustomerChange} />
             </div>
           </div>
 
           {/* Shipping Information */}
-          <h3 className="text-base font-medium text-gray-600">SHIPPING INFORMATION</h3>
+          <h3 className="text-base font-medium text-gray-600">THÔNG TIN GIAO HÀNG</h3>
           <div className="p-4 bg-white shadow-sm rounded-xl space-y-4">
-            <FloatingInput label="Recipient" placeholder="Recipient" name="recipient" value={shippingInfo.recipient} onChange={handleShippingChange} />
+            <FloatingInput 
+              label="Người nhận" 
+              placeholder="Nhập tên người nhận" 
+              name="recipient" 
+              value={shippingInfo.recipient} 
+              onChange={handleShippingChange} 
+            />
             <div className="relative">
               <FloatingInput
                 label="Default Delivery Address"
@@ -304,7 +315,7 @@ const Checkout = () => {
                 icon={<PlusOutlined />}
                 onClick={() => setShowModal("selectAddress")}
               >
-                Select another address
+                Chọn địa chỉ khác
               </Button>
             </div>
             {showModal === "selectAddress" && (
@@ -324,7 +335,7 @@ const Checkout = () => {
                     className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 space-y-4"
                   >
                     <h3 className="text-xl font-semibold text-center text-gray-800">
-                      📍 Select Delivery Address
+                      Chọn địa chỉ giao hàng
                     </h3>
 
                     <div className="max-h-[600px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-gray-300 pr-1">
@@ -351,7 +362,7 @@ const Checkout = () => {
                           }`}
                         >
                           <div className="flex-1 text-sm">
-                            <div className="font-semibold text-black">{addr.label || addr.recipient}</div>
+                            <div className="font-semibold text-black">{addr.label === 'home' ? 'Nhà riêng' : addr.label === 'office' ? 'Văn Phòng' : addr.recipient}</div>
                             <div className="text-gray-700">{addr.fullAddress}</div>
                             <div className="text-gray-700">Phone: {addr.phone}</div>
                           </div>
@@ -359,7 +370,7 @@ const Checkout = () => {
                             {addr.isDefault ? (
                               <span className="text-blue-600 text-xs font-medium flex items-center">
                                 <CheckOutlined className="mr-1" />
-                                Default address
+                                Địa chỉ mặc định
                               </span>
                             ) : (
                               <Button
@@ -379,15 +390,15 @@ const Checkout = () => {
                                         },
                                       }
                                     );
-                                    message.success("Set as default address", 1);
+                                    message.success("Đặt làm địa chỉ mặc định", 1);
                                     await fetchDefaultAddress();
                                     await refetchAddresses();
                                   } catch (error) {
-                                    message.error("Error setting as default");
+                                    message.error("Lỗi khi thiết lập mặc định");
                                   }
                                 }}
                               >
-                                Set as default
+                                Đặt làm mặc định
                               </Button>
                             )}
                           </div>
@@ -397,14 +408,14 @@ const Checkout = () => {
 
                     <div className="flex justify-between pt-2">
                       <Button onClick={() => setShowModal(null)} className="bg-gray-200 hover:bg-gray-300">
-                        Close
+                        Đóng
                       </Button>
                       <Button
                         type="primary"
                         className="bg-blue-600 text-white hover:bg-blue-700"
                         onClick={() => setShowModal("addAddress")}
                       >
-                        + Add address
+                        + Thêm địa chỉ
                       </Button>
                     </div>
                   </motion.div>
@@ -412,33 +423,33 @@ const Checkout = () => {
               </AnimatePresence>
             )}
 
-            <FloatingInput label="Order Note" name="note" placeholder="Note (optional)" value={shippingInfo.note} onChange={handleShippingChange} />
+            <FloatingInput label="Ghi chú đơn hàng" name="note" placeholder="Ghi chú (nếu có)" value={shippingInfo.note} onChange={handleShippingChange} />
           </div>
 
           {/* Totals */}
           <div className="w-full bg-white shadow-md rounded-lg p-4 space-y-2">
             <div className="flex justify-between">
-              <span>Subtotal:</span>
+              <span>Tạm tính:</span>
               <span>{(cart?.subtotal || 0).toLocaleString()}₫</span>
             </div>
             {appliedCoupon && (
               <>
                 <div className="flex justify-between">
-                  <span>Discount Code:</span>
+                  <span>Mã giảm giá:</span>
                   <span className="text-green-600 font-semibold">{appliedCoupon.code}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Discount:</span>
+                  <span>Giảm giá:</span>
                   <span>-{discountAmount.toLocaleString()}₫</span>
                 </div>
               </>
             )}
             <div className="flex justify-between">
-              <span>Shipping Fee:</span>
+              <span>Phí vận chuyển:</span>
               <span>{shippingFee.toLocaleString()}₫</span>
             </div>
             <div className="flex justify-between font-bold text-lg">
-              <span>Total:</span>
+              <span>Tổng thanh toán:</span>
               <span className="text-red-500">
                 {((cart?.subtotal || 0) - discountAmount + shippingFee).toLocaleString()}₫
               </span>
@@ -449,7 +460,7 @@ const Checkout = () => {
             className="w-full bg-blue-950 mt-6 mb-6 h-[40px] cursor-pointer text-white py-2 rounded hover:bg-blue-900"
             onClick={handleContinue}
           >
-            Continue
+            Tiếp theo
           </button>
         </div>
 

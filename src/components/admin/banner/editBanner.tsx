@@ -67,13 +67,13 @@ const EditBanner = () => {
       });
     },
     onSuccess: () => {
-      message.success("Banner update successfully");
+      message.success("Cập nhâp banner thành công");
       setLoading(true);
       queryClient.invalidateQueries({ queryKey: ["bannersAdmin"] });
       navigate("/admin/listbanner");
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || "Update failed");
+      message.error(error.response?.data?.message || "Cập nhập thất bại");
     },
   });
 
@@ -87,14 +87,14 @@ const EditBanner = () => {
       <Card className="shadow-lg rounded-2xl border border-gray-200">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Edit Banner</h2>
-            <p className="text-sm text-gray-500">Fill in the details to add a new banner.</p>
+            <h2 className="text-2xl font-bold text-gray-800">Cập nhập banner</h2>
+            <p className="text-sm text-gray-500">Điền thông tin chi tiết để cập nhập banner.</p>
           </div>
           <Button
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/admin/listbanner")}
           >
-            Back to List
+            Quay lại danh sách
           </Button>
         </div>
 
@@ -107,20 +107,20 @@ const EditBanner = () => {
           {/* Left Section */}
           <div className="space-y-6">
             <Form.Item
-              label="Title"
+              label="Tiêu đề"
               name="title"
-              rules={[{ required: true, message: "Please enter the title" }]}
+              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
             >
-              <Input placeholder="Enter banner title" className="text-[15px] w-[700px] h-[40px]"  />
+              <Input placeholder="Vui lòng nhập tiêu đề" className="text-[15px] w-[700px] h-[40px]"  />
             </Form.Item>
 
-            <Form.Item label="Link" name="link">
-              <Input placeholder="Optional link when clicking banner" className="text-[15px] h-[40px]" />
+            <Form.Item label="Liên kết" name="link">
+              <Input placeholder="Liên kết tùy chọn khi nhấp vào banner" className="text-[15px] h-[40px]" />
             </Form.Item>
 
-            <Form.Item label="Position" name="position">
+            <Form.Item label="Vị trí" name="position">
               <InputNumber
-                placeholder="Optional position for sort order"
+                placeholder="Nhập vị trí cho banner"
                 className="text-[15px]"
                 style={{
                   width: "100%",
@@ -135,11 +135,11 @@ const EditBanner = () => {
           {/* Right Section */}
           <div className="space-y-6">
             <Form.Item
-              label="Banner Image"
+              label="Ảnh"
               name="image"
               valuePropName="file"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Please upload an image" }]}
+              rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
             >
               <Upload
                 beforeUpload={() => false}
@@ -149,13 +149,13 @@ const EditBanner = () => {
               >
                 <div>
                   <UploadOutlined />
-                  <div className="mt-1">Upload</div>
+                  <div className="mt-1">tải lên</div>
                 </div>
               </Upload>
             </Form.Item>
 
             <Form.Item
-              label="Active"
+              label="Trạng thái"
               name="is_active"
               valuePropName="checked"
               initialValue={true}
@@ -175,7 +175,7 @@ const EditBanner = () => {
               style={{height: 40}}
               className="h-[40px] w-[180px]"
             >
-              Update Banner
+              Cập nhập
             </Button>
             <Button 
               icon={<ReloadOutlined />}
@@ -186,7 +186,7 @@ const EditBanner = () => {
               className="h-[40px]"
               danger
             >
-              Cancel
+              Đặt lại
             </Button>
           </div>
         </Form>

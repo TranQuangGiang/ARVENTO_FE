@@ -25,11 +25,11 @@ const AddCategoryBlog = () => {
                 <div className="w-[90%] mx-auto mt-10 shadow-lg bg-white rounded-xl p-8 mb-10 border border-gray-100">
                     <div className='flex items-center justify-between m-1 pt-[0px]'>
                         <span>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-2">Add New Category Blog</h3>
+                            <h3 className="text-3xl font-bold text-gray-800 mb-2">Thêm mới danh mục bài viết</h3>
                         </span>
                         <span>
                             <Link to={`/admin/listCategoryBlog`}>
-                                <Button className='text-[16px] font-sans' style={{height: 45, width: 190}} type='primary'><OrderedListOutlined /> LIST CATEGORY BLOG</Button>
+                                <Button className='text-[16px] font-sans' style={{height: 45, width: 190}} type='primary'><OrderedListOutlined /> Danh sách</Button>
                             </Link>
                         </span>
                     </div>
@@ -53,25 +53,25 @@ const AddCategoryBlog = () => {
                         }}
                     >
                         <Form.Item
-                            label="Name"
+                            label="Tên"
                             name="name"
                             rules={[{ required: true }]}
                             className="font-semibold"
                         >
                             <Input
                                 className="h-[45px] rounded-md border-gray-300 hover:border-blue-500 focus:border-blue-500 transition-all duration-200"
-                                placeholder="Enter category name"
+                                placeholder="Nhập tên danh mục"
                             />
                         </Form.Item>
                         <Form.Item
-                            label="Slug"
+                            label="Đường dẫn"
                             name="slug"
                             rules={[{ required: true }]}
                             className="font-semibold"
                         >
                             <Input
                                 className="h-[45px] rounded-md border-gray-300 hover:border-blue-500 focus:border-blue-500 transition-all duration-200"
-                                placeholder="Enter category slug"
+                                placeholder="Nhập đường dẫn"
                             />
                         </Form.Item>
                         <Form.Item>
@@ -83,7 +83,7 @@ const AddCategoryBlog = () => {
                                     icon={<PlusOutlined />}
                                     className="h-10 w-[170px] text-base font-medium bg-blue-600 hover:bg-blue-700 transition-all"
                                 >
-                                Submit
+                                    Thêm mới
                                 </Button>
                                 <Button
                                     style={{width: 170, height: 40}}
@@ -92,7 +92,7 @@ const AddCategoryBlog = () => {
                                     icon={<CloseCircleOutlined />}
                                     className="h-10 w-[170px] text-base font-medium border-red-500 hover:bg-red-50"
                                 >
-                                Cancel
+                                    Hủy
                                 </Button>
                             </div>
                         </Form.Item>

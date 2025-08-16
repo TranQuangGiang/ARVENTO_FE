@@ -86,7 +86,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             });
             dispatch({ type: "ADD_TO_CART", payload: item });
             await fetchCart();
-            message.success("Add product to cart successfully");
+            message.success("Thêm sản phẩm vào giỏ hàng thành công");
         } catch (error: any) {
             const errorMsg =
                 error?.response?.data?.message ||

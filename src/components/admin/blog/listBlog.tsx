@@ -34,7 +34,7 @@ const ListBlog = () => {
     });
     const columns: ColumnsType<any> = [
         {
-            title: <span className="font-semibold">Title</span>,
+            title: <span className="font-semibold">Tiêu đề</span>,
             dataIndex: "title",
             key: "title",
             align: "center",
@@ -46,7 +46,7 @@ const ListBlog = () => {
             ),
         },
         {
-            title: <span className="font-semibold">Slug</span>,
+            title: <span className="font-semibold">Đường dẫn</span>,
             dataIndex: "slug",
             key: "slug",
             align: "center",
@@ -58,14 +58,14 @@ const ListBlog = () => {
             ),
         },
         {
-            title: <span className="font-semibold">status</span>,
+            title: <span className="font-semibold">Trạng thái</span>,
             dataIndex: "status",
             key: "status",
             align: "center",
             width: 120
         },
         {
-            title: <span className="font-semibold">Thumbnail</span>,
+            title: <span className="font-semibold">Ảnh</span>,
             dataIndex: "thumbnail",
             key: "thumbnail",
             align: "center",
@@ -75,7 +75,7 @@ const ListBlog = () => {
             width: 120
         },
         {
-            title: <span className="font-semibold">Excerpt</span>,
+            title: <span className="font-semibold">Mô tả ngắn</span>,
             dataIndex: "excerpt",
             key: "excerpt",
             align: "center",
@@ -96,7 +96,7 @@ const ListBlog = () => {
             width: 120
         },
         {
-            title: "Action",
+            title: "Hành động",
             key: "action",
             align: "center",
             render: (_:any, blog: any) => {
@@ -132,7 +132,7 @@ const ListBlog = () => {
                 >
                     <div className="ml-6 mr-6 mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
                         <span className='w-full flex items-center justify-between mb-3'>
-                            <h2 className="text-[22px] font-bold text-gray-800">📝 Post List</h2>
+                            <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách bài viết</h2>
                             <Link to={`/admin/addBlog`}>
                                 <Button
                                 style={{width: 130, height: 40}}
@@ -140,7 +140,7 @@ const ListBlog = () => {
                                 icon={<PlusOutlined />}
                                 className="h-10 w-[170px] text-[18px] font-medium bg-blue-600 hover:bg-blue-700 transition-all"
                                 >
-                                Create
+                                    Thêm mới
                                 </Button>
                             </Link>
                         </span>

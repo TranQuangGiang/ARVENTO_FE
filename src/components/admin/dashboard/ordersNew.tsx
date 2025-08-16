@@ -32,6 +32,17 @@ const OrdersNew = () => {
         returned: "#d46b08",
     };
 
+    const statusLabels: Record<string, string> = {
+        pending: "Đang chờ xử lý",
+        confirmed: "Đã xác nhận",
+        processing: "Đang xử lý",
+        shipping: "Đang giao hàng",
+        delivered: "Đã giao hàng",
+        completed: "Hoàn thành",
+        cancelled: "Đã hủy",
+        returning: "Đang trả hàng",
+        returned: "Đã trả hàng",
+    };
     const columns = [
         {
             title: "STT",
@@ -40,44 +51,44 @@ const OrdersNew = () => {
             render: (_: any, __:any, index:number) => index + 1,
         },
         {
-            title: "Order ID",
+            title: "Mã đơn hàng",
             dataIndex: "_id",
             key: "_id",
         },
         {
-            title: "User",
+            title: "Khách hàng",
             dataIndex: ["user", "name"],
             key: "user",
         },
         {
-            title: "Email",
+            title: "Địa chỉ email",
             dataIndex: ["user", "email"],
             key: "email",
         },
         {
-            title: "Shipping Address",
+            title: "Địa chỉ giao hàng",
             dataIndex: ["address", "address"],
             key: "address",
         },
         {
-            title: "Order Status",
+            title: "Trạng thái",
             dataIndex: "status",
             key: "status",
             render: (status: string) => (
                 <Tag className="custom-tag" color={statusColors[status]}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    {statusLabels[status] || status.charAt(0).toUpperCase() + status.slice(1)}
                 </Tag>
             ),
         },
         {
-            title: "Action",
+            title: "Hành động",
             key: "action",
             render: (_: any, record: any) => {
                 return (
                 <div className="flex flex-col gap-2">
                     {/* Nút xem chi tiết */}
                     <Link to={`/admin/orderDetail/${record._id}`}>
-                    <Button icon={<EyeOutlined />}>Details</Button>
+                        <Button icon={<EyeOutlined />}>Chi tiết</Button>
                     </Link>
                 </div>
                 );
@@ -107,7 +118,7 @@ const OrdersNew = () => {
                             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                         }}
                     >
-                    <Title level={3}>List of latest orders</Title>
+                    <Title level={3}>Danh sách đơn hàng mới nhất</Title>
                     <Table
                         dataSource={recentOrders}
                         columns={columns}

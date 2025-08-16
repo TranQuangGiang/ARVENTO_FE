@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Form,
   Input,
@@ -25,22 +25,43 @@ const EditCoupon = () => {
   const nav = useNavigate();
   const { id } = useParams();
   const [discountType, setDiscountType] = useState("percentage");
+  // State để quản lý các lựa chọn
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [excludedCategories, setExcludedCategories] = useState<string[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<string[]>([]);
+  const [excludedProduct, setExcludedProduct] = useState<string[]>([]);
 
   const { data: categoryData } = useList({ resource: "/categories/admin" });
+  const categoryOption = useMemo(() => {
+    if (!categoryData) return [];
+    return categoryData.data.map((cat: any) => ({
+      label: cat.name,
+      value: cat._id,
+    }));
+  }, [categoryData]);
+
+  // Lọc danh sách danh mục áp dụng dựa trên danh mục không áp dụng
+  const categoriesToApplyOptions = useMemo(() => {
+    return categoryOption.filter(
+      (option:any) => !excludedCategories.includes(option.value)
+    );
+  }, [categoryOption, excludedCategories]);
+  // Lọc danh sách danh mục không áp dụng dựa trên danh mục áp dụng
+  const excludedCategoriesOptions = useMemo(() => {
+      return categoryOption.filter(
+        (option:any) => !selectedCategories.includes(option.value)
+      );
+    }, [categoryOption, selectedCategories]);
+  
+
   const { data: coupon } = useOneData({
     resource: "/coupons/admin/coupons",
     _id: id,
   });
-
   const { mutate } = useUpdateCoupon({
     resource: "/coupons/admin/coupons",
     _id: id,
   });
-
-  const categoryOption = categoryData?.data.map((cat:any) => ({
-    label: cat.name,
-    value: cat._id,
-  }));
 
   const { data: userData } = useList({ resource: "/users" });
   const userOption =
@@ -50,12 +71,27 @@ const EditCoupon = () => {
     })) || [];
 
   const { data: productData } = useList({ resource: "/products" });
-  const productOption =
-    productData?.data?.docs?.map((product:any) => ({
+  const productOption = useMemo(() => {
+    if (!productData || !productData.data || !productData.data.docs) return [];
+    return productData.data.docs.map((product: any) => ({
       label: product.name,
-      value: product._id,
-    })) || [];
+      value: product._id
+    }));
+  }, [productData]);
+  
+  // Lọc danh sách sản phẩm áp dụng dựa trên sản phẩm không áp dụng
+  const productToApplyOptions = useMemo(() => {
+    return productOption.filter(
+      (option:any) => !excludedProduct.includes(option.value)
+    );
+  }, [productOption, excludedProduct]);
 
+  // Lọc danh sách sản phẩm không áp dụng dựa trên sản phẩm áp dụng
+  const excludedProductsOptions = useMemo(() => {
+    return productOption.filter(
+      (option:any) => !selectedProduct.includes(option.value)
+    );
+  }, [productOption, selectedProduct]);
   useEffect(() => {
     if (!coupon || !coupon.data) return;
     const c = coupon.data;
@@ -104,9 +140,9 @@ const EditCoupon = () => {
       <Card className="max-w-6xl mx-auto shadow-xl rounded-xl">
         <div className="mb-8 flex items-center justify-between">
           <span>
-            <h2 className="text-3xl font-bold text-gray-800 mb-1">Add New Coupon</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-1">Cập nhập khuyến mãi</h2>
             <p className="text-gray-500 text-sm">
-              Fill out the form to create a discount coupon for your customers.
+              Điền vào mẫu để cập nhập phiếu giảm giá cho khách hàng của bạn.
             </p>
            
           </span>
@@ -124,16 +160,16 @@ const EditCoupon = () => {
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
           <Form.Item
-            label="Coupon Code"
+            label="Mã giảm giá"
             name="code"
-            rules={[{ required: true, message: "Enter coupon code" }]}
+            rules={[{ required: true, message: "Vui lòng nhập mã code" }]}
           >
             <Input style={{height: 40, width: 1100}} placeholder="e.g., SALE10" className="text-[15px]" />
           </Form.Item>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2">
             <Form.Item
-              label="Discount Value"
+              label="Giá trị chiết khấu"
               name="discountValue"
               rules={[{ required: true }]}
             >
@@ -147,15 +183,15 @@ const EditCoupon = () => {
             </Form.Item>
 
             <Form.Item
-              label="Discount Type"
+              label="Loại giảm giá"
               name="discountType"
               rules={[{ required: true }]}
             >
               <Select
                 onChange={(val) => setDiscountType(val)}
                 options={[
-                  { label: "Percentage (%)", value: "percentage" },
-                  { label: "Fixed Amount", value: "fixed_amount" },
+                  { label: "Phần trăm (%)", value: "percentage" },
+                  { label: "Số tiền cố định", value: "fixed_amount" },
                 ]}
                 className="text-[15px]"
                 style={{ height: 40 }}
@@ -164,11 +200,11 @@ const EditCoupon = () => {
             </Form.Item>
           </div>
 
-          <Form.Item label="Description" name="description" className="md:col-span-2">
+          <Form.Item label="Mô tả" name="description" className="md:col-span-2">
             <Input.TextArea placeholder="Short description..." rows={3} />
           </Form.Item>
 
-          <Form.Item label="Usage Limit" name="usageLimit">
+          <Form.Item label="Giới hạn số người sử dụng" name="usageLimit">
             <InputNumber 
               style={{
                 width: "100%",
@@ -176,7 +212,7 @@ const EditCoupon = () => {
               }} className="w-full" min={1} size="large" />
           </Form.Item>
 
-          <Form.Item label="Limit per User" name="perUserLimit">
+          <Form.Item label="Lượt dùng giới hạn mỗi người dùng" name="perUserLimit">
             <InputNumber 
               style={{
                 width: "100%",
@@ -184,15 +220,15 @@ const EditCoupon = () => {
               }} className="w-full" min={1} size="large" />
           </Form.Item>
 
-          <Form.Item label="Start Date" name="startDate">
+          <Form.Item label="Ngày bắt đầu" name="startDate">
             <DatePicker className="w-full" size="large" />
           </Form.Item>
 
-          <Form.Item label="Expiry Date" name="expiryDate">
+          <Form.Item label="Ngày kết thúc" name="expiryDate">
             <DatePicker className="w-full" size="large" />
           </Form.Item>
 
-          <Form.Item label="Minimum Spend" name="minSpend">
+          <Form.Item label="Giá trị đơn hàng tối thiểu" name="minSpend">
             <InputNumber 
               style={{
                 width: "100%",
@@ -201,7 +237,7 @@ const EditCoupon = () => {
             />
           </Form.Item>
 
-          <Form.Item label="Maximum Spend" name="maxSpend">
+          <Form.Item label="Giá trị đơn hàng tối đa" name="maxSpend">
             <InputNumber 
               style={{
                 width: "100%",
@@ -212,81 +248,97 @@ const EditCoupon = () => {
           </Form.Item>
 
           <Form.Item
-            label="Applicable Products"
+            label="Sản phẩm được áp dụng"
             name="products"
             className="md:col-span-2"
           >
             <Select
               mode="multiple"
-              options={productOption}
-              placeholder="Select applicable products"
+              options={productToApplyOptions}
+              placeholder="Chọn sản phẩm áp dụng"
               size="large"
+              onChange={(value: string[]) => {
+                form.setFieldsValue({ products: value });
+                setSelectedProduct(value);
+              }}
             />
           </Form.Item>
 
           <Form.Item
-            label="Excluded Products"
+            label="Sản phẩm không áp dụng"
             name="excludedProducts"
             className="md:col-span-2"
           >
             <Select
               mode="multiple"
-              options={productOption}
+              options={excludedProductsOptions}
               placeholder="Select excluded products"
               size="large"
+              onChange={(value: string[]) => {
+                form.setFieldsValue({ excludedProducts: value });
+                setExcludedProduct(value);
+              }}
             />
           </Form.Item>
 
           <Form.Item
-            label="Applicable Categories"
+            label="Danh mục áp dụng"
             name="categories"
             className="md:col-span-2"
           >
             <Select
               mode="multiple"
-              options={categoryOption}
-              placeholder="Select categories"
+              options={categoriesToApplyOptions}
+              placeholder="Chon danh mục áp dụng"
               size="large"
+              onChange={(value: string[]) => {
+                form.setFieldsValue({ categories: value });
+                setSelectedCategories(value);
+              }}
             />
           </Form.Item>
 
           <Form.Item
-            label="Excluded Categories"
+            label="Danh mục không áp dụng"
             name="excludedCategories"
             className="md:col-span-2"
           >
             <Select
               mode="multiple"
-              options={categoryOption}
-              placeholder="Select excluded categories"
+              options={excludedCategoriesOptions}
+              placeholder="Chọn danh mục không áp dụng"
               size="large"
+              onChange={(value: string[]) => {
+                form.setFieldsValue({ excludedCategories: value });
+                setExcludedCategories(value);
+              }}
             />
           </Form.Item>
 
           <Form.Item
-            label="User Restrictions"
+            label="Người dùng được áp dụng"
             name="userRestrictions"
             className="md:col-span-2"
           >
             <Select
               mode="multiple"
               options={userOption}
-              placeholder="Limit coupon to specific users"
+              placeholder="Giới hạn phiếu giảm giá cho người dùng cụ thể"
               size="large"
             />
           </Form.Item>
 
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
             <Form.Item name="allowFreeShipping" valuePropName="checked">
-              <Checkbox>Allow Free Shipping</Checkbox>
+              <Checkbox>Cho phép miễn phí vận chuyển</Checkbox>
             </Form.Item>
             <Form.Item name="excludeSaleItems" valuePropName="checked">
-              <Checkbox>Exclude Sale Items</Checkbox>
+              <Checkbox>Loại trừ các mặt hàng giảm giá</Checkbox>
             </Form.Item>
             <Form.Item name="individualUse" valuePropName="checked">
-              <Checkbox>Individual Use Only</Checkbox>
+              <Checkbox>Chỉ sử dụng cá nhân</Checkbox>
             </Form.Item>
-            <Form.Item label="Active" name="isActive" valuePropName="checked">
+            <Form.Item label="Trạng thái" name="isActive" valuePropName="checked">
               <Switch />
             </Form.Item>
           </div>
@@ -300,7 +352,7 @@ const EditCoupon = () => {
               // loading={loading}
               style={{height: 40}}
             >
-              Update Coupon
+              Cập nhập
             </Button>
             <Button 
               onClick={() => form.resetFields()} 
@@ -311,7 +363,7 @@ const EditCoupon = () => {
               style={{height: 40}}
               icon={<ReloadOutlined />}
             >
-              Reset
+              Đặt lại
             </Button>
           </Form.Item>
         </Form>

@@ -78,18 +78,18 @@ const UpdateVariants = () => {
       <div className="w-full pt-[20px]">
         <div className='flex justify-between'>
           <span>
-            <h3 className="pl-[20px] text-2xl font-semibold mb-1">Edit Variants</h3>
-            <p className="pl-[20px] text-sm text-gray-500 mb-6">Fill in the variants details</p>
+            <h3 className="pl-[20px] text-2xl font-semibold mb-1">Cập nhập biến thể</h3>
+            <p className="pl-[20px] text-sm text-gray-500 mb-6">Điền thông tin chi tiết về các biến thể</p>
           </span>
           <Link to={`/admin/listVariants/${productId}`}>
-            <Button className='mt-2 mr-10' type='primary' style={{height: 40}} icon={<UnorderedListOutlined />}>List Variants</Button>
+            <Button className='mt-2 mr-10' type='primary' style={{height: 40}} icon={<UnorderedListOutlined />}>Danh sách</Button>
           </Link>
         </div>
         <hr className="border-t border-gray-300 mb-6 -mt-3" />
       </div>
       <div className='flex items-center'>
         <div className='flex items-center gap-6 ml-6'>
-          <p style={{ margin: 0 }}>Color:</p>
+          <p style={{ margin: 0 }}>Màu:</p>
           <p style={{ margin: 0 }}>{variants?.data?.color?.name}</p>
         </div>
         <div className='flex items-center gap-6 ml-20 '>
@@ -104,7 +104,7 @@ const UpdateVariants = () => {
         style={{margin: 20}} className='m-2 [&_Input]:h-[40px]'
       >
         <Form.Item
-          label="Variant Images"
+          label="Ảnh"
           name="imageIndex"
           rules={[{ required: true, message: "Please upload product images" }]}
         >
@@ -122,13 +122,13 @@ const UpdateVariants = () => {
             }))}
           />
         </Form.Item>
-        <Form.Item label="Price" name="price">
+        <Form.Item label="Giá gốc" name="price">
           <InputNumber style={{width: "100%"}} disabled />
         </Form.Item>
-        <Form.Item label="Sale_Price" name="sale_price" >
+        <Form.Item label="Giá khuyến mãi" name="sale_price" >
           <InputNumber style={{width: "100%"}} min={0} placeholder='0đ' />
         </Form.Item>
-        <Form.Item label="Variant stock" name="stock" rules={[{required: true}]}>
+        <Form.Item label="Số lượng" name="stock" rules={[{required: true}]}>
           <InputNumber style={{width: "100%"}} />
         </Form.Item>
         <Form.Item>
@@ -139,10 +139,10 @@ const UpdateVariants = () => {
               loading={isLoading}  
               style={{height: 40, width: 200}}
             >
-              Save Variants
+              Lưu
             </Button>
             <Button htmlType="button" onClick={() => form.resetFields()} disabled={isLoading} style={{height: 40}}>
-              Reset
+              Đặt lại
             </Button>
           </div>
         </Form.Item>
