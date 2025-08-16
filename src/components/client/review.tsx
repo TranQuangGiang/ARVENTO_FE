@@ -18,6 +18,7 @@ const Review = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
+        console.log(decoded);
         setUserId(decoded.id);
       } catch (err) {
         console.error("Invalid token");
@@ -44,7 +45,7 @@ const Review = () => {
   }, [orderId]);
 
   const handleReviewChange = (productId: string, field: string, value: string) => {
-    setReviews((prev) => ({
+    setReviews((prev:any) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -55,7 +56,7 @@ const Review = () => {
 
   const resetAllReviews = () => {
     const newReviews = {};
-    uniqueProducts.forEach((item) => {
+    uniqueProducts.forEach((item:any) => {
       newReviews[item.product._id] = {
         rating: 0,
         comment: "",
@@ -65,7 +66,7 @@ const Review = () => {
     setReviews(newReviews);
   };
 
-  const handleSubmitReview = async (productId) => {
+  const handleSubmitReview = async (productId:any) => {
     const token = localStorage.getItem("token");
     if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
     let userInfo = null;
@@ -86,7 +87,7 @@ const Review = () => {
     formData.append("comment", review.comment);
     formData.append("product_id", productId);
 
-    review.images?.forEach((file) => {
+    review.images?.forEach((file:any) => {
       if (file.originFileObj) {
         formData.append("images", file.originFileObj);
       }
@@ -103,7 +104,7 @@ const Review = () => {
       resetAllReviews();
 
       await axios.get(`http://localhost:3000/api/reviews/product/${productId}`);
-    } catch (error) {
+    } catch (error:any) {
       console.error(error);
       message.error(error?.response?.data.message);
     }
@@ -112,8 +113,8 @@ const Review = () => {
   if (loading) return <Spin className="mt-10" />;
   if (!order) return <div className="p-6 text-gray-500">No order data available.</div>;
 
-  const productQuantityMap = order.items.reduce((acc, item) => {
-    const productId = item.product._id;
+  const productQuantityMap = order?.items.reduce((acc:any, item:any) => {
+    const productId = item.product?._id;
     if (!acc[productId]) {
       acc[productId] = { ...item, quantity: 0 };
     }
@@ -131,8 +132,8 @@ const Review = () => {
         </h2>
 
         <div className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm mt-6">
-          {uniqueProducts.map((item, index) => {
-            const productId = item.product._id;
+          {uniqueProducts.map((item:any, index) => {
+            const productId = item.product?._id;
             const review = reviews[productId] || {};
 
             return (
@@ -148,10 +149,10 @@ const Review = () => {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold text-base text-gray-800">
-                          {item.product.name}
+                          {item.product?.name}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          x{item.quantity} - <span className="text-red-500 font-semibold">{(item.unit_price * item.quantity).toLocaleString()}₫</span>
+                          x{item?.quantity} - <span className="text-red-500 font-semibold">{(item.unit_price * item.quantity).toLocaleString()}₫</span>
                         </p>
                       </div>
                       <Button
@@ -180,7 +181,7 @@ const Review = () => {
                         listType="picture-card"
                         maxCount={3}
                         beforeUpload={() => false}
-                        onChange={({ fileList }) => handleReviewChange(productId, "images", fileList)}
+                        onChange={({ fileList }:any) => handleReviewChange(productId, "images", fileList)}
                       >
                         {(!review.images || review.images.length < 3) && (
                           <div className="text-sm">+ Upload</div>

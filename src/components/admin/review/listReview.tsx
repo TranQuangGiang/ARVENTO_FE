@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { DeleteOutlined, MessageOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons';
 
 import { Button, Popconfirm, Switch, message, Input, Select, Table, Rate } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -168,7 +168,6 @@ const ListReview = () => {
         <div className="flex gap-2 justify-end">
           <Button
             type="primary"
-            icon={<EditOutlined/>}
             onClick={() => navigate(`/admin/editreview/${record._id}`)}
             icon={<MessageOutlined />}
           >
