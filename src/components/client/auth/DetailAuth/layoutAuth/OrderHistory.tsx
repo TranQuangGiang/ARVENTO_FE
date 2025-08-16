@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useList } from '../../../../../hooks/useList';
-import { Button, Card, Image, Input, message, Modal, Popconfirm, Select } from 'antd';
+import { Button, Card, Image, Input, message, Modal, Popconfirm, Select, Typography } from 'antd';
 import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+const { Text, Title } = Typography;
 
 const OrderHistory = () => {
     const [selectedStatus, setSelectedStatus] = useState("all");
@@ -11,25 +13,25 @@ const OrderHistory = () => {
     const getOrderStatusLabel = (status: string) => {
         switch (status) {
             case "pending":
-                return "Pending";
+                return "Chờ xác nhận";
             case "confirmed":
-                return "Confirmed";
+                return "Đã xác nhận";
             case "processing":
-                return "Processing";
+                return "Đang xử lý";
             case "shipping":
-                return "Shipping";
+                return "Đang giao hàng";
             case "delivered":
-                return "Delivered";
+                return "Đã giao hàng";
             case "completed":
-                return "Completed";
+                return "Hoàn thành";
             case "cancelled":
-                return "Cancelled";
-            case "returning":
-                return "Returning";
+                return "Đã hủy";
+            case "returning": 
+                return "Đang trả hàng"
             case "returned":
-                return "Returned";
+                return "Đã trả hàng";
             default:
-                return "Unknown";
+                return "Không xác định";
         }
     };
 
@@ -59,19 +61,19 @@ const OrderHistory = () => {
     };
 
     const orderTabs = [
-        { key: "all", label: "All" },
-        { key: "pending", label: "Pending" },
-        { key: "confirmed", label: "Confirmed" },
-        { key: "processing", label: "Processing" },
-        { key: "shipping", label: "Shipping" },
-        { key: "delivered", label: "Delivered" },
-        { key: "completed", label: "Completed" },
-        { key: "cancelled", label: "Cancelled" },
-        { key: "returning", label: "Returning" },
-        { key: "returned", label: "Returned" },
+        { key: "all", label: "Tất cả" },
+        { key: "pending", label: "Chờ xác nhận" },
+        { key: "confirmed", label: "Đã xác nhận" },
+        { key: "processing", label: "Đang xử lý" },
+        { key: "shipping", label: "Đang giao hàng" },
+        { key: "delivered", label: "Đã giao hàng" },
+        { key: "completed", label: "Hoàn thành" },
+        { key: "cancelled", label: "Đã hủy" },
+        { key: "returning", label: "Đang trả hàng" },
+        { key: "returned", label: "Đã trả hàng" },
     ];
 
-
+    
     const { data: orderData, refetch } = useList({
         resource: `/orders/my`
     });
@@ -84,25 +86,25 @@ const OrderHistory = () => {
 
     const handleCancelOrder = (orderId: string, status: string) => {
         if (status !== "pending") {
-            message.error("You cannot cancel an order that has already been processed.");
+            message.error("Bạn không thể hủy đơn hàng đã được xử lý.");
             return;
         }
 
         const predefinedReasons = [
-            "I ordered the wrong shoe size",
-            "I want to switch to a different shoe model",
-            "Delivery time is too long",
-            "I found a cheaper price elsewhere",
-            "I no longer need to buy shoes",
-            "Other"
+            "Tôi đã đặt nhầm cỡ giày",
+            "Tôi muốn đổi sang mẫu giày khác",
+            "Thời gian giao hàng quá lâu",
+            "Tôi tìm thấy giá rẻ hơn ở nơi khác",
+            "Tôi không cần mua giày nữa",
+            "Khác"
         ];
 
         // Using useRef-like to store values persistently
-        const reasonRef = { current: "Other" };
+        const reasonRef = { current: "Khác" };
         const customRef = { current: "" };
 
         const ModalContent = () => {
-            const [reason, setReason] = useState("Other");
+            const [reason, setReason] = useState("Khác");
             const [custom, setCustom] = useState("");
 
             // Update the ref
@@ -111,11 +113,11 @@ const OrderHistory = () => {
 
             return (
                 <div style={{ marginTop: 10 }}>
-                    <p style={{ fontWeight: 500, marginBottom: 8 }}>Please select a reason for canceling the order:</p>
+                    <p style={{ fontWeight: 500, marginBottom: 8 }}>Vui lòng chọn lý do hủy đơn:</p>
 
                     <Select
                         style={{ width: '100%', marginBottom: 10 }}
-                        placeholder="Select a reason"
+                        placeholder="Vui lòng chọn lý do hủy đơn"
                         value={reason}
                         onChange={(value) => setReason(value)}
                         options={predefinedReasons.map(item => ({
@@ -124,13 +126,13 @@ const OrderHistory = () => {
                         }))}
                     />
 
-                    {reason === "Other" && (
+                    {reason === "Khác" && (
                         <Input.TextArea
                             rows={4}
                             maxLength={300}
                             value={custom}
                             onChange={(e) => setCustom(e.target.value)}
-                            placeholder="Enter the reason for canceling the order (max 300 characters)"
+                            placeholder="Nhập lý do hủy đơn hàng (tối đa 300 ký tự)"
                             style={{
                                 borderRadius: 8,
                                 padding: 10,
@@ -145,10 +147,15 @@ const OrderHistory = () => {
 
         Modal.confirm({
             width: 600,
-            title: <span style={{ fontSize: '18px', fontWeight: 600, color: '#ef4444' }}>Confirm Order Cancellation</span>,
+            title: 
+                <div className='w-full text-center'>
+                    <span style={{ fontSize: '18px', fontWeight: 600, color: '#ef4444'}}>Xác nhận hủy đơn hàng</span>
+                </div>
+            ,
             content: <ModalContent />,
-            okText: "Confirm Cancellation",
-            cancelText: "No",
+            icon: null,
+            okText: "Xác nhận hủy",
+            cancelText: "Không",
             onOk: async () => {
                 const reasonToSend =
                     reasonRef.current !== "Other"
@@ -156,7 +163,7 @@ const OrderHistory = () => {
                         : (customRef.current || "").trim();
 
                 if (!reasonToSend) {
-                    message.error("Please select or enter a reason for cancellation.");
+                    message.error("Vui lòng chọn hoặc nhập lý do hủy.");
                     return Promise.reject();
                 }
 
@@ -173,11 +180,11 @@ const OrderHistory = () => {
                             }
                         }
                     );
-                    message.success("Order cancelled successfully!");
+                    message.success("Hủy đơn hàng thành công!");
                     refetch();
                 } catch (error) {
                     console.error(error);
-                    message.error("Could not cancel order.");
+                    message.error("Hủy đơn hàng thất bại ");
                 }
             }
         });
@@ -191,7 +198,7 @@ const OrderHistory = () => {
             await axios.patch(`http://localhost:3000/api/orders/${orderId}/status`,
                 {
                     status: "completed",
-                    note: "Status updated successfully completed"
+                    note: "Cập nhập thành công trạng thái hoàn thành"
                 },
                 {
                     headers: {
@@ -199,29 +206,72 @@ const OrderHistory = () => {
                     }
                 }
             );
-            message.success("Order confirmed as complete, please rate the product to help us!");
+            message.success("Đơn hàng đã được xác nhận hoàn tất, vui lòng đánh giá sản phẩm để giúp chúng tôi!");
             refetch();
         } catch (error) {
             console.error(error);
-            message.error("Could not confirm order completion.");
+            message.error("Không thể xác nhận hoàn tất đơn hàng.");
         }
 
     }
     // Return request function
-    const handleRequestReturn = (orderId: string) => {
+    const handleRequestReturn = async (orderId: string) => {
+        
+        const token = localStorage.getItem("token")
+        const { data } = await axios.get(`http://localhost:3000/api/orders/${orderId}`, {
+            headers : {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(data);
+      
+        const orderDetails = data.data;
         let reasonRef  = { current: ""};
         Modal.confirm({
             width: 600,
             height: 300,
-            title: <span style={{ fontSize: '18px', fontWeight: 600, color: '#eab308', textAlign: "center", width: "100%" }}> Return Request</span>,
+            icon: null,
+            title: 
+                <div style={{ textAlign: 'center' }}>
+                    <span style={{ fontSize: '18px', fontWeight: 600, color: '#eab308' }}>
+                        Yêu cầu hoàn hàng hoặc hoàn tiền
+                    </span>
+                </div>
+            ,
             content: (
                 <div style={{ marginTop: 10 }}>
-                    <p style={{ fontWeight: 500, marginBottom: 8 }}>Please enter the reason for the return:</p>
+                    {orderDetails.items?.map((item: any) => (
+                        <Card
+                            key={item.product._id}
+                            style={{ marginBottom: 15, borderRadius: 10, border: '1px solid #f0f0f0' }}
+                            bodyStyle={{ padding: 12 }}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <Image
+                                    width={80}
+                                    height={80}
+                                    src={item.selected_variant?.image?.url}
+                                    style={{ borderRadius: 8, objectFit: 'cover' }}
+                                    preview={false}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <Title level={5} style={{ margin: 0, fontWeight: 700 }}>{item.product.name}</Title>
+                                    <div style={{ display: 'flex', gap: 15 }}>
+                                        <Text type="secondary" style={{ fontSize: 13 }}>Size: <Text strong>{item.selected_variant?.size}</Text></Text>
+                                        <Text type="secondary" style={{ fontSize: 13 }}>Số lượng: <Text strong>{item.quantity}</Text></Text>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                    {/* Thêm Checkbox vào đây */}
+                   
+                    <p style={{ fontWeight: 500, marginBottom: 8 }}>Bạn gặp vấn đề gì với mặt hàng của mình ?</p>
                     <Input.TextArea
                         rows={4}
                         maxLength={500}
                         onChange={(e) => { reasonRef.current = e.target.value; }}
-                        placeholder="Enter the reason for return (max 500 characters)"
+                        placeholder="Nhập lý do trả lại (tối đa 500 ký tự)"
                         style={{
                             borderRadius: 8,
                             padding: 10,
@@ -231,8 +281,8 @@ const OrderHistory = () => {
                     />
                 </div>
             ),
-            okText: <span style={{ fontWeight: 600 }}>Send Request</span>,
-            cancelText: "Cancel",
+            okText: <span style={{ fontWeight: 600 }}>Gửi yêu cầu</span>,
+            cancelText: "Hủy",
             okButtonProps: {
                 style: {
                     backgroundColor: '#10b981',
@@ -249,7 +299,7 @@ const OrderHistory = () => {
             onOk: async () => {
                 const trimmedReason = (reasonRef.current || "").trim();
                 if (!trimmedReason) {
-                    message.error("Please enter a reason before sending the return request.");
+                    message.error("Vui lòng nhập lý do trước khi gửi yêu cầu trả hàng.");
                     return Promise.reject(); // Ngăn modal tự đóng
                 }
                 try {
@@ -265,11 +315,11 @@ const OrderHistory = () => {
                             }
                         }
                     );
-                    message.success("Return request sent!");
+                    message.success("Đã gửi yêu cầu trả hàng!");
                     refetch();
                 } catch (error) {
                     console.error(error);
-                    message.error("Failed to send request!");
+                    message.error("Gửi yêu cầu thất bại!");
                 }
             }
         })
@@ -277,39 +327,34 @@ const OrderHistory = () => {
     return (
         <div className='w-full min-h-screen'>
             <div className='w-full h-full rounded-[15px] bg-white min-h-screen mb-4'>
-                <div className="flex h-16 items-center ">
+                <div className="w-full ml-1 mt-1.5 mb-2.5 flex h-16 items-center gap-2 px-3">
                     {orderTabs.map((tab) => (
                         <div
                             key={tab.key}
                             onClick={() => setSelectedStatus(tab.key)}
-                            className={`pb-2 ml-6 text-center cursor-pointer text-[14px] font-semibold ${
-                                selectedStatus === tab.key
-                                    ? "text-red-600 border-b-[3px] rounded-[1px] border-red-600"
-                                    : "text-gray-500"
-                                }`}
+                            className={`
+                                text-[14px]
+                                relative pb-2 px-2 cursor-pointer text-sm font-medium transition-all duration-200
+                                ${selectedStatus === tab.key
+                                    ? "text-red-600 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[3px] after:bg-red-600 after:rounded-full"
+                                    : "text-gray-500 hover:text-gray-700 hover:after:absolute hover:after:left-0 hover:after:bottom-0 hover:after:w-full hover:after:h-[3px] hover:after:bg-gray-300 hover:after:rounded-full"
+                                }
+                            `}
                         >
                             {tab.label}
                         </div>
                     ))}
                 </div>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 ml-4 mr-4">
                     {filteredOrders.length > 0 ? (
                         filteredOrders.map((order: any) => (
                             <Card key={order._id} bordered className="shadow-md rounded-xl transition-all duration-200 hover:shadow-lg">
-                                {order.status === "delivered" && order.is_return_requested && (
-                                    <div className="w-full bg-yellow-50 border mt-0 border-yellow-300 text-yellow-800 px-4 py-1.5 rounded mb-3 flex items-center gap-2">
-                                        <span className="text-[17px]">⚠️</span>
-                                        <span className="font-medium text-[14px]">
-                                            Your return request is being processed. Please wait for the shop's response!
-                                        </span>
-                                    </div>
-                                )}
                                 <div className="flex justify-between flex-wrap gap-4">
                                     <div>
-                                        <p className="text-gray-500 text-[12px] mb-1">
-                                            SKU: <strong>{order._id}</strong>
+                                        <p className="text-gray-500 text-[14px] mb-1">
+                                            Mã đơn: <strong className='text-black'>{order._id}</strong>
                                         </p>
-                                        <p className="font-bold text-lg mb-2">Products in order:</p>
+                                        <p className="font-bold text-lg mb-2">Sản phẩm trong đơn:</p>
                                         {order.items?.map((item: any) => {
                                             return (
                                                 <div key={item.product?._id} className="flex items-center gap-3 mb-2">
@@ -321,14 +366,14 @@ const OrderHistory = () => {
                                                         className="rounded"
                                                     />
                                                     <div>
-                                                        <p className="font-medium text-base">
+                                                        <p className="font-bold text-base">
                                                             {item.product?.name} - x{item.quantity} -
                                                             <span className="text-red-600 font-semibold ml-1">
                                                                 {item.total_price?.toLocaleString()}₫
                                                             </span>
                                                         </p>
-                                                        <p className="text-gray-600 text-sm">
-                                                            Unit price: {item.unit_price?.toLocaleString()}₫
+                                                        <p className="text-gray-600 text-sm mt-1">
+                                                            Giá sản phẩm: {item.unit_price?.toLocaleString()}₫
                                                         </p>
                                                     </div>
                                                 </div>
@@ -341,23 +386,23 @@ const OrderHistory = () => {
                                             {getOrderStatusLabel(order.status)}
                                         </span>
                                         <p className="text-gray-600 text-[15px]">
-                                            <CalendarOutlined /> Order date: {new Date(order.created_at).toLocaleDateString()}
+                                            <CalendarOutlined /> Ngày đặt: <strong className='text-black'>{new Date(order.created_at).toLocaleDateString()}</strong>
                                         </p>
                                         <p className="font-bold text-red-600 text-[17px]">
-                                            <DollarOutlined /> Total: {order.total?.toLocaleString()}₫
+                                            <DollarOutlined /> Tổng: {order.total?.toLocaleString()}₫
                                         </p>
                                         <div className="flex flex-wrap gap-2 justify-end mt-2">
                                             <Link to={`/detailAuth/detailOrder/${order._id}`}>
                                                 <Button type="primary" className='text-[16px]' style={{ height: 38 }}>
-                                                    View order details
+                                                    Chi tiết
                                                 </Button>
                                             </Link>
 
                                             {order.status === "delivered" && !order.is_return_requested && (
                                                 <Popconfirm
-                                                    title="Confirm that you have received the goods and want to complete the order?"
-                                                    okText="Complete"
-                                                    cancelText="Cancel"
+                                                    title="Xác nhận bạn đã nhận được hàng và muốn hoàn tất đơn hàng?"
+                                                    okText="Hoàn thành"
+                                                    cancelText="Hủy"
                                                     onConfirm={() => handleConfirmComplete(order._id)}
                                                 >
                                                     <Button
@@ -365,7 +410,7 @@ const OrderHistory = () => {
                                                         style={{ height: 38, color: '#16a34a', borderColor: '#16a34a' }}
                                                         className="text-[16px]"
                                                     >
-                                                        ✅ Received
+                                                        ✅ Đã nhận
                                                     </Button>
                                                 </Popconfirm>
                                             )}
@@ -376,16 +421,35 @@ const OrderHistory = () => {
                                                     className="text-[16px]"
                                                     onClick={() => handleRequestReturn(order._id)}
                                                 >
-                                                    ↩️ Request Return
+                                                    ↩️ Hoàn hàng / hoàn tiền 
                                                 </Button>
 
+                                            )}
+                                            {order.status === "delivered" && order.is_return_requested && (
+                                                <Button
+                                                    disabled
+                                                    icon={<ExclamationCircleOutlined style={{ fontSize: 16 }} />}
+                                                    style={{
+                                                        background: 'linear-gradient(90deg, #fde68a, #fcd34d)',
+                                                        color: '#78350f',
+                                                        border: 'none',
+                                                        borderRadius: '7px', // bo tròn pill
+                                                        fontWeight: 600,
+                                                        padding: '0 15px',
+                                                        height: 40,
+                                                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                                                        cursor: 'not-allowed'
+                                                    }}
+                                                >
+                                                    Chờ duyệt hoàn hàng
+                                                </Button>
                                             )}
                                             {
                                                 (order.status === 'pending') && (
                                                     <Popconfirm
-                                                        title="Are you sure you want to cancel this order?"
-                                                        okText="Cancel"
-                                                        cancelText="No"
+                                                        title="Bạn có chắc muốn hủy đơn hàng này ?"
+                                                        okText="Hủy"
+                                                        cancelText="Không"
                                                         onConfirm={() => handleCancelOrder(order._id, order.status)}
                                                     >
                                                         <Button
@@ -395,7 +459,7 @@ const OrderHistory = () => {
                                                             style={{ height: 38 }}
                                                             className="text-[16px]"
                                                         >
-                                                            Cancel Order
+                                                            Hủy đơn / Hoàn tiền
                                                         </Button>
                                                     </Popconfirm>
                                                 )

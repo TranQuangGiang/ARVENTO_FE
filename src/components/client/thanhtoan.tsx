@@ -23,9 +23,9 @@ const Payment = () => {
 
 
   const paymentMethods = [
-    { id: "cod", label: "Cash on Delivery", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png" },
+    { id: "cod", label: "Thanh toán khi nhận hàng", icon: "https://cdn-icons-png.flaticon.com/512/1041/1041883.png" },
     { id: "zalopay", label: "Zalo Pay", icon: "https://seeklogo.com/images/Z/zalopay-logo-643ADC36A4-seeklogo.com.png" },
-    { id: "momo", label: "MoMo Wallet", icon: "https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" },
+    { id: "momo", label: "MoMo ", icon: "https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" },
   ];
 
   const handleConfirmMethod = () => {
@@ -114,7 +114,7 @@ const Payment = () => {
         console.log("paymentUrl", paymentData.data?.paymentUrl);
         await clearCart();
       } else {
-        message.success("Order and payment successful.");
+        message.success("Đặt hàng thành công");
         await clearCart();
         const convertedItems = cartContext?.items.map((item) => ({
           product: item.product,
@@ -160,12 +160,12 @@ const Payment = () => {
     <div className="w-full bg-gray-50 py-6">
       <div className="max-w-3xl mx-auto space-y-6 text-sm">
         <div className="flex">
-          <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">1. INFORMATION</div>
-          <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">2. PAYMENT</div>
+          <div className="flex-1 text-center py-2 border-b-2 border-gray-300 text-gray-500">1. THÔNG TIN</div>
+          <div className="flex-1 text-center py-2 border-b-2 border-blue-950 font-semibold text-black">2. THANH TOÁN</div>
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow space-y-4">
-          <h3 className="font-medium">Product List</h3>
+          <h3 className="font-medium">Sản phẩm trong đơn</h3>
           {cartContext?.items?.map((product: any, index: any) => (
             <div key={product._id}>
               <div className="flex space-x-3">
@@ -177,7 +177,7 @@ const Payment = () => {
                 <div className="flex-1">
                   <h3 className="font-medium">{product.product?.name}</h3>
                   {product.selected_variant?.size && <p className="text-gray-600 text-xs">Size: {product.selected_variant.size}</p>}
-                  {product.selected_variant?.color && <p className="text-gray-600 text-xs">Color: {product.selected_variant.color.name}</p>}
+                  {product.selected_variant?.color && <p className="text-gray-600 text-xs">Màu sắc: {product.selected_variant.color.name}</p>}
                   <div className="flex items-center space-x-2 mt-1">
                     <span className="text-red-500 font-semibold">{product.unit_price.toLocaleString()}₫</span>
                     {product.original_price && (
@@ -192,18 +192,18 @@ const Payment = () => {
           ))}
         </div>
 
-        <h3 className="text-base font-medium text-gray-600">RECEIVING INFORMATION</h3>
+        <h3 className="text-base font-medium text-gray-600">TÓM TẮT ĐƠN HÀNG</h3>
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
-          <div className="flex justify-between"><strong>Customer:</strong><span>{customerInfo?.name}</span></div>
+          <div className="flex justify-between"><strong>Khách hàng:</strong><span>{customerInfo?.name}</span></div>
           <div className="flex justify-between"><strong>Email:</strong><span>{customerInfo?.email}</span></div>
-          <div className="flex justify-between"><strong>Recipient Phone:</strong><span>{customerInfo?.phone}</span></div>
-          <div className="flex justify-between"><strong>Recipient:</strong><span>{shippingInfo?.recipient}</span></div>
-          <div className="flex justify-between"><strong>Address:</strong><span>{shippingInfo?.fullAddress}</span></div>
-          <div className="flex justify-between"><strong>Note:</strong><span>{shippingInfo?.note}</span></div>
+          <div className="flex justify-between"><strong>Số điện thoại:</strong><span>{customerInfo?.phone}</span></div>
+          <div className="flex justify-between"><strong>Người nhận:</strong><span>{shippingInfo?.recipient}</span></div>
+          <div className="flex justify-between"><strong>Địa chỉ:</strong><span>{shippingInfo?.fullAddress}</span></div>
+          <div className="flex justify-between"><strong>Ghi chú:</strong><span>{shippingInfo?.note}</span></div>
         </div>
 
         <div className="bg-white p-4 rounded-xl shadow space-y-4">
-          <h3 className="font-medium">PAYMENT INFORMATION</h3>
+          <h3 className="font-medium">THÔNG TIN THANH TOÁN</h3>
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setIsModalOpen(true)}>
             {currentMethod ? (
               <>
@@ -213,7 +213,7 @@ const Payment = () => {
             ) : (
               <>
                 <img src="https://cdn-icons-png.flaticon.com/512/1041/1041883.png" alt="payment" className="w-8 h-8" />
-                <span className="text-red-500">Select payment method</span>
+                <span className="text-red-500">Chọn phương thức thanh toán</span>
               </>
             )}
           </div>
@@ -221,24 +221,24 @@ const Payment = () => {
 
         <div className="bg-white p-4 rounded-xl shadow space-y-2">
           <div className="flex justify-between font-semibold text-base">
-            <span>Subtotal:</span>
+            <span>Tạm tính:</span>
             <span className="text-red-500">{subtotal?.toLocaleString()}₫</span>
           </div>
 
           {discount > 0 && (
             <div className="flex justify-between font-semibold text-base text-green-600">
-              <span>Discount:</span>
+              <span>Giảm giá:</span>
               <span>-{discount?.toLocaleString()}₫</span>
             </div>
           )}
 
           <div className="flex justify-between font-semibold text-base">
-            <span>Shipping Fee:</span>
+            <span>Phí vận chuyển:</span>
             <span>{shippingFee?.toLocaleString()}₫</span>
           </div>
 
           <div className="flex justify-between font-semibold text-lg">
-            <span>Total:</span>
+            <span>Tổng thanh toán:</span>
             <span className="text-red-500">{total?.toLocaleString()}₫</span>
           </div>
           <button
@@ -246,18 +246,18 @@ const Payment = () => {
             onClick={handlePayment}
             disabled={isLoading}
           >
-            {isLoading ? "Processing..." : "Proceed to Payment"}
+            {isLoading ? "Tiến hàng..." : "Tiến hành thanh toán"}
           </button>
         </div>
       </div>
 
       <Modal
-        title="Select Payment Method"
+        title="Chọn phương thức thanh toán"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[
-          <Button key="cancel" onClick={() => setIsModalOpen(false)}>Cancel</Button>,
-          <Button key="confirm" type="primary" onClick={handleConfirmMethod} disabled={!selectedTempMethod}>Confirm</Button>,
+          <Button key="cancel" onClick={() => setIsModalOpen(false)}>Đóng</Button>,
+          <Button key="confirm" type="primary" onClick={handleConfirmMethod} disabled={!selectedTempMethod}>Chọn</Button>,
         ]}
       >
         <div className="space-y-3">

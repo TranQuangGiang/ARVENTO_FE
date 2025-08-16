@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Switch, message, Input, Select, Table, Rate } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
@@ -82,7 +82,7 @@ const ListReview = () => {
       onSuccess: () => {
         refetchReview();
       },
-      onError: () => message.error("Failed to delete review"),
+      onError: () => message.error("Xóa đánh giá thất bại"),
     });
   };
 
@@ -123,22 +123,22 @@ const ListReview = () => {
       ),
     },
     {
-      title: "User",
+      title: "Khách hàng",
       dataIndex: "user_id",
       render: (user: any) => user?.name || "Unknown",
     },
     {
-      title: "Product ID",
+      title: "Mã sản phẩm",
       dataIndex: "product_id",
       render: (product: any) => product?._id || "N/A",
     },
     {
-      title: "Product Name",
+      title: "Tên sản phẩm",
       dataIndex: "product_id",
       render: (product: any) => product?.name || "Unknown",
     },
     {
-      title: "Images",
+      title: "Ảnh",
       dataIndex: "images",
       render: (images: any[]) =>
         Array.isArray(images) && images.length > 0 ? (
@@ -160,44 +160,30 @@ const ListReview = () => {
         ),
     },
     {
-      title: "Rating",
+      title: "Xếp hạng",
       dataIndex: "rating",
       render: (rating: number) => <Rate disabled value={rating} />,
     },
     {
-      title: "Comment",
+      title: "Đánh giá",
       dataIndex: "comment",
     },
     {
-      title: "Reply",
+      title: "Phản hồi",
       dataIndex: "reply",
       render: (reply: string) => reply || "Chưa phản hồi",
     },
     {
-      title: "Action",
+      title: "Hành động",
       align: "right",
       render: (_: any, record: any) => (
         <div className="flex gap-2 justify-end">
           <Button
-            type="default"
-            className="border-blue-500 text-blue-500 hover:!bg-blue-50"
+            type="primary"
+            icon={<EditOutlined/>}
             onClick={() => navigate(`/admin/editreview/${record._id}`)}
-          >
-            Update
-          </Button>
-          <Popconfirm
-            title="Are you sure you want to delete this review?"
-            okText="Delete"
-            cancelText="Cancel"
-            onConfirm={() => handleDelete(record._id)}
-          >
-            <Button
-              icon={<DeleteOutlined />}
-              className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+          /> 
+          
         </div>
       ),
     },
@@ -224,7 +210,7 @@ const ListReview = () => {
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-2 items-center">
-                  <span className="text-gray-500">Showing</span>
+                  <span className="text-gray-500">Hiện</span>
                   <Select
                     value={itemsPerPage}
                     onChange={(value) => {
@@ -241,11 +227,11 @@ const ListReview = () => {
                   </Select>
                 </div>
                 <Input
-                  placeholder="Search by user or comment..."
+                  placeholder="Tìm kiếm theo người dùng hoặc bình luận..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   allowClear
-                  className="w-64"
+                  style={{width: 500}}
                 />
               </div>
               <Table

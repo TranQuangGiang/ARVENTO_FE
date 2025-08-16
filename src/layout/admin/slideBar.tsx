@@ -13,6 +13,7 @@ import {
   LetterText,
   FileText,
   Tickets,
+  LayoutGrid,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -63,7 +64,7 @@ const AdminSidebar = () => {
                             className=" group-hover:text-red-500 transition-all duration-300"
                             size={23}
                         />
-                        Dashboard
+                            Tổng quan
                         </Link>
                     </li>
                     <li>
@@ -79,7 +80,7 @@ const AdminSidebar = () => {
                                 className="mr-[10px] group-hover:text-red-500 transition-all duration-300"
                                 size={23}
                             />
-                            Users
+                            Người dùng
                         </Link>
                     </li>
                     <li ref={categoryRef}>
@@ -91,17 +92,17 @@ const AdminSidebar = () => {
                                 : "text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]"
                             }`}
                         >
-                            <span className="flex items-center">
-                                <ChartBarStacked
-                                    className={`mr-[15px] transition-all duration-300 ${
-                                        isPathMatch(["/admin/listcategory", "/admin/addcategory", "/admin/editcategory/:id"])
-                                        ? "text-red-500"
-                                        : "group-hover:text-red-500"
-                                    }`}
-                                />
-                                Category
-                            </span>
-                            <span>{openCategory ? <ChevronUp /> : <ChevronDown />}</span>
+                        <span className="flex items-center ">
+                            <LayoutGrid
+                                className={`mr-[15px] transition-all duration-300 ${
+                                    isPathMatch(["/admin/listcategory", "/admin/addcategory", "/admin/editcategory/:id"])
+                                    ? "text-red-500"
+                                    : "group-hover:text-red-500"
+                                }`}
+                            />
+                            Danh mục 
+                        </span>
+                        <span>{openCategory ? <ChevronUp /> : <ChevronDown />}</span>
                         </button>
                         {openCategory && (
                             <ul className="ml-10 p-2 space-y-1.5">
@@ -110,7 +111,7 @@ const AdminSidebar = () => {
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                         to="/admin/listcategory"
                                     >
-                                        Category List
+                                        Danh sách danh mục
                                     </Link>
                                 </li>
                                 <li>
@@ -118,7 +119,7 @@ const AdminSidebar = () => {
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                         to="/admin/addcategory"
                                     >
-                                        Category Create
+                                        Thêm mới danh mục
                                     </Link>
                                 </li>
                             </ul>
@@ -141,7 +142,7 @@ const AdminSidebar = () => {
                                         : "group-hover:text-red-500"
                                     }`}
                                 />
-                                Products
+                                Sản phẩm
                             </span>
                             <span>{openProducts ? <ChevronUp /> : <ChevronDown />}</span>
                         </button>
@@ -152,7 +153,7 @@ const AdminSidebar = () => {
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                         to="/admin/listProduct"
                                     >
-                                        Product List
+                                        Danh sách sản phẩm
                                     </Link>
                                 </li>
                                 <li>
@@ -160,24 +161,11 @@ const AdminSidebar = () => {
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                         to="/admin/addProduct"
                                     >
-                                        Product Create
+                                        Thêm mới sản phẩm
                                     </Link>
                                 </li>
                             </ul>
                         )}
-                    </li>
-                    <li>
-                        <Link
-                            to="/admin/wishlist"
-                            className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                location.pathname === '/admin/wishlist'
-                                ? 'bg-[#FEE2E2] text-red-500'
-                                : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
-                            }`}
-                        >
-                            <Heart className="mr-[10px] group-hover:text-red-500 transition-all duration-300" />
-                            Wishlist
-                        </Link>
                     </li>
                     <li ref={cartRef}>
                         <button
@@ -190,7 +178,7 @@ const AdminSidebar = () => {
                         >
                             <span className="flex items-center">
                                 <ShoppingBag className="mr-[15px] group-hover:text-red-500 transition-all duration-300" />
-                                Order
+                                Đơn hàng
                             </span>
                             <span>{openCart ? <ChevronUp /> : <ChevronDown />}</span>
                         </button>
@@ -201,7 +189,7 @@ const AdminSidebar = () => {
                                     className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                     to="/admin/listorder"
                                 >
-                                    Order List
+                                    Danh sách đơn hàng
                                 </Link>
                                 </li>
                             </ul>
@@ -218,7 +206,7 @@ const AdminSidebar = () => {
                     >
                         <span className="flex items-center">
                             <MessageCircleHeart className="mr-[15px] group-hover:text-red-500 transition-all duration-300" />
-                            Comment
+                            Đánh giá
                         </span>
                         <span>{openComment ? <ChevronUp /> : <ChevronDown />}</span>
                         </button>
@@ -229,7 +217,7 @@ const AdminSidebar = () => {
                                         className="block p-1.5 text-gray-700 hover:text-red-500 transition-all"
                                         to="/admin/listreview"
                                     >
-                                        Comment List
+                                        Danh sách đánh giá
                                     </Link>
                                 </li>
                             </ul>
@@ -251,7 +239,7 @@ const AdminSidebar = () => {
                                     : "group-hover:text-red-500"
                                 }`}
                             />
-                            Coupon Code
+                            Mã giảm giá
                         </Link>
                     </li>
                     <li>
@@ -264,22 +252,22 @@ const AdminSidebar = () => {
                             }`}    
                         >
                             <Images className="mr-[10px] group-hover:text-red-500 transition-all duration-300" />
-                            Banner
+                            Quản lý Banner
                         </Link>
                     </li>
 
                     {/* Statistics */}
                     <li>
                         <Link
-                            to="/admin/statistical/revenue"
+                            to="/admin/statistical"
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                                location.pathname === '/admin/statistics'
+                                isPathMatch(["/admin/statistical"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
-                            }`}
+                            }`} 
                         >
                             <ChartNoAxesCombined className="mr-[10px] group-hover:text-red-500 transition-all duration-300" />
-                            Statistics
+                            Thống kê
                         </Link>
                     </li>
                     <li>
@@ -292,7 +280,7 @@ const AdminSidebar = () => {
                             }`}
                         >
                             <LetterText   className="mr-[10px] group-hover:text-red-500 transition-all duration-300" />
-                            Category Blog
+                            Danh mục bài viết
                         </Link>
                     </li>
                     <li>
@@ -305,7 +293,7 @@ const AdminSidebar = () => {
                             }`}
                         >
                             <FileText className="mr-[10px] group-hover:text-red-500 transition-all duration-300" />
-                            Blog
+                            Bài viết
                         </Link>
                     </li>
                 </ul>

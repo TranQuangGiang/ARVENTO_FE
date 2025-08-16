@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import apiClient from "../../hooks/refreshToken";
 import { useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 type AuthContextType = {
   user: any;
@@ -69,6 +70,7 @@ export const AuthProvider = ({ children }: any) => {
   const logout = async () => {
     try {
       await apiClient.post("/auth/logout");
+      message.success("Đăng xuất thành công");
       
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error);

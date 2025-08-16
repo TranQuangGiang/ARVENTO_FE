@@ -5,6 +5,7 @@ import { useUser } from "../providers/auth/authProviders";
 type useListParams = {
     resource: string ;
     _id?: string | number;
+    enabled?: any;
 }
 type useListUserMe = {
     resource: string ;

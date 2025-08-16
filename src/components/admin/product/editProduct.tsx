@@ -113,8 +113,8 @@ const EditProduct = () => {
   return (
     <div className="w-[95%] mx-auto mt-[30px] shadow-md bg-white rounded-xl mb-[40px]">
       <div className="w-full pt-[20px]">
-        <h3 className="pl-[20px] text-2xl font-semibold mb-1">EDIT PRODUCT</h3>
-        <p className="pl-[20px] text-sm text-gray-500 mb-6">Fill in the product details</p>
+        <h3 className="pl-[20px] text-2xl font-semibold mb-1">Cập nhập sản phẩm</h3>
+        <p className="pl-[20px] text-sm text-gray-500 mb-6">Nhập thông tin cần sửa để cập nhập sản phẩm</p>
         <hr className="border-t border-gray-300 mb-6 -mt-3" />
       </div>
       <Form 
@@ -138,12 +138,12 @@ const EditProduct = () => {
       >
         <Tabs defaultActiveKey="1">
           {/* Tab 1 thông tin sản phẩm */}
-          <Tabs.TabPane tab="Product Information" key="1">
+          <Tabs.TabPane tab="Thông tin sản phẩm" key="1">
               <div
                 className="grid grid-cols-1 md:grid-cols-2 gap-6" 
               >
                 <Form.Item
-                  label="Product Name"
+                  label="Tên sản phẩm"
                   name="name"
                   rules={[{ required: true, message: "Please enter the product name" }]}
                 >
@@ -151,7 +151,7 @@ const EditProduct = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Product Code"
+                  label="Mã sản phẩm"
                   name="product_code"
                   rules={[{ required: true, message: "Please enter the product code" }]}
                 >
@@ -159,14 +159,14 @@ const EditProduct = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Slug"
+                  label="Đường dẫn"
                   name="slug"
                   rules={[{ required: true, message: "Please enter the slug" }]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
-                  label="Category"
+                  label="Danh mục"
                   name="category_id"
                   rules={[{ required: true, message: "Please select a category" }]}
                 >
@@ -174,7 +174,7 @@ const EditProduct = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Original_Price (VND)"
+                  label="Giá gốc (VND)"
                   name="original_price"
                   className="font-semibold"
                   rules={[{ required: true, message: "Please enter the price" }]}
@@ -185,13 +185,13 @@ const EditProduct = () => {
                   />
                 </Form.Item>
 
-                <Form.Item label="Tags" name="tags">
+                <Form.Item label="Thẻ" name="tags">
                   <Select mode="tags" style={{ height: 40 }} placeholder="Enter tags" />
                 </Form.Item>
               </div>
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Description and images" key="2">
-            <Form.Item label="Product Description" name="description">
+          <Tabs.TabPane tab="Mô tả & hình ảnh" key="2">
+            <Form.Item label="Mô tả sản phẩm" name="description" rules={[{ required: true }]}>
               <CKEditor
                 editor={ClassicEditor as any}
                 data={content}
@@ -205,11 +205,11 @@ const EditProduct = () => {
               </CKEditor>
             </Form.Item>
             <Form.Item
-              label="Product Images"
+              label="Ảnh sản phẩm"
               name="images"
               valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-              rules={[{ required: true, message: "Please upload product images" }]}
+              rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
             >
               <Upload 
                 beforeUpload={() => false} 
@@ -217,7 +217,7 @@ const EditProduct = () => {
                 multiple>
                 <div>
                   <UploadOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               </Upload>
             </Form.Item>
@@ -231,10 +231,10 @@ const EditProduct = () => {
                 style={{height: 40}}
                 loading={loading}
               >
-                Update Product
+                Cập nhập
               </Button>
               <Button htmlType="button" onClick={() => form.resetFields()} style={{height: 40}}>
-                Reset
+                Đặt lại
               </Button>
             </div>
           </Form.Item> 

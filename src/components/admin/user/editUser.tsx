@@ -64,9 +64,9 @@ const EditUser = () => {
         <div className="mb-8 text-center">
           <div className="flex justify-center items-center mb-2">
             <EditOutlined className="text-blue-500 text-2xl mr-2" />
-            <Title level={3} className="!mb-0">Update User</Title>
+            <Title level={3} className="!mb-0">Cập nhập người dùng</Title>
           </div>
-          <Text type="secondary">Edit user information and update their role</Text>
+          <Text type="secondary">Chỉnh sửa thông tin người dùng và cập nhật vai trò của họ</Text>
         </div>
 
         <Form
@@ -76,7 +76,7 @@ const EditUser = () => {
           className="space-y-4"
         >
           <Form.Item
-            label="Full Name"
+            label="Họ tên"
             name="name"
             rules={[{ required: true, message: "Please enter name" }]}
           >
@@ -87,7 +87,7 @@ const EditUser = () => {
           </Form.Item>
 
           <Form.Item
-            label="Email"
+            label="Địa chỉ email"
             name="email"
             rules={[
               { required: true, message: "Please enter email" },
@@ -103,7 +103,7 @@ const EditUser = () => {
           </Form.Item>
 
           <Form.Item
-            label="Role"
+            label="Vai trò"
             name="role"
             rules={[{ required: true, message: "Please select role" }]}
           >
@@ -116,7 +116,7 @@ const EditUser = () => {
           <Form.Item className="pt-6">
             <div className="flex justify-between">
               <Button htmlType="reset" size="large">
-                Reset
+                Đặt lại
               </Button>
               <Button
                 type="primary"
@@ -124,7 +124,7 @@ const EditUser = () => {
                 size="large"
                 loading={loading}
               >
-                Update
+                Cập nhập
               </Button>
             </div>
           </Form.Item>

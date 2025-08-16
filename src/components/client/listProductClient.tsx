@@ -197,12 +197,12 @@ const ListProductClient = () => {
           )}
           <div className='w-[255px] relative h-[300px] bg-[#0b1f4e] flex flex-col gap-3'>
             <div className='pt-[35px] pl-[30px]'>
-              <h3 className='text-[20px] text-white font-sans font-bold uppercase'>Hot Product.</h3>
-              <p className='text-[13px] text-white w-[80%] gap-1'>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
+              <h3 className='text-[20px] text-white font-sans font-bold uppercase'>Sản phẩm mới.</h3>
+              <p className='text-[13px] text-white w-[80%] gap-1 mt-2.5 mb-1.5'>
+                Khám phá dòng sản phẩm đột phá, kết hợp công nghệ hiện đại và thiết kế tinh tế. Mang đến trải nghiệm hoàn toàn mới, giúp bạn giải quyết mọi vấn đề một cách hiệu quả.
               </p>
               <button className='mt-[10px] w-[140px] h-[45px] text-[#fff] text-[14px] font-sans border border-[#fff] transition-all cursor-pointer duration-300 hover:bg-white hover:text-black uppercase'>
-                See more <FontAwesomeIcon icon={faArrowRight} />
+                XEM THÊM <FontAwesomeIcon icon={faArrowRight} />
               </button>
             </div>
             <div className='w-[35%] absolute bottom-0 right-0 z-20'>
@@ -244,14 +244,16 @@ const ListProductClient = () => {
             />
             <div className="content w-[30%] absolute top-[55px] left-[290px]">
               <h3 className="text-white font-sans font-bold text-[36px] leading-11 uppercase">
-                Makes Yourself Keep Sporty & Stylish
+                Giúp bạn luôn thể thao và phong cách
               </h3>
               <p className="text-white text-[14px] font-medium mt-[20px] font-sans">
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+                Tự tin thể hiện cá tính trong mọi hoạt động. Sản phẩm của chúng tôi không chỉ mang lại hiệu suất vượt trội mà còn giúp bạn luôn dẫn đầu xu hướng.
               </p>
-              <button className="text-white mt-[20px] w-[140px] uppercase font-sans text-[14px] h-[50px] border border-[#fff] hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
-                Show now
-              </button>
+              <Link to={``}>
+                <button className="text-white mt-[20px] w-[140px] uppercase font-sans text-[14px] h-[50px] border border-[#fff] hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
+                  MUA SẮM NGAY
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -265,7 +267,7 @@ const ListProductClient = () => {
               <div className='content mt-0 w-[80%] mx-auto'>
                 <h3 className='font-sans font-bold text-[19px] uppercase'>Nike - Xtrema 3 Edition</h3>
                 <p className='text-[13px] mt-[10px] cursor-pointer font-light font-sans text-[#0b1f4e] uppercase'>
-                  See more <FontAwesomeIcon className=' text-[12px] font-light' icon={faArrowRight} />
+                  Xem thêm <FontAwesomeIcon className=' text-[12px] font-light' icon={faArrowRight} />
                 </p>
               </div>
             </div>
@@ -275,7 +277,7 @@ const ListProductClient = () => {
               <h3 className='text-[22px] font-sans font-bold uppercase'>FILLO Special Edition</h3>
               <span className='ml-[10px] mr-[10px] w-[500px] h-[1px] border border-[#ededed]'></span>
               <p className='text-[13px] ml-[3px] cursor-pointer font-light font-sans text-black uppercase'>
-                See more <FontAwesomeIcon className='font-light text-[12px]' icon={faArrowRight} />
+                Xem thêm <FontAwesomeIcon className='font-light text-[12px]' icon={faArrowRight} />
               </p>
             </div>
             <div className='list-product flex items-center justify-between gap-[21px] mt-[40px]'>
@@ -331,10 +333,10 @@ const ListProductClient = () => {
 
         <div className='max-w-[75%] mt-[80px] mx-auto mb-[120px] flex flex-col'>
           <div className='w-[100%] flex items-center justify-between mb-[25px]'>
-            <h3 className='text-[25px] font-sans font-bold uppercase'>All Our Product</h3>
+            <h3 className='text-[25px] font-sans font-bold uppercase'>Tất cả sản phẩm</h3>
             <span className='w-[800px] h-[1px] border border-[#ededed]'></span>
             <p className='text-[15px] cursor-pointer font-light font-sans text-black uppercase'>
-              See more <FontAwesomeIcon className='font-light' icon={faArrowRight} />
+              Xem thêm <FontAwesomeIcon className='font-light' icon={faArrowRight} />
             </p>
           </div>
           <div className='list-product w-full grid grid-cols-4 gap-[24px]'>
@@ -400,7 +402,7 @@ const ListProductClient = () => {
                   </p>
                   <Link to={`/detailBlog/${post.slug}`}>
                     <button className="text-white text-[15px] border border-white w-[150px] h-[50px] font-sans font-light hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
-                      SHOP NOW
+                      Xem ngay
                     </button>
                   </Link>
                 </div>

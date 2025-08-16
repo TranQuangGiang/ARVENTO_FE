@@ -11,6 +11,7 @@ import { useCart } from "../contexts/cartContexts";
 import axios from "axios";
 import type { UploadProps } from "antd";
 import dayjs from "dayjs";
+import { useList } from "../../hooks/useList";
 
 const DeltaiProduct = () => {
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,11 @@ const DeltaiProduct = () => {
     fileList,
     onChange: ({ fileList }) => setFileList(fileList),
   };
-
+  const { data:sanphamlienquan } = useList({
+    resource: `/products/related/${id}`
+  });
+  console.log("Sản phẩm liên quan", sanphamlienquan);
+  
   useEffect(() => {
     const fetchVariants = async () => {
       if (!product?._id) return;
@@ -448,7 +453,7 @@ const DeltaiProduct = () => {
             </span>
             <span className="price mt-5 flex items-center">
               <h6 className="text-[20px] font-sans font-medium text-[#01225a]">
-                Price:
+                Giá:
               </h6>
               {/* Conditional price display */}
               {variantSalePrice > 0 && variantSalePrice < variantOriginalPrice ? (
@@ -474,7 +479,7 @@ const DeltaiProduct = () => {
             {/* Chọn màu */}
             <div className="mb-6 mt-9">
               <span className="text-[15px] font-medium text-[#01225a] block mb-2">
-                Color: {selectedColor}
+                Màu sắc: {selectedColor}
               </span>
               <div className="flex flex-wrap gap-4">
                 {/* Hiển thị 1 ảnh đại diện cho mỗi màu */}
@@ -501,7 +506,7 @@ const DeltaiProduct = () => {
               <div className="mb-6 bg-[#efefef] p-3.5 rounded transition-all duration-100 hover:bg-[#ebebeb]">
                 <div className="flex flex-wrap items-center gap-2 mb-0">
                   <span className="text-[#01225a] text-[15px] font-medium mr-2">
-                    Size:
+                    Kích thước:
                   </span>
                   <div className="flex gap-2 flex-wrap">
                     {sizes.map((size, i) => (
@@ -518,10 +523,10 @@ const DeltaiProduct = () => {
               </div>
               {/* Hiển thị stock chỉ khi đã chọn size */}
               {selectedSize !== null && (
-                <p className={`text-sm mt-2 ${
+                <p className={`text-sm mt-2 flex items-center gap-1.5 ${
                   currentStock > 0 ? "text-green-500" : "text-red-500"
                   }`}>
-                  {currentStock} in stock
+                  <span className="text-gray-600">Kho:</span>  {currentStock} 
                 </p>
               )}
               {/* Add to Cart */}
@@ -546,7 +551,7 @@ const DeltaiProduct = () => {
                   onClick={handleAddToCart}
                   disabled={selectedSize === null || currentStock <= 0}
                 >
-                  ADD TO CART
+                  Thêm vào giỏ hàng
                 </Button>
                 <Button
                   type="text"
@@ -612,7 +617,7 @@ const DeltaiProduct = () => {
                     icon={faShieldHalved}
                   />
                   <p className="font-sans font-bold text-[#01225a] ml-1.5">
-                    SAFETY INSURANCE
+                    BẢO HIỂM AN TOÀN
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
@@ -621,7 +626,7 @@ const DeltaiProduct = () => {
                     icon={faTruckFast}
                   />
                   <p className="font-sans font-bold text-[#01225a] ml-1.5">
-                    FREE DELIVERY
+                    GIAO HÀNG NHANH CHÓNG
                   </p>
                 </div>
               </div>

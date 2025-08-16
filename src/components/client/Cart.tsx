@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Popconfirm, message } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, GiftOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/cartContexts';
 import { Link, useNavigate } from 'react-router-dom';
 import { useList } from '../../hooks/useList';
 import { Check } from 'lucide-react';
+import moment from 'moment';
 
 const Cart = () => {
   const {
@@ -93,7 +94,7 @@ const Cart = () => {
         setAppliedCoupon(payload.coupon || null);
         setVoucherApplied(true);
         setVoucherError(false);
-        message.success("Voucher applied successfully");
+        message.success("Phiếu giảm giá đã được áp dụng thành công");
       }
     } catch (error) {
       setVoucherError(true);
@@ -108,8 +109,8 @@ const Cart = () => {
   return (
     <div className="w-full bg-white text-gray-900 min-h-screen font-inter mb-16">
       <div className="w-full border-t border-t-gray-200 px-4 md:px-10 lg:px-[180px]">
-        <h2 className="text-4xl font-bold text-gray-900 mt-16">🛒 YOUR CART</h2>
-        <p className="text-[17px] ml-2 text-gray-700 mt-2">Total {cartItemCount} products added</p>
+        <h2 className="text-4xl font-bold text-gray-900 mt-16">🛒 GIỎ HÀNG CỦA BẠN</h2>
+        <p className="text-[17px] ml-2 text-gray-700 mt-2">Tổng cộng {cartItemCount} sản phẩm đã được thêm vào</p>
       </div>
 
       <div className="w-[78%] mt-6 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -153,10 +154,10 @@ const Cart = () => {
                     {(item.total_price || item.quantity * item.unit_price).toLocaleString()}₫
                   </span>
                   <Popconfirm
-                    title="Are you sure you want to remove this item?"
+                    title="Bạn có chắc chắn muốn xóa sản phẩm này không?"
                     onConfirm={() => handleRemove(item.product._id, item.selected_variant?.size, item.selected_variant?.color)}
-                    okText="Remove"
-                    cancelText="Cancel"
+                    okText="Xóa"
+                    cancelText="Hủy"
                   >
                     <DeleteOutlined
                       style={{ color: 'red' }}
@@ -170,16 +171,11 @@ const Cart = () => {
         </div>
 
         <div className="p-6 ml-5 w-full rounded-lg shadow-md bg-slate-50 sticky top-8 h-fit">
-          <h4 className="text-2xl font-sans font-bold mb-4">ORDER SUMMARY</h4>
+          <h4 className="text-2xl font-sans font-bold mb-4">TÓM TẮT ĐƠN HÀNG</h4>
 
           <div className="flex justify-between mb-2 text-[15px]">
-            <span className="text-gray-700">Subtotal ({totalQuantity} items)</span>
+            <span className="text-gray-700">Tạm tính ({totalQuantity} sản phẩm)</span>
             <span className="font-medium">{subtotal.toLocaleString()}₫</span>
-          </div>
-
-          <div className="flex justify-between mb-2 text-[15px]">
-            <span className="text-gray-700">Shipping fee</span>
-            <span className="font-medium text-green-600">Free</span>
           </div>
 
           <div className="mt-6">
@@ -188,23 +184,31 @@ const Cart = () => {
               onClick={() => setShowVouchers(!showVouchers)}
               className="text-[16px] font-semibold font-sans mb-2 flex items-center gap-2 text-left cursor-pointer"
             >
-              🎁 Apply discount code
-              <span className="text-sm text-blue-500">{showVouchers ? "(Hide)" : "(Show)"}</span>
+              🎁 Áp dụng mã giảm giá
+              <span className="text-sm text-blue-500">{showVouchers ? "(Ẩn)" : "(Hiện)"}</span>
             </button>
 
             {showVouchers && (
               <div className="space-y-2 mt-2">
                 {vouchers?.data?.coupons?.map((voucher: any) => {
                   const isSelected = selectedVoucher === voucher.code;
-
+                  const isExpired = moment(voucher.expiryDate).isBefore(moment());
                   return (
                     <div
                       key={voucher.code}
                       onClick={() => handleApplyVoucher(isSelected ? null : voucher.code)}
                       className={`relative border p-3 rounded-md cursor-pointer transition-all hover:border-blue-500 ${isSelected ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}`}
                     >
-                      <p className="text-sm font-semibold text-blue-600">{voucher.code}</p>
-                      <p className="text-sm text-gray-700">{voucher.description}</p>
+                      <div className='flex justify-between items-center mt-2'>
+                        <p  className="text-[15px] font-semibold text-blue-600 flex items-center"><GiftOutlined className='mr-0.5' style={{ fontSize: 17, color: '#f59e0b' }} /> {voucher.code} {voucher.discountValue} {voucher.discountType === "percentage" ? "%" : "đ" }</p>
+                        <p className="text-[13px] text-gray-700">{voucher.description}</p>
+                        
+                      </div>
+                      <div className='text-[13px]'>
+                        <p className='mt-1'>Áp dụng cho đơn hàng từ <span className="font-semibold">{voucher.minSpend.toLocaleString()}₫ - {voucher.maxSpend.toLocaleString()}đ</span></p>
+                        <p className="mt-1">Hết hạn: <span className="font-semibold">{moment(voucher.expiryDate).format('L')}</span></p>
+                      </div>
+                      
 
                       {isSelected && !voucherError && (
                         <div className="absolute w-5 flex items-center justify-center bg-blue-600 h-5 rounded-full top-2 right-2 text-white text-xl">
@@ -221,17 +225,17 @@ const Cart = () => {
           {discountAmount > 0 && appliedCoupon && (
             <div className="mt-5 border-t pt-5 text-[15px] text-green-600">
               <div className="flex justify-between mb-1">
-                <span>Discount ({appliedCoupon.code})</span>
+                <span>Mã giảm giá ({appliedCoupon.code})</span>
                 <span>-{discountAmount.toLocaleString()}₫</span>
               </div>
               <div className="text-sm text-gray-600">
-                ({appliedCoupon.discount_type === 'percentage' ? `Discount ${appliedCoupon.discount_value}%` : `Discount ${appliedCoupon.discount_value.toLocaleString()}₫`})
+                ({appliedCoupon.discount_type === 'percentage' ? `Giảm giá ${appliedCoupon.discount_value}%` : `Giảm giá ${appliedCoupon.discount_value.toLocaleString()}₫`})
               </div>
             </div>
           )}
 
           <div className="flex pt-1 justify-between text-lg font-sans font-bold">
-            <span>Total:</span>
+            <span>Tổng: </span>
             <span>{finalAmount.toLocaleString()}₫</span>
           </div>
 
@@ -240,7 +244,7 @@ const Cart = () => {
             disabled={items.length === 0}
             className="w-full mt-8 mb-3.5 cursor-pointer text-white py-3 rounded-md bg-black hover:bg-gray-800 transition font-semibold font-sans"
           >
-            CHECKOUT →
+            Đặt Hàng →
           </button>
         </div>
       </div>

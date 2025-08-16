@@ -73,17 +73,17 @@ const UserDetail = () => {
                 <div className="flex items-start justify-between flex-wrap gap-6">
                     {/* Left content */}
                     <div className="flex-1 min-w-[300px]">
-                        <h2 className="text-2xl font-semibold mb-5">👤 User Detail</h2>
+                        <h2 className="text-2xl font-semibold mb-5">👤 Chi tiết người dùng</h2>
                         <Descriptions
                             column={1}
                             bordered
                             size="middle"
                             labelStyle={{ fontWeight: 600, width: 160 }}
                         >
-                            <Descriptions.Item label="ID">{user?._id}</Descriptions.Item>
-                            <Descriptions.Item label="Name">{user?.name}</Descriptions.Item>
-                            <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>
-                            <Descriptions.Item label="Role">
+                            <Descriptions.Item label="Id">{user?._id}</Descriptions.Item>
+                            <Descriptions.Item label="Họ tên">{user?.name}</Descriptions.Item>
+                            <Descriptions.Item label="Địa chỉ email">{user?.email}</Descriptions.Item>
+                            <Descriptions.Item label="Vai trò">
                                 <Select
                                     value={user?.role}
                                     style={{ width: 150, height: 40 }}
@@ -91,43 +91,43 @@ const UserDetail = () => {
                                     loading={updating}
                                 >
                                 <Select.Option value="user">
-                                    <Tag color="blue">User</Tag>
+                                    <Tag color="blue">Người dùng</Tag>
                                 </Select.Option>
                                 <Select.Option value="admin">
-                                    <Tag color="gold">Admin</Tag>
+                                    <Tag color="gold">Quản trị viên</Tag>
                                 </Select.Option>
                                 </Select>
                             </Descriptions.Item>
-                            <Descriptions.Item label="Created At">
+                            <Descriptions.Item label="Ngày tạo">
                                 {user?.created_at ? formatDate(user.created_at) : "N/A"}
                             </Descriptions.Item>
-                            <Descriptions.Item label="Updated At">
+                            <Descriptions.Item label="Lần cập nhập gần nhất">
                                 {user?.updated_at ? formatDate(user.updated_at) : "N/A"}
                             </Descriptions.Item>
                         </Descriptions>
                         {/* Danh sách địa chỉ */}
                         <div className="mt-10">
-                            <h2 className="text-xl font-semibold mb-4">📦 Addresses</h2>
+                            <h2 className="text-xl font-semibold mb-4">📦 Danh sách địa chỉ</h2>
                             {address.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {address.map((addr:any, index: number) => (
                                         <Card
                                             key={index}
-                                            title={`Address ${index + 1}`}
+                                            title={`Địa chỉ ${index + 1}`}
                                             className="rounded-lg shadow border"
                                             size="small"
                                         >
-                                            <p><strong>Phone:</strong> {addr.phone || "N/A"}</p>
-                                            <p><strong>Province:</strong> {addr.province || "N/A"}</p>
-                                            <p><strong>District:</strong> {addr.district || "N/A"}</p>
-                                            <p><strong>Ward:</strong> {addr.ward || "N/A"}</p>
-                                            <p><strong>Detail:</strong> {addr.detail || "N/A"}</p>
-                                            <p><strong>FullAddress:</strong> {addr.fullAddress || "N/A"}</p>
+                                            <p><strong>Số điện thoại:</strong> {addr.phone || "N/A"}</p>
+                                            <p><strong>Tỉnh / Thành phố:</strong> {addr.province || "N/A"}</p>
+                                            <p><strong>Quận ? Huyện:</strong> {addr.district || "N/A"}</p>
+                                            <p><strong>Phường / Xã:</strong> {addr.ward || "N/A"}</p>
+                                            <p><strong>Địa chỉ:</strong> {addr.detail || "N/A"}</p>
+                                            <p><strong>Địa chỉ chi tiết:</strong> {addr.fullAddress || "N/A"}</p>
                                         </Card>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-gray-500">No addresses found.</p>
+                                <p className="text-gray-500">Không có địa chỉ nào</p>
                             )}
                         </div>
                     </div>
@@ -139,7 +139,7 @@ const UserDetail = () => {
                             onClick={() => navigate(-1)}
                             className="mt-2"
                         >
-                            Back
+                            Trở lại
                         </Button>
                     </div>
                 </div>

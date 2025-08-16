@@ -39,13 +39,13 @@ const ListColorAvarin = () => {
 
  const columns = [
   {
-    title: "Key",
+    title: "Thuộc tính",
     dataIndex: "key",
     key: "key",
     width: 150,
   },
   {
-    title: "Values",
+    title: "Giá trị",
     dataIndex: "values",
     key: "values",
     render: (values: any[]) => (
@@ -65,29 +65,25 @@ const ListColorAvarin = () => {
     ),
   },
   {
-    title: "Actions",
+    title: "Hành động",
     key: "actions",
     width: 150,
     render: (_: any, record: any) => (
       <div className="flex gap-2">
         <Link to={`/admin/editcolor/${record.key}`}>
-          <Button type="default" icon={<EditOutlined />}>
-            Edit
-          </Button>
+          <Button type="primary" icon={<EditOutlined />} />
         </Link>
         <Popconfirm
-          title="Are you sure to delete?"
-          okText="Yes"
-          cancelText="No"
+          title="Bạn chắc chắc muốn xóa thuộc tính này?"
+          okText="Xóa"
+          cancelText="Hủy"
           onConfirm={() => deleteOption(record.key)}
         >
           <Button
-            type="default"
+            danger
             icon={<DeleteOutlined />}
             className="hover:!border-red-500 hover:!text-red-500"
-          >
-            Delete
-          </Button>
+          />
         </Popconfirm>
       </div>
     ),
@@ -112,11 +108,11 @@ const ListColorAvarin = () => {
           <div className="w-full px-6 bg-gray-50 min-h-screen">
             <div className="w-full h-auto px-6 py-5 bg-white mt-10 rounded-lg border border-gray-200">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <Palette style={{ width: 35 }} className="pr-2" /> Option List
+                <Palette style={{ width: 35 }} className="pr-2" /> Danh sách thuộc tính
               </h2>
               <div className="flex flex-wrap items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Show</span>
+                  <span className="text-gray-600">Hiện</span>
                   <Select
                     value={itemsPerPage}
                     onChange={(value) => {
@@ -139,14 +135,14 @@ const ListColorAvarin = () => {
                     }}
                     style={{ width: 120 }}
                   >
-                    <Option value="asc">Oldest first</Option>
-                    <Option value="desc">Newest first</Option>
+                    <Option value="asc">Mới nhất</Option>
+                    <Option value="desc">Cũ nhất</Option>
                   </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="Search by key..."
+                    placeholder="Tìm kiếm theo từ khóa..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear
@@ -154,7 +150,7 @@ const ListColorAvarin = () => {
                   />
                   <Link to="/admin/addcolor">
                     <Button type="primary" icon={<PlusOutlined />}>
-                      Add New
+                      Thêm mới
                     </Button>
                   </Link>
                 </div>

@@ -62,28 +62,28 @@ const ListCoupon: React.FC = () => {
 
   const columns = [
     {
-      title: "Code",
+      title: "Mã",
       dataIndex: "code",
       key: "code",
     },
     {
-      title: "Discount Type",
+      title: "Loại giảm giá",
       dataIndex: "discountType",
       key: "discountType",
     },
     {
-      title: "Discount Value",
+      title: "Giá trị chiết khấu",
       dataIndex: "discountValue",
       key: "discountValue",
     },
     {
-      title: "Description",
+      title: "Mô tả",
       dataIndex: "description",
       key: "description",
       render: (text: string) => text || "-",
     },
     {
-      title: "Active",
+      title: "Trạng thái hoạt động",
       dataIndex: "isActive",
       key: "isActive",
       render: (isActive: boolean, record: Coupon) => (
@@ -96,32 +96,27 @@ const ListCoupon: React.FC = () => {
     },
 
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_: any, record: Coupon) => (
         <div className="flex space-x-2">
           <Link to={`/admin/editCoupon/${record._id}`}>
             <Button
-              type="default"
+              type="primary"
               icon={<EditOutlined />}
-            >
-              Edit
-            </Button>
+            /> 
           </Link>
          
           <Popconfirm
-            title="Are you sure to delete?"
-            okText="Yes"
-            cancelText="No"
+            title="Bạn có chắc chắn muốn xóa?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => deleteCoupon(record._id)}
           >
             <Button
-              type="default"
+              danger
               icon={<DeleteOutlined />}
-              className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Delete
-            </Button>
+            /> 
           </Popconfirm>
         </div>
       ),
@@ -145,25 +140,25 @@ const ListCoupon: React.FC = () => {
           <div className="w-full px-6 bg-gray-50 min-h-screen">
             <div className="w-full h-auto px-6 py-5 bg-white mt-10 rounded-lg border border-gray-200">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <Ticket style={{width: 35}} className="pr-2" /> Coupon Code List
+                <Ticket style={{width: 35}} className="pr-2" /> Danh sách mã giảm giá
               </h2>
               <div className="flex flex-wrap items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Status</span>
+                  <span className="text-gray-600">Trạng thái</span>
                   <Select
                     value={isActiveFilter}
                     onChange={(value) => setIsActiveFilter(value)}
-                    style={{ width: 120 }}
+                    style={{ width: 150 }}
                   >
-                    <Option value="all">All</Option>
-                    <Option value="true">Active</Option>
-                    <Option value="false">Inactive</Option>
+                    <Option value="all">Tất cả</Option>
+                    <Option value="true">Đang hoạt động</Option>
+                    <Option value="false">Không hoạt động</Option>
                   </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="Search by code..."
+                    placeholder="Tìm kiếm theo mã..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear
@@ -171,7 +166,7 @@ const ListCoupon: React.FC = () => {
                   />
                   <Link to="/admin/addCoupon">
                     <Button type="primary" icon={<PlusOutlined />}>
-                      Add New
+                      Thêm mới
                     </Button>
                   </Link>
                 </div>
