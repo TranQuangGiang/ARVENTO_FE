@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useUserMe } from '../../../../../hooks/useOne';
 import { useUpdateUser } from '../../../../../hooks/useUpdate';
+import { X } from 'lucide-react';
 
 const UpdateAccount = ({ isOpen, onClose }: any) => {
     const [showModal, setShowModal] = useState<"updateAccount" | null>("updateAccount");
@@ -62,12 +63,18 @@ const UpdateAccount = ({ isOpen, onClose }: any) => {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ duration: 0.25 }}
-                        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl h-[470px] p-6"
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl h-[470px] p-6 relative"
                         key="modal"
-                    >
+                    >   
+                        <button
+                            onClick={onClose}
+                            className="absolute px-1.5 py-1.5 z-20 top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:rounded-[50%] flex items-center justify-center transition-all duration-300"
+                        >
+                            <X />
+                        </button>
                         {showModal === "updateAccount" && (
                             <>
-                                <h2 className="text-2xl font-semibold mb-6 text-gray-900">Cập nhật tài khoản</h2>
+                                <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">Cập nhật tài khoản</h2>
                                 <Form
                                     layout="vertical"
                                     className="space-y-7"

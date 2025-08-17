@@ -66,21 +66,21 @@ const ResendVerification = () => {
                         <MailOutlined style={{ fontSize: 32, color: "#1890ff" }} />
                     </div>
                     <Title level={3} style={{ marginTop: 16 }}>
-                        Resend Verification Email
+                        Gửi lại email xác minh
                     </Title>
                     <Paragraph type="secondary" style={{ fontSize: 14 }}>
-                        Enter the email you used to register your account. 
-                        We will resend the verification link if the email has not been verified yet.
+                        Nhập email bạn đã dùng để đăng ký tài khoản.
+                        Chúng tôi sẽ gửi lại liên kết xác minh nếu email chưa được xác minh.
                     </Paragraph>
                 </div>
 
                 <Form layout="vertical" onFinish={onFinish}>
                     <Form.Item
                         name="email"
-                        label={<Text strong>Your Email</Text>}
+                        label={<Text strong>Email của bạn</Text>}
                         rules={[
-                            { required: true, message: "Please enter your email" },
-                            { type: "email", message: "The email is not valid" },
+                            { required: true, message: "Vui lòng nhập email của bạn" },
+                            { type: "email", message: "Email không hợp lệ" },
                         ]}
                     >
                         <Input
@@ -98,7 +98,7 @@ const ResendVerification = () => {
                         block
                         loading={loading}
                     >
-                        Resend Verification Link
+                       Gửi lại liên kết xác minh
                     </Button>
                 </Form>
             </Card>

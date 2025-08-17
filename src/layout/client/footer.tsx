@@ -9,8 +9,8 @@ const FooterClient = () => {
       <div className='w-[87%] mx-auto pt-[20px] flex justify-between'>
         <section className='footer-logo w-[310px] flex flex-col '>
           <img className='w-[200px]' src="/logo1.png" alt="logo" />
-          <p className='w-[355px] pl-[26px] text-[15px] font-sans text-white'>
-            ARVENTO is oriented to become the leading e-commerce platform for selling authentic shoes in Vietnam.
+          <p className='w-[365px] pl-[26px] text-[15px] font-sans text-white'>
+            ARVENTO hướng tới mục tiêu trở thành nền tảng thương mại điện tử hàng đầu bán giày dép chính hãng tại Việt Nam.
           </p>
           <span className='icon-footer mt-[20px] pl-[30px] flex gap-8'>
             <FontAwesomeIcon className='text-[20px] text-white hover:scale-[1.1] transition-all duration-300 cursor-pointer' icon={faFacebook} />
@@ -21,45 +21,45 @@ const FooterClient = () => {
         </section>
 
         <section className=' mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
-          <h3 className='font-semibold text-[18px]'>About Us</h3>
+          <h3 className='font-semibold text-[18px]'>Về chúng tôi</h3>
           <ul className='[&_li]:pt-[10px] [&_li]:text-[14px] [&_li]:text-white'>
             <a href="/gioithieu">
-              <li>Introduction</li>
+              <li>Giới thiệu</li>
             </a>
             <a href="/dieukhoan">
-              <li>Terms of Use</li>
+              <li>Điều khoản</li>
             </a>
             <a href="/chinhsach">
-              <li>Privacy Policy</li>
+              <li>Chính sách</li>
             </a>
-            <li>News</li>
+            <li>Tin tức</li>
           </ul>
         </section>
 
         <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
-          <h3 className='font-semibold text-[18px]'>Customer</h3>
+          <h3 className='font-semibold text-[18px]'>Khách hàng</h3>
           <ul className='[&_li]:text-white [&_li]:pt-[10px] [&_li]:text-[14px]'>
             <a href="/hdmh">
-              <li>Shopping Guide</li>
+              <li>Hướng dẫn mua sắm</li>
             </a>
             <a href="/chinhsachmuahang">
-              <li>Purchase Policy</li>
+              <li>Chính sách mua hàng</li>
             </a>
             <a href="/chinhsachdoitra">
-              <li>Return Policy</li>
+              <li>Chính sách hoàn trả</li>
             </a>
             <a href="/huongdanchonsize">
-              <li>Size Guide</li>
+              <li>Hướng dẫn chọn kích thước</li>
             </a>
-            <li>Loyal Customers</li>
+            <li>Khách hàng thân thiết</li>
             <a href="/khuyenmai">
-              <li>Promotional Program</li>
+              <li>Chương trình khuyến mại</li>
             </a>
           </ul>
         </section>
 
         <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
-          <h3 className='font-semibold text-[18px]'>Contact</h3>
+          <h3 className='font-semibold text-[18px]'>Địa chỉ liên hệ</h3>
           <ul className='[&_li]:text-white [&_li]:pt-[10px] [&_li]:text-[14px]'>
             <li className='flex items-center'><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faLocationDot} /> <address>102 Tran Phu, Ha Dong</address></li>
             <li><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faPhone} /> <span>0348892533</span></li>
@@ -71,10 +71,10 @@ const FooterClient = () => {
       <div className='w-[86%] mx-auto border-t-[1px] border-[#fff] mt-[50px] flex items-center'>
         <section className='w-full h-[90px] flex items-center justify-between [&_p]:text-[15px] [&_p]:text-white [&_p]:font-sans'>
           <p>
-            Sneaker Store Template Kit by Jegtheme
+            Bộ mẫu cửa hàng giày thể thao của Jegtheme
           </p>
           <p>
-            Copyright © 2025. All rights reserved.
+            Bản quyền © 2025. Bảo lưu mọi quyền.
           </p>
         </section>
       </div>

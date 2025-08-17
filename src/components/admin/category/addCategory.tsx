@@ -57,7 +57,7 @@ const AddCategory = () => {
       >
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            Add New Category
+            Thêm mới danh mục
           </h2>
           <Link to={`/admin/listcategory`}>
             <Button
@@ -65,12 +65,12 @@ const AddCategory = () => {
               icon={<OrderedListOutlined />}
               style={{ width: 200, height: 40 }}
             >
-              List Category
+              Danh sách danh mục
             </Button>
           </Link>
         </div>
         <p className="text-sm text-gray-500 mb-6">
-          Fill in the details to add a new category.
+          Điền thông tin chi tiết để tạo danh mục mới.
         </p>
 
         <Form
@@ -93,31 +93,31 @@ const AddCategory = () => {
           }}
         >
           <Form.Item
-            label={<span className="text-base font-medium">Title</span>}
+            label={<span className="text-base font-medium">Tên danh mục</span>}
             name="name"
             rules={[{ required: true, message: "Please enter the title" }]}
           >
-            <Input placeholder="Enter title" className="h-10" size="large" />
+            <Input placeholder="Nhập tên danh mục" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-base font-medium">Slug</span>}
+            label={<span className="text-base font-medium">Đường dẫn</span>}
             name="slug"
             rules={[{ required: true, message: "Please enter the slug" }]}
           >
-            <Input placeholder="Enter slug" className="h-10" size="large" />
+            <Input placeholder="Đường dẫn" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-base font-medium">Description</span>}
+            label={<span className="text-base font-medium">Mô tả</span>}
             name="description"
           >
-            <Input.TextArea placeholder="Enter description" rows={4} />
+            <Input.TextArea placeholder="Nhập mô tả" rows={4} />
           </Form.Item>
 
           <Form.Item
             name="image"
-            label={<span className="text-base font-medium">Image Categories</span>}
+            label={<span className="text-base font-medium">Ảnh danh mục</span>}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
             rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
@@ -131,7 +131,7 @@ const AddCategory = () => {
             >
               <div>
                 <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ marginTop: 8 }}>Tải lên</div>
               </div>
             </Upload>
           </Form.Item>
@@ -145,7 +145,7 @@ const AddCategory = () => {
               style={{ height: 40 }}
               type="primary"
             >
-              Save Category
+              Thêm mới
             </Button>
             <Button
               danger
@@ -155,7 +155,7 @@ const AddCategory = () => {
               style={{ height: 40 }}
               icon={<ReloadOutlined />}
             >
-              Cancel
+              Hủy
             </Button>
           </div>
         </Form>

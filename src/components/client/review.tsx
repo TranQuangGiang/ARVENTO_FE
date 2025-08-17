@@ -20,6 +20,7 @@ const Review = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
+        console.log(decoded);
         setUserId(decoded.id);
       } catch {
         console.error("Invalid token");
@@ -96,6 +97,8 @@ const Review = () => {
 
   const handleReviewChange = (productId: any, field: any, value: any) => {
     setReviews((prev) => ({
+  const handleReviewChange = (productId: string, field: string, value: string) => {
+    setReviews((prev:any) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -107,6 +110,7 @@ const Review = () => {
   const resetAllReviews = () => {
     const newReviews = {};
     uniqueProducts.forEach((item: any) => {
+    uniqueProducts.forEach((item:any) => {
       newReviews[item.product._id] = {
         rating: 5, 
         comment: "",
@@ -116,7 +120,7 @@ const Review = () => {
     setReviews(newReviews);
   };
 
-  const handleSubmitReview = async (productId) => {
+  const handleSubmitReview = async (productId:any) => {
     const token = localStorage.getItem("token");
     if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
 
@@ -140,6 +144,7 @@ const Review = () => {
     formData.append("product_id", productId);
 
     review.images?.forEach((file: any) => {
+    review.images?.forEach((file:any) => {
       if (file.originFileObj) {
         formData.append("images", file.originFileObj);
       }
@@ -160,6 +165,9 @@ const Review = () => {
         [productId]: true,
       }));
     } catch (error) {
+
+      await axios.get(`http://localhost:3000/api/reviews/product/${productId}`);
+    } catch (error:any) {
       console.error(error);
       message.error(error?.response?.data?.message || "Lỗi khi gửi đánh giá.");
     }
@@ -167,6 +175,18 @@ const Review = () => {
 
   if (loading) return <Spin className="mt-10" />;
   if (!order) return <div className="p-6 text-gray-500">Không có dữ liệu đơn hàng.</div>;
+  if (!order) return <div className="p-6 text-gray-500">No order data available.</div>;
+
+  const productQuantityMap = order?.items.reduce((acc:any, item:any) => {
+    const productId = item.product?._id;
+    if (!acc[productId]) {
+      acc[productId] = { ...item, quantity: 0 };
+    }
+    acc[productId].quantity += item.quantity;
+    return acc;
+  }, {});
+
+  const uniqueProducts = Object.values(productQuantityMap);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
@@ -180,6 +200,14 @@ const Review = () => {
             const productId = item.product._id;
             const review = reviews[productId] || {}; 
             const isSubmitted = submittedReviews[productId];
+        <h2 className="text-lg font-semibold text-center uppercase tracking-wide text-[#01225a] bg-gray-100 py-3 border-b-2 border-[#01225a]">
+          Product Reviews
+        </h2>
+
+        <div className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm mt-6">
+          {uniqueProducts.map((item:any, index) => {
+            const productId = item.product?._id;
+            const review = reviews[productId] || {};
 
             return (
               <div key={productId} className="mb-10 -mt-3">
@@ -228,6 +256,14 @@ const Review = () => {
 
                           )}
                         </div>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-base text-gray-800">
+                          {item.product?.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          x{item?.quantity} - <span className="text-red-500 font-semibold">{(item.unit_price * item.quantity).toLocaleString()}₫</span>
+                        </p>
                       </div>
                     </div>
 
@@ -295,6 +331,25 @@ const Review = () => {
                         </div>
                       </div>
                     )}
+                      <Upload
+                        listType="picture-card"
+                        maxCount={3}
+                        beforeUpload={() => false}
+                        onChange={({ fileList }:any) => handleReviewChange(productId, "images", fileList)}
+                      >
+                        {(!review.images || review.images.length < 3) && (
+                          <div className="text-sm">+ Upload</div>
+                        )}
+                      </Upload>
+
+                      <TextArea
+                        rows={4}
+                        placeholder="Share your thoughts about this product"
+                        value={review.comment || ""}
+                        onChange={(e) => handleReviewChange(productId, "comment", e.target.value)}
+                        className="rounded-md w-full"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

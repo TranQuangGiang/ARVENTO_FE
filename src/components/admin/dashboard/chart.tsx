@@ -109,14 +109,14 @@ const Chart = () => {
       <div className="flex justify-between items-center mb-4">
         {/* Tiêu đề hiển thị ngày được chọn */}
         <h2 className="text-[16px] font-semibold">
-          Revenue from {' '}
+          Doanh thu từ {' '}
           {dateRange[0] && dateRange[1] ?
-            `${dateRange[0].format('DD/MM/YYYY')} to ${dateRange[1].format('DD/MM/YYYY')}` :
+            `${dateRange[0].format('DD/MM/YYYY')} đến ${dateRange[1].format('DD/MM/YYYY')}` :
             'chưa chọn'
           }
         </h2>
         <div className="flex gap-2 items-center">
-          <span className="text-sm">Select date:</span>
+          <span className="text-sm">Chọn ngày:</span>
           <RangePicker
             value={dateRange}
             onChange={handleDateRangeChange}
@@ -138,7 +138,7 @@ const Chart = () => {
         </div>
       ) : data.length === 0 ? (
         <div className="h-[300px] flex justify-center items-center">
-          <p className="text-gray-500">There is no revenue data for the selected date</p>
+          <p className="text-gray-500">Không có dữ liệu doanh thu cho ngày đã chọn</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={310}>

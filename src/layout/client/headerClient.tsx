@@ -20,6 +20,7 @@ const HeaderClient = () => {
   const nav = useNavigate();
 
   const modalParam = searchParams.get("modal");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (modalParam) {
@@ -34,14 +35,14 @@ const HeaderClient = () => {
   const category = data?.data;
 
 
-    const { data: postData } = useListClient({
-  resource: `/posts/client/category/blog-client`
-});
-const categoryPost = Array.isArray(postData?.data?.docs)
-  ? [...postData.data.docs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-  : [];
+  const { data: postData } = useListClient({
+    resource: `/posts/client/category/blog-client`
+  });
+  const categoryPost = Array.isArray(postData?.data?.docs)
+    ? [...postData.data.docs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    : [];
 
-  console.log("📌 categoryPost:", categoryPost); // 👈 THÊM DÒNG NÀY
+  console.log("📌 categoryPost:", categoryPost);
 
 
   const handleSearchChange = async (value: string) => {
@@ -83,9 +84,9 @@ const categoryPost = Array.isArray(postData?.data?.docs)
         <section className='header-menu flex items-center gap-5'>
           {/* Menu */}
           <nav className='flex items-center gap-6 transition-all duration-300 [&_a]:text-[15px] [&_a]:text-[#0b1f4e]'>
-            <a href="">Home</a>
+            <a href="">Trang chủ</a>
             <div className="relative group">
-              <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Products</span>
+              <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Sản phẩm</span>
               <ul className="absolute top-full left-0 z-20 min-w-[200px] mt-2 rounded-md bg-white shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                 {category?.map((cat: any) => (
                   <li key={cat._id} className="px-4 py-2 hover:bg-gray-100 whitespace-nowrap">
@@ -97,7 +98,7 @@ const categoryPost = Array.isArray(postData?.data?.docs)
               </ul>
             </div>
             <div className="relative group">
-                <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Pages</span>
+                <span className="cursor-pointer text-[15px] text-[#0b1f4e]">Về chúng tôi</span>
                 <ul className="absolute top-full left-0 z-20 min-w-[200px] mt-2 rounded-md bg-white shadow-lg invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300">
                   {Array.isArray(categoryPost) &&
                     categoryPost
@@ -112,8 +113,8 @@ const categoryPost = Array.isArray(postData?.data?.docs)
                 </ul>
             </div>
 
-            <Link to={`/listBlogClient`}>Blog News</Link>
-            <a href="">Contact</a>
+            <Link to={`/listBlogClient`}>Bài viết</Link>
+            <a href="">Liên hệ</a>
           </nav>
 
           {/* Search Section */}
@@ -130,7 +131,7 @@ const categoryPost = Array.isArray(postData?.data?.docs)
                   nav(`/searchProduct?keyword=${encodeURIComponent(searchTerm)}`);
                 }
               }}
-              placeholder="Search..."
+              placeholder="Sản phẩm..."
               className={`h-[35px] pr-10 pl-3 border border-[#0b1f4e] rounded text-black transition-all duration-300 outline-0 ${
                 searchOpen ? 'w-[350px]' : 'w-0 px-0 border-0'
               }`}
@@ -143,15 +144,14 @@ const categoryPost = Array.isArray(postData?.data?.docs)
             />
             {searchTerm && Array.isArray(suggestions) && suggestions.length > 0 && (
               <div className="absolute top-full mt-2 bg-white rounded w-[350px] z-40 shadow-lg drop-shadow-xl ring-1 ring-gray-200">
-                <h3 className='font-bold font-sans text-[18px] text-gray-800 text-center mt-3.5 mb-2'>Search results</h3>
+                <h3 className='font-bold text-[18px] text-gray-800 text-center mt-3.5 mb-2'>Kết quả tìm kiếm</h3>
                 {suggestions.map((product: any) => (
                   <Link to={`/detailProductClient/${product._id}`} key={product._id} className="flex items-center gap-2 p-3 hover:bg-gray-100">
                     <img src={product?.images?.[0].url} alt={product.name} className="w-12 h-12 object-cover" />
                     <div className="text-sm">
                       <p>{product.name}</p>
                       <span className='flex items-center gap-3'>
-                        <p className="text-red-500 text-[15px]">{formatPrice(product.sale_price)}₫</p>
-                        <del className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}₫</del>
+                        <p className='text-gray-500 text-[15px]'>{formatPrice(product.original_price)}₫</p>
                       </span>
                     </div>
                   </Link>
@@ -165,22 +165,22 @@ const categoryPost = Array.isArray(postData?.data?.docs)
         <section className='header-person flex gap-4'>
           <div className='group relative'>
             <FontAwesomeIcon className='text-[19px] font-sans cursor-pointer' icon={faUser} />
-            {user ? (
+            {user && token ? (
               <div className={`bg-[#fff] absolute shadow-lg -right-[40px] min-w-[160px] top-[100%] z-30 flex flex-col
                 [&_button]:text-[14px] [&_button]:text-[#01225a] rounded-md [&_a]:cursor-pointer
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible' : 'opacity-0 invisible'}`}>
                 <Link to={'/detailAuth/homeAuth'}>
                   <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
-                    My Account
+                    Tài khoản của tôi
                   </button>
                 </Link>
                 <button onClick={logout} className='block px-3 py-2 cursor-pointer hover:bg-gray-200 text-left'>
-                  Log Out
+                  Đăng xuất
                 </button>
                 <Link to={`/admin`}>
                   <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
-                    Admin Access
+                    Truy cập quản trị
                   </button>
                 </Link>
               </div>
@@ -190,14 +190,14 @@ const categoryPost = Array.isArray(postData?.data?.docs)
                 p-2.5 transition-all duration-300
                 ${showModal === null ? 'opacity-0 invisible group-hover:opacity-100 group-hover:visible' : 'opacity-0 invisible'}`}>
                 <button onClick={() => setShowModal("login")} className='block px-3 py-2 border-0 hover:bg-gray-200 text-left cursor-pointer'>
-                  Sign In
+                  Đăng nhập
                 </button>
                 <button onClick={() => setShowModal("register")} className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'>
-                  Register
+                  Đăng ký
                 </button>
                 <Link to={`/admin`}>
                   <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
-                    Admin Access
+                    Truy cập trang quản trị
                   </button>
                 </Link>
               </div>

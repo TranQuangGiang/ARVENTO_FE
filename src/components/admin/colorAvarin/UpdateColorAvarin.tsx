@@ -55,7 +55,7 @@ const UpdateColorAvarin = () => {
         }
       } catch (error) {
         console.error(error);
-        message.error("Failed to fetch option");
+        message.error("Không thể tải tùy chọn");
       } finally {
         setLoading(false);
       }
@@ -98,11 +98,11 @@ const UpdateColorAvarin = () => {
         }
       );
 
-      message.success("Option updated successfully");
+      message.success("Cập nhập thành công");
       nav("/admin/listcolor");
     } catch (error) {
       console.error(error);
-      message.error("Failed to update option");
+      message.error("Không cập nhật được tùy chọn");
     } finally {
       setSubmitLoading(false);
     }
@@ -114,8 +114,8 @@ const UpdateColorAvarin = () => {
         className="w-full mt-6 shadow-md rounded-2xl border border-gray-200"
         bodyStyle={{ padding: "2rem" }}
       >
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Update Option</h2>
-        <p className="text-sm text-gray-500 mb-6">Update the details of this option.</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Cập nhập thuộc tính</h2>
+        <p className="text-sm text-gray-500 mb-6">Cập nhật thông tin chi tiết của tùy chọn này.</p>
 
         <Spin spinning={loading}>
           <Form
@@ -125,12 +125,12 @@ const UpdateColorAvarin = () => {
             initialValues={{ values: [{}] }}
           >
             <Form.Item
-              label="Key"
+              label="Thuộc tính"
               name="key"
               rules={[{ required: true, message: "Please select the key" }]}
             >
               <Select placeholder="Select option key" disabled>
-                <Option value="color">Color</Option>
+                <Option value="color">Màu sắc</Option>
                 <Option value="size">Size</Option>
               </Select>
             </Form.Item>
@@ -141,7 +141,7 @@ const UpdateColorAvarin = () => {
                 {
                   validator: async (_, names) => {
                     if (!names || names.length < 1) {
-                      return Promise.reject(new Error("At least 1 value"));
+                      return Promise.reject(new Error("Nhập ít nhất giá trị"));
                     }
                   },
                 },
@@ -158,7 +158,7 @@ const UpdateColorAvarin = () => {
                       <Form.Item
                         {...restField}
                         name={[name, "name"]}
-                        rules={[{ required: true, message: "Name required" }]}
+                        rules={[{ required: true, message: "Vui lòng nhập tên thuộc tính" }]}
                       >
                         <Input placeholder="Name (e.g., Red or 42)" />
                       </Form.Item>
@@ -167,10 +167,10 @@ const UpdateColorAvarin = () => {
                           {...restField}
                           name={[name, "hex"]}
                           rules={[
-                            { required: true, message: "Hex required" },
+                            { required: true, message: "Vui lòng nhập mã màu" },
                             {
                               pattern: /^#[0-9A-Fa-f]{6}$/,
-                              message: "Hex must be valid (e.g., #ffffff)",
+                              message: "Hex phải hợp lệ (e.g., #ffffff)",
                             },
                           ]}
                         >
@@ -187,7 +187,7 @@ const UpdateColorAvarin = () => {
                       block
                       icon={<PlusOutlined />}
                     >
-                      Add Value
+                      Thêm giá trị
                     </Button>
                   </Form.Item>
                 </>
@@ -203,7 +203,7 @@ const UpdateColorAvarin = () => {
                 type="primary"
                 loading={submitLoading}
               >
-                Update Option
+                Cập nhập 
               </Button>
               <Button
                 htmlType="button"
@@ -212,7 +212,7 @@ const UpdateColorAvarin = () => {
                 style={{ height: 40 }}
                 icon={<ArrowLeftOutlined />}
               >
-                Back
+                Quay lại
               </Button>
             </div>
           </Form>

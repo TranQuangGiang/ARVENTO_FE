@@ -39,7 +39,7 @@ const TopSellingProducts = () => {
     <div className="mt-10 w-full px-4 sm:px-0"> 
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg"> 
         <Tabs defaultActiveKey='1'>
-          <Tabs.TabPane tab="List of best selling products" key="1">
+          <Tabs.TabPane tab="Top sản phẩm bán chạy" key="1">
             {topProducts?.data?.length > 0 ? (
               <div className="space-y-4"> 
                 {topProducts.data.map((item: any, index: any) => (
@@ -58,7 +58,7 @@ const TopSellingProducts = () => {
                       />
                       <div className="flex-grow">
                         <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item.name}</p> 
-                        <p className="text-sm text-gray-600 mt-1">Sold: <span className="font-medium">{item.quantity}</span> product</p> 
+                        <p className="text-sm text-gray-600 mt-1">Lượt bán: <span className="font-medium">{item.quantity}</span> product</p> 
                       </div>
                     </div>
                     <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
@@ -69,11 +69,11 @@ const TopSellingProducts = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">No best selling product data available.</p>
+              <p className="text-gray-400 text-center py-8">Không có dữ liệu sản phẩm bán chạy nhất.</p>
             )}
           </Tabs.TabPane>
           <Tabs.TabPane
-            tab="List of most favorite products" key="2"
+            tab="Top sản phẩm được yêu thích nhất" key="2"
           >
             {
               topProductFavorites?.data.length > 0 ? (
@@ -105,13 +105,13 @@ const TopSellingProducts = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400 text-center py-8">There is no favorite product data.</p>
+                <p className="text-gray-400 text-center py-8">Không có dữ liệu sản phẩm yêu thích.</p>
               )}
           </Tabs.TabPane>
-          <TabPane tab="List of unsold products" key="3">
+          <TabPane tab="Top sản phẩm chậm" key="3">
 
           </TabPane>
-          <TabPane tab="List of most used promotions" key="4">
+          <TabPane tab="Danh sách mã giảm giá được sử dụng nhiều nhất" key="4">
             {
              topConpon?.data.length > 0 ? (
               <div className='space-y-4'>

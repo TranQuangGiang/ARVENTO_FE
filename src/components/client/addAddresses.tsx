@@ -114,7 +114,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                   <div className="text-center mb-6">
                     <Title level={3}>
                       <HomeOutlined className="mr-2 text-blue-500" />
-                      Add New Address
+                      Thêm mới địa chỉ
                     </Title>
                   </div>
 
@@ -128,7 +128,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                     <Row gutter={16}>
                       <Col span={12}>
                         <Form.Item
-                          label="Phone Number"
+                          label="Số điện thoại"
                           name="phone"
                           rules={[
                             { required: true, message: "Please enter phone number" },
@@ -136,7 +136,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                         >
                           <Input
                             prefix={<PhoneOutlined />}
-                            placeholder="Enter phone number"
+                            placeholder="Nhập số điện thoại"
                             className="rounded-lg h-[40px]"
                           />
                         </Form.Item>
@@ -146,13 +146,13 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                         <Form.Item name="province_id" hidden><Input /></Form.Item>
 
                         <Form.Item
-                          label="Province / City"
+                          label="Tỉnh / Thành phố"
                           name="province"
-                          rules={[{ required: true, message: "Please select province/city" }]}
+                          rules={[{ required: true, message: "Vui lòng chọn tỉnh/thành phố" }]}
                         >
                           <Select
                             showSearch
-                            placeholder="Select province or city"
+                            placeholder="Chọn tỉnh hoặc thành phố"
                             className="rounded-lg"
                             style={{ height: 40 }}
                             onChange={(provinceId) => {
@@ -189,13 +189,13 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                         <Form.Item name="district_id" hidden><Input /></Form.Item>
 
                         <Form.Item
-                          label="District / County"
+                          label="Quận / Huyện"
                           name="district"
-                          rules={[{ required: true, message: "Please select district/county" }]}
+                          rules={[{ required: true, message: "Vui lòng chọn quận huyện" }]}
                         >
                           <Select
                             showSearch
-                            placeholder="Select district or county"
+                            placeholder="Chọn quận hoặc huyện"
                             className="rounded-lg"
                             style={{ height: 40 }}
                             disabled={!selectedProvince}
@@ -228,13 +228,13 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                         <Form.Item name="ward_code" hidden><Input /></Form.Item>
 
                         <Form.Item
-                          label="Ward / Commune"
+                          label="Phường / Xã"
                           name="ward"
-                          rules={[{ required: true, message: "Please select ward/commune" }]}
+                          rules={[{ required: true, message: "Vui lòng chọn phường/xã" }]}
                         >
                           <Select
                             showSearch
-                            placeholder="Select ward or commune"
+                            placeholder="Chọn phường hoặc xã"
                             className="rounded-lg"
                             style={{ height: 40 }}
                             disabled={!selectedDistrict}
@@ -260,7 +260,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                       </Col>
                     </Row>
                     <Form.Item
-                      label="Detailed Address"
+                      label="Địa chỉ chi tiết"
                       name="detail"
                       rules={[
                         { required: true, message: "Please enter detailed address" },
@@ -272,7 +272,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                         className="rounded-lg h-[40px]"
                       />
                     </Form.Item>
-                    <Form.Item label="Label"
+                    <Form.Item label="Loại địa chỉ"
                       name="label"
                       rules={[
                         { required: true, message: "Please select an address label" },
@@ -284,7 +284,7 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                           form.setFieldsValue({ label: 'home' })
                         }}
                       >
-                        Home
+                        Nhà riêng
                       </Button>
                       <Button className="ml-4" type={selected === 'office' ? 'primary' : 'default'}
                         onClick={() => {
@@ -292,15 +292,15 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                           form.setFieldsValue({ label: 'office' })
                         }}
                       >
-                        Office
+                        Văn phòng
                       </Button>
                     </Form.Item>
                     <div className="flex justify-end gap-4 mt-6">
                       <Button onClick={onClose} htmlType="reset" style={{ height: 40 }}>
-                        Cancel
+                        Đóng
                       </Button>
                       <Button icon={<PlusOutlined />} loading={loading} type="primary" htmlType="submit" style={{ height: 40 }} className="w-40">
-                        Add Address
+                        Thêm mới địa chỉ
                       </Button>
                     </div>
                   </Form>

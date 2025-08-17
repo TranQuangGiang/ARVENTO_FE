@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Card, List, Image, Typography, Divider, Row, Col, Button } from "antd"; // ✅ Thêm Button
+import { Card, List, Image, Typography, Divider, Row, Col, Button, Tag } from "antd"; // ✅ Thêm Tag
 import { motion } from "framer-motion";
 import {
   UserOutlined,
@@ -11,6 +11,8 @@ import {
   ClockCircleOutlined,
   ReloadOutlined,
   DollarOutlined,
+  MailOutlined, // ✅ Thêm icon email
+  CheckCircleOutlined, // ✅ Thêm icon thành công
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -27,6 +29,43 @@ const Thanhcong = () => {
     return null;
   }
 
+  // Hàm để lấy thẻ tag trạng thái
+  const getStatusTag = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return <Tag color="orange" className="font-semibold">PENDING</Tag>;
+      case "SHIPPED":
+        return <Tag color="blue" className="font-semibold">SHIPPED</Tag>;
+      case "DELIVERED":
+        return <Tag color="green" className="font-semibold">DELIVERED</Tag>;
+      case "CANCELLED":
+        return <Tag color="red" className="font-semibold">CANCELLED</Tag>;
+      default:
+        return <Tag>{status}</Tag>;
+    }
+  };
+
+  const paymentMethodText = (method: string) => {
+    switch (method) {
+      case "COD":
+        return "COD";
+      case "MOMO":
+        return "MOMO";
+      default:
+        return method;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -34,172 +73,168 @@ const Thanhcong = () => {
       transition={{ duration: 0.5 }}
       className="px-6 py-10 bg-gray-50 min-h-screen mb-6"
     >
-      <Card
-        bordered={false}
-        className="shadow-lg rounded-xl"
-        style={{ maxWidth: 1100, margin: "0 auto" }}
-      >
-        <div className="flex justify-center items-center mb-4 flex-col">
-          <motion.img
-            src="https://cdn-icons-png.flaticon.com/512/845/845646.png"
-            alt="Success"
-            style={{ width: 80, marginBottom: 8 }}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 20,
-            }}
-          />
-          <Title level={4} style={{ color: "green", margin: 0 }}>
-            Đơn hàng đã được đặt thành công!
-          </Title>
-        </div>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Dòng "Đơn hàng đã được đặt thành công!" */}
+        <Card
+          bordered={false}
+          className="shadow-lg rounded-xl mb-6"
+        >
+          <div className="flex justify-center items-center mb-4 flex-col text-center">
+            <motion.img
+              src="https://cdn-icons-png.flaticon.com/512/845/845646.png"
+              alt="Success"
+              style={{ width: 80, marginBottom: 8 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+              }}
+            />
+            <Title level={4} style={{ color: "green", margin: 0 }}>
+              <CheckCircleOutlined style={{ marginRight: 8 }} />
+              Đơn hàng đã được đặt thành công!
+            </Title>
+            <Text type="secondary">Mã đơn hàng của bạn là: <strong className="text-blue-500">{order._id}</strong></Text>
+          </div>
+        </Card>
 
-        <Divider />
+        {/* Bố cục chính với 2 cột */}
+        <Row gutter={[24, 24]}>
+          {/* Cột chính chứa thông tin khách hàng và sản phẩm */}
+          <Col xs={24} lg={16}>
+            <Row gutter={[24, 24]}>
+              {/* Thông tin khách hàng */}
+              <div className="mt-7 w-full flex items-center mb-7">
+                <Col xs={24} md={12}>
+                  <Card bordered={false} className="shadow-lg rounded-xl h-[205px]">
+                    <Title level={5}>Thông tin khách hàng</Title>
+                    <Divider className="!my-2" />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <UserOutlined />
+                        <Text>{order.customer?.name || "Trần Quang Giang"}</Text>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <PhoneOutlined />
+                        <Text>{order.address?.phone || "0348892533"}</Text>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MailOutlined />
+                        <Text>{order.customer?.email || "giangtqph52177@gmail.com"}</Text>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+                {/* Thông tin giao hàng */}
+              <Col xs={24} md={12}>
+                <Card bordered={false} className="shadow-lg rounded-xl">
+                  <Title level={5}>Thông tin người nhận</Title>
+                  <Divider className="!my-2" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <UserOutlined />
+                      <Text>{order.address?.recipient || "Trần Quang Giang"}</Text>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <PhoneOutlined className="mt-1"/>
+                      <Text>{order.shipping_address?.phone}</Text>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <HomeOutlined className="mt-1"/>
+                      <Text>{order.shipping_address?.detail}</Text>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <FileTextOutlined className="mt-1" />
+                      <Text>{order.note || "No notes"}</Text>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+              </div>
+              
+              
+            </Row>
 
-        <Row gutter={24} className="mb-6">
-          <Col xs={24} md={12}>
-            <Title level={4}>Shipping Info</Title>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <p>
-                <UserOutlined className="mr-1" />
-                <strong>Recipient:</strong>
-                <span style={{ float: "right" }}>{order.address?.recipient || "-"}</span>
-              </p>
-              <p>
-                <PhoneOutlined className="mr-1" />
-                <strong>Phone:</strong>
-                <span style={{ float: "right" }}>{order.address?.phone || "-"}</span>
-              </p>
-              <p>
-                <HomeOutlined className="mr-1" />
-                <strong>Address:</strong>
-                <span style={{ float: "right" }}>
-                  {order.address?.address || "-"}
-                </span>
-              </p>
-            </div>
+            {/* Danh sách sản phẩm */}
+            <Card bordered={false} className="shadow-lg rounded-xl mt-6">
+              <Title level={5}>Sản phẩm theo đơn hàng</Title>
+              <Divider className="!my-2" />
+              <List
+                itemLayout="horizontal"
+                dataSource={order.items}
+                renderItem={(item: any) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<Image src={item.selected_variant?.image?.url || "/no-image.png"} width={60} />}
+                      title={`${item.product?.name || "Tên sản phẩm"} ${item.selected_variant?.size ? ` - ${item.selected_variant.size}` : ''}`}
+                      description={
+                        <div>
+                          <Text>Qty: {item.quantity}</Text> | <Text>Màu: {item.selected_variant?.color?.name}</Text>
+                          <br />
+                          <Text>Đơn giá: {item.price?.toLocaleString()}₫</Text>
+                        </div>
+                      }
+                    />
+                    <div>
+                      <Text strong>{item.total_price?.toLocaleString()}₫</Text>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            </Card>
           </Col>
-          <Col xs={24} md={12}>
-            <Title level={4}>Order Info</Title>
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <p>
-                <TagOutlined className="mr-1" />
-                <strong>Order ID:</strong>
-                <span style={{ float: "right" }}>{order._id}</span>
-              </p>
-              <p className="mt-1">
-                <DollarOutlined className="mr-1" />
-                <strong>Payment Method:</strong>
-                <span style={{ float: "right" }}>
-                  {order.payment_method ? order.payment_method.toUpperCase() : "-"}
-                </span>
-              </p>
-              <p>
-                <FileTextOutlined className="mr-1" />
-                <strong>Note:</strong>
-                <span style={{ float: "right" }}>{order.note || "-"}</span>
-              </p>
-              <p>
-                <ClockCircleOutlined className="mr-1" />
-                <strong>Created At:</strong>
-                <span style={{ float: "right" }}>{new Date(order.created_at).toLocaleString()}</span>
-              </p>
-              <p>
-                <ReloadOutlined className="mr-1" />
-                <strong>Last Updated:</strong>
-                <span style={{ float: "right" }}>{new Date(order.updated_at).toLocaleString()}</span>
-              </p>
+
+          {/* Cột tóm tắt thanh toán */}
+          <Col xs={24} lg={8}>
+            <div className="mt-7">
+                <Card bordered={false} className="shadow-lg rounded-xl mt-7">
+                <Title level={5}>Tóm tắt thanh toán</Title>
+                <Divider className="!my-2" />
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Text>Tạm tính</Text>
+                    <Text>{order.subtotal?.toLocaleString()}₫</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <Text>Giảm giá</Text>
+                    <Text type="success">-{order.applied_coupon?.discount_amount?.toLocaleString()}₫</Text>
+                  </div>
+                  <div className="flex justify-between">
+                    <Text>Phí vận chuyển</Text>
+                    <Text type="secondary">+<span className="text-blue-500 font-semibold">{order.shipping_fee?.toLocaleString()}₫</span></Text>
+                  </div>
+                  <Divider className="!my-2" />
+                  <div className="flex justify-between items-center">
+                    <Text strong style={{fontSize: 18}}>Tổng thanh toán</Text>
+                    <Text strong style={{color: "red", fontSize: 18}} className="text-red-500 text-lg">
+                      {order.total?.toLocaleString()}₫
+                    </Text>
+                  </div>
+                </div>
+                <Divider className="!my-2" />
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Text><DollarOutlined className="mr-1" />Phương thức thanh toán:</Text>
+                    <Tag color="blue">{paymentMethodText(order.payment_method)}</Tag>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <Text><ClockCircleOutlined className="mr-1" />Trạng thái thanh toán:</Text>
+                    {getStatusTag(order.status)}
+                  </div>
+                </div>
+              </Card>
+            </div>
+            
+            <div className="mt-4">
+              <Button type="default" block onClick={() => navigate("/")}>
+                Về trang chủ
+              </Button>
             </div>
           </Col>
         </Row>
-
-        <Divider />
-
-        <Title level={4} className="mb-3">Product List</Title>
-        <Card bordered={false} className="bg-gray-50">
-          <List
-            dataSource={order.items}
-            renderItem={(item: any) => {
-              return (
-                <List.Item key={item.product._id}>
-                  <List.Item.Meta
-                    avatar={
-                      <Image
-                        width={60}
-                        src={item.selected_variant?.image?.url || "/no-image.png"}
-                        alt={item.selected_variant?.image?.alt || "Product image"}
-                        className="rounded-lg"
-                      />
-                    }
-                    title={
-                      <>
-                        <Text strong>{item.product?.name || "Tên sản phẩm"}</Text>
-                        <Text className="ml-2" type="secondary">x{item.quantity}</Text>
-                        <Text style={{ marginLeft: 12, color: "red", fontWeight: 500 }}>
-                          {item.total_price?.toLocaleString()}₫
-                        </Text>
-                        {item.selected_variant?.color?.name && (
-                          <Text style={{ display: "block", marginTop: 2 }}>
-                            Color: <strong>{item.selected_variant.color.name}</strong>
-                          </Text>
-                        )}
-                        {item.selected_variant?.size && (
-                          <Text style={{ display: "block" }}>
-                            Size: <strong>{item.selected_variant.size}</strong>
-                          </Text>
-                        )}
-                      </>
-                    }
-                    description={
-                      <div>
-                        <Text>Price: <strong>{item.price?.toLocaleString()}₫</strong></Text>
-                      </div>
-                    }
-                  />
-                </List.Item>
-              );
-            }}
-          />
-          <Divider />
-          <div className="text-right pr-4 mb-4 gap-1 flex flex-col">
-            <div>
-              <Text>
-                Subtotal: <strong>{order.subtotal?.toLocaleString()}₫</strong>
-              </Text>
-            </div>
-             {order.applied_coupon?.discount_amount > 0 && (
-              <div>
-                <Text>
-                  Discount: <strong className="text-green-600">-{Number(order.applied_coupon.discount_amount).toLocaleString()}₫</strong>
-                </Text>
-              </div>
-            )}
-            {order.shipping_fee > 0 && (
-              <div>
-                <Text>
-                  Phí vận chuyển:{" "}
-                  <strong style={{ color: "black" }}>
-                    {Number(order.shipping_fee).toLocaleString("vi-VN")}₫
-                  </strong>
-                </Text>
-              </div>
-            )}
-            <Divider />
-            <Text strong style={{ fontSize: 18 }}>
-              Order Total: <span className="text-blue-500">{order.total?.toLocaleString()}₫</span>
-            </Text>
-          </div>
-
-        </Card>
-        <div className="text-right mt-5">
-            <Button onClick={() => navigate("/")}>
-              Cancel
-            </Button>
-          </div>
-      </Card>
+      </div>
     </motion.div>
   );
 };

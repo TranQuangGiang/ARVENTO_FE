@@ -27,22 +27,22 @@ const EmailVerificationNotice = () => {
         }}
       >
         <MailOutlined style={{ fontSize: 48, color: "#1890ff" }} />
-        <Title level={3} style={{ marginTop: 16 }}>Email Verification</Title>
+        <Title level={3} style={{ marginTop: 16 }}>Xác minh Email</Title>
         <Paragraph>
-          We have sent a verification link to your email address.
-          Please check your inbox and click the link to complete your registration.
+          Chúng tôi đã gửi liên kết xác minh đến địa chỉ email của bạn. 
+          Vui lòng kiểm tra hộp thư đến và nhấp vào liên kết để hoàn tất đăng ký.
         </Paragraph>
         <Button
           type="primary"
           size="large"
           onClick={() => window.open("https://mail.google.com", "_blank")}
         >
-          Open my Email
+          Mở Email của tôi
         </Button>
         <Paragraph style={{ marginTop: 24 }}>
-          Didn't receive the email?{" "}
+          Không nhận được email ?{" "}
           <a onClick={() => navigate("/resend-verification")}>
-            Resend verification link
+            Gửi lại liên kết xác minh
           </a>
         </Paragraph>
       </Card>

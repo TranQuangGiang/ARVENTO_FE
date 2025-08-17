@@ -47,7 +47,7 @@ const ListBanner = () => {
 
   const columns: ColumnsType<any> = [
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'is_active',
       align: 'center',
       render: (text: boolean, record: any) => (
@@ -63,15 +63,15 @@ const ListBanner = () => {
       render: (text: string) => <span>{text}</span>,
     },
     {
-      title: 'Title',
+      title: 'Chủ đề',
       dataIndex: 'title',
     },
     {
-      title: 'Link',
+      title: 'Liên kết',
       dataIndex: 'link',
     },
     {
-      title: 'Image',
+      title: 'Ảnh',
       dataIndex: 'image_url',
       render: (url: string, record: any) => (
         <Image
@@ -84,7 +84,7 @@ const ListBanner = () => {
       ),
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       dataIndex: '_id',
       align: 'right',
       render: (_: any, record: any) => (
@@ -93,21 +93,20 @@ const ListBanner = () => {
             icon={<EditOutlined />}
             onClick={() => navigate(`/admin/editbanner/${record._id}`)}
             style={{ marginRight: 8 }}
-          >
-            Edit
-          </Button>
+            type="primary"
+          />
+           
           <Popconfirm
-            title="Are you sure you want to delete?"
-            okText="Delete"
-            cancelText="Cancel"
+            title="Bạn có chắc chắn muốn xóa ?"
+            okText="Xóa"
+            cancelText="Hủy"
             onConfirm={() => handleDelete(record._id)}
           >
             <Button
               icon={<DeleteOutlined />}
-              className="hover:!border-red-500 hover:!text-red-500"
-            >
-              Delete
-            </Button>
+              danger
+            />
+             
           </Popconfirm>
         </>
       ),
@@ -118,16 +117,16 @@ const ListBanner = () => {
     updateStatus.mutate(
       { id, isActive: checked },
       {
-        onSuccess: () => message.success('Status update successful'),
-        onError: () => message.error('Update status failed')
+        onSuccess: () => message.success('Cập nhật trạng thái thành công'),
+        onError: () => message.error('Cập nhập trạng thái thất bại')
       }
     );
   };
 
   const handleDelete = (id: string) => {
     deleteBanner.mutate(id, {
-      onSuccess: () => message.success('Successfully removed the banner'),
-      onError: () => message.error('Removing banner failed')
+      onSuccess: () => message.success('Xóa thành công'),
+      onError: () => message.error('Xóa thất bại')
     });
   };
 
@@ -148,11 +147,11 @@ const ListBanner = () => {
           <div className="pl-6 pr-6 bg-gray-50 min-h-screen">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow mt-10">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <Images className="pr-2" style={{width: 35}} /> Banner List
+                <Images className="pr-2" style={{width: 35}} /> Danh sách banner
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-2 items-center">
-                  <span className="text-gray-500">Showing</span>
+                  <span className="text-gray-500">Hiện</span>
                   <Select
                     value={itemsPerPage}
                     onChange={(value) => {
@@ -168,7 +167,7 @@ const ListBanner = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Input
-                    placeholder="Search..."
+                    placeholder="Tìm kiếm..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     allowClear
@@ -179,7 +178,7 @@ const ListBanner = () => {
                     icon={<FiPlus />}
                     onClick={() => navigate("/admin/addbanner")}
                   >
-                    Add New
+                    Thêm mới
                   </Button>
                 </div>
               </div>

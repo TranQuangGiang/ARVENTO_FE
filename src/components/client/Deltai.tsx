@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTruckFast, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
-import { Button, Image, message, Rate, Popconfirm, Select, Input } from "antd";
+import { Button, Image, message, Rate, Popconfirm } from "antd";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useOneData } from "../../hooks/useOne";
@@ -9,8 +9,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { jwtDecode } from "jwt-decode";
 import { useCart } from "../contexts/cartContexts";
 import axios from "axios";
-import type { UploadProps } from "antd";
 import dayjs from "dayjs";
+import { useList } from "../../hooks/useList";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Link } from "react-router-dom";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
 
 const DeltaiProduct = () => {
   const [loading, setLoading] = useState(false);
@@ -19,9 +26,6 @@ const DeltaiProduct = () => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const [variants, setVariants] = useState<any[]>([]);
-  const [userRating, setUserRating] = useState<number>(0);
-  const [userComment, setUserComment] = useState<string>("");
-  const [fileList, setFileList] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   // New state for current price
   const [currentPrice, setCurrentPrice] = useState<number>(0);
@@ -34,12 +38,16 @@ const DeltaiProduct = () => {
   const { data: productDetail } = useOneData({ resource: '/products', _id: id });
   const product = productDetail?.data;
 
-  const uploadProps: UploadProps = {
-    beforeUpload: () => false,
-    fileList,
-    onChange: ({ fileList }) => setFileList(fileList),
-  };
+  const { data:relatedProducts } = useList({
+    resource: `/products/related/${id}`
+  });
 
+  const productsRelated = (relatedProducts?.data || []).filter((p:any) => p.isActive); 
+  const productData = [...productsRelated]
+  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  .slice(0, 7);
+  console.log("Sản phẩm liên quan", relatedProducts);
+  
   useEffect(() => {
     const fetchVariants = async () => {
       if (!product?._id) return;
@@ -229,57 +237,6 @@ const DeltaiProduct = () => {
     }
   };
 
-  const handleSubmitReview = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
-    let userInfo: any = null;
-    try {
-      userInfo = jwtDecode(token);
-    } catch (err) {
-      return message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
-    }
-    if (!userInfo?.id) return message.warning("Vui lòng đăng nhập để đánh giá.");
-    if (!userRating || !userComment.trim()) return message.warning("Vui lòng nhập đủ thông tin.");
-
-    const formData = new FormData();
-    formData.append("rating", userRating.toString());
-    formData.append("comment", userComment);
-    formData.append("product_id", product._id);
-
-    console.log("Đang gửi đánh giá:", {
-      rating: userRating,
-      comment: userComment,
-      product_id: product._id,
-      images: fileList.map(f => f.name || f.originFileObj?.name),
-    });
-
-    fileList.forEach((file) => {
-      if (file.originFileObj) {
-        formData.append("images", file.originFileObj);
-      }
-    });
-
-    try {
-      await axios.post("http://localhost:3000/api/reviews", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      message.success("Đánh giá của bạn đã được gửi!");
-      setUserRating(0);
-      setUserComment("");
-      setFileList([]);
-
-      const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
-      const reviewData = res.data?.data?.reviews;
-      setReviews(Array.isArray(reviewData) ? reviewData : []);
-    } catch (error: any) {
-      console.error(error);
-      message.error(error?.response?.data.message);
-    }
-  };
-
   const handleDeleteReview = async (reviewId: string) => {
     const token = localStorage.getItem("token");
     if (!token) return message.error("Bạn chưa đăng nhập.");
@@ -377,11 +334,8 @@ const DeltaiProduct = () => {
   const percentDiscount = Math.round(((variantOriginalPrice - variantSalePrice) / variantOriginalPrice) * 100);
   console.log(percentDiscount);
 
-  const { Option } = Select;
-const { TextArea } = Input;
-
   const [ratingFilter, setRatingFilter] = useState(null);
-  const [filteredReviews, setFilteredReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState<any[]>([]);
 
   useEffect(() => {
     if (ratingFilter === null) {
@@ -411,7 +365,7 @@ const { TextArea } = Input;
       </div>
 
       {/* Nội dung chính */}
-      <div className="max-w-[75%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[76%] mx-auto mt-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Ảnh sản phẩm */}
           <div className="w-full flex flex-col items-center">
@@ -436,7 +390,7 @@ const { TextArea } = Input;
               </div>
 
             </AnimatePresence>
-            <div className="flex space-x-2 mt-4 flex-wrap justify-center">
+            <div className="flex space-x-2 flex-wrap justify-center mt-5">
               {filteredImages.map((img: any, i: number) => (
                 <img
                   key={i}
@@ -465,7 +419,7 @@ const { TextArea } = Input;
             </span>
             <span className="price mt-5 flex items-center">
               <h6 className="text-[20px] font-sans font-medium text-[#01225a]">
-                Price:
+                Giá:
               </h6>
               {/* Conditional price display */}
               {variantSalePrice > 0 && variantSalePrice < variantOriginalPrice ? (
@@ -491,7 +445,7 @@ const { TextArea } = Input;
             {/* Chọn màu */}
             <div className="mb-6 mt-9">
               <span className="text-[15px] font-medium text-[#01225a] block mb-2">
-                Color: {selectedColor}
+                Màu sắc: {selectedColor}
               </span>
               <div className="flex flex-wrap gap-4">
                 {/* Hiển thị 1 ảnh đại diện cho mỗi màu */}
@@ -518,7 +472,7 @@ const { TextArea } = Input;
               <div className="mb-6 bg-[#efefef] p-3.5 rounded transition-all duration-100 hover:bg-[#ebebeb]">
                 <div className="flex flex-wrap items-center gap-2 mb-0">
                   <span className="text-[#01225a] text-[15px] font-medium mr-2">
-                    Size:
+                    Kích thước:
                   </span>
                   <div className="flex gap-2 flex-wrap">
                     {sizes.map((size, i) => (
@@ -535,10 +489,10 @@ const { TextArea } = Input;
               </div>
               {/* Hiển thị stock chỉ khi đã chọn size */}
               {selectedSize !== null && (
-                <p className={`text-sm mt-2 ${
+                <p className={`text-sm mt-2 flex items-center gap-1.5 ${
                   currentStock > 0 ? "text-green-500" : "text-red-500"
                   }`}>
-                  {currentStock} in stock
+                  <span className="text-gray-600">Kho:</span>  {currentStock} 
                 </p>
               )}
               {/* Add to Cart */}
@@ -563,7 +517,7 @@ const { TextArea } = Input;
                   onClick={handleAddToCart}
                   disabled={selectedSize === null || currentStock <= 0}
                 >
-                  ADD TO CART
+                  Thêm vào giỏ hàng
                 </Button>
                 <Button
                   type="text"
@@ -629,7 +583,7 @@ const { TextArea } = Input;
                     icon={faShieldHalved}
                   />
                   <p className="font-sans font-bold text-[#01225a] ml-1.5">
-                    SAFETY INSURANCE
+                    BẢO HIỂM AN TOÀN
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
@@ -638,7 +592,7 @@ const { TextArea } = Input;
                     icon={faTruckFast}
                   />
                   <p className="font-sans font-bold text-[#01225a] ml-1.5">
-                    FREE DELIVERY
+                    GIAO HÀNG NHANH CHÓNG
                   </p>
                 </div>
               </div>
@@ -647,102 +601,166 @@ const { TextArea } = Input;
         </div>
       </div>
 
-      <div className="content-product w-[70%] mx-auto">
+      <div className="content-product max-w-[76%] mx-auto mt-10">
         <div
-          className="font-sans text-[16px] text-[#01225a] mb-2"
+          className=" text-[16px] text-[#01225a] mb-2"
           dangerouslySetInnerHTML={{ __html: product.description }}
         />
       </div>
-       <div className="content-product w-[70%] mx-auto">
-      {/* Review Section */}
-      <div className="mt-10 bg-gray-100 pt-8 px-6 pb-6 rounded-lg shadow-sm">
-        <h2 className="text-lg font-semibold  uppercase tracking-wide text-[#01225a] bg-gray-100 py-3 border-b-2 border-[#01225a]">
-          Product Reviews
-        </h2> <br />
-        {/* Lọc đánh giá */}
-        <div className="mb-6 flex flex-wrap items-center gap-3">
-          {[5, 4, 3, 2, 1].map((star) => {
-            const count = reviews.filter((r) => r.rating === star).length;
-            const isActive = ratingFilter === star;
-            return (
-              <button
-                key={star}
-                onClick={() => setRatingFilter(star === ratingFilter ? null : star)}
-                className={`flex items-center gap-1 px-3 py-1 border rounded-full transition-all duration-200
-                  ${isActive ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
-                `}
-              >
-                <Rate disabled defaultValue={star} count={1} />
-                {star} ({count})
-              </button>
-            );
-          })}
-          <button
-            onClick={() => setRatingFilter(null)}
-            className={`px-3 py-1 border rounded-full transition-all duration-200
-              ${ratingFilter === null ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
-            `}
-          >
-            Tất cả ({reviews.length})
-          </button>
+      {/* Sản phẩm liên quan */}
+      
+      <div className="max-w-[76%] mx-auto mt-[100px] mb-[80px]">
+        <h2 className="mb-4 text-[20px] font-semibold text-[#4A4A4A]">Có thể bạn cũng thích</h2>
+        <div className="w-full flex items-center justify-between">
+          <div className="w-full">
+            <Swiper 
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={40}
+              slidesPerView={5}
+              autoplay={{
+                delay: 2500,
+                disableOnInteraction: false
+              }}
+            >
+              {productData.map((product, index) => {
+                const imageIndex = index % 2 === 0 ? 0 : 5;
+                let imageUrl = "/default.png";
+                if (product.images && product.images.length > 0) {
+                  if (product.images && product.images.length <= 5) {
+                    imageUrl = product.images[0]?.url
+                  } else {
+                    imageUrl = product.images[imageIndex]?.url
+                  }
+                }
+                return (
+                  
+                  <SwiperSlide>
+                    <Link to={`/detailProductClient/${product._id}`} key={product._id}>
+                      <div className='list-product-one overflow-hidden w-[210px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
+                        <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                          <img
+                            className='w-[220px] h-[220px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                            src={imageUrl}
+                            alt={product.name}
+                          />
+                        </div>
+                        <div className='content w-[80%] mt-[0px]'>
+                          <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
+                            {product.name}
+                          </h4>
+                          <div className='pt-1.5 flex items-center'>
+                            <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                              {formatPrice(product.original_price)}<sup>đ</sup>
+                            </p>
+                          </div>
+                        </div>
+                        <div className='mt-2 text-[13px] uppercase w-[80%] mx-auto border-b-1'>
+                          <p>Select options</p>
+                        </div>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                )
+              })}
+              
+            </Swiper>
+          </div>
         </div>
-
-        {filteredReviews.length === 0 ? (
-          <p className="text-gray-600">Chưa có đánh giá nào.</p>
-        ) : (
-          filteredReviews.map((r, idx) => (
-            <div key={idx} className="mb-6 border-b border-gray-300 pb-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center mb-3">
-                  <div className="w-9 h-9 rounded-full bg-[#2d0d0d] text-white flex items-center justify-center text-sm font-sans font-semibold">
-                    {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
-                  </div>
-                  <span className="font-semibold text-[#01225a] ml-2">
-                    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-                  </span>
-                </div>
-
-                <div className="flex gap-2 items-center">
-                  <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
-                  {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                    <Popconfirm
-                      title="Bạn chắc chắn muốn xóa đánh giá này?"
-                      onConfirm={() => handleDeleteReview(r._id)}
-                      okText="Xóa"
-                      cancelText="Hủy"
-                    >
-                      <Button size="small" danger>Xóa</Button>
-                    </Popconfirm>
-                  )}
-                </div>
-              </div>
-
-              <Rate disabled defaultValue={r.rating} className="mt-1" />
-              <p className="mt-2 text-gray-700">{r.comment}</p>
-
-              {r.images?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {r.images.map((img: any, i: any) => (
-                    <img
-                      key={i}
-                      src={img}
-                      className="w-16 h-16 rounded object-cover"
-                      alt={`review-img-${i}`}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {r.reply && (
-                <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
-                  <strong>Phản hồi từ Admin:</strong> {r.reply}
-                </div>
-              )}
-            </div>
-          ))
-        )}
       </div>
-    </div> <br />
+      <div className="reviews-product max-w-[76%] mx-auto">
+        {/* Review Section */}
+        <div className="mt-10 bg-gray-100 pt-8 px-6 pb-6 rounded-lg shadow-sm">
+          <h2 className="text-lg font-semibold  uppercase tracking-wide text-[#01225a] py-3 border-b-2 border-[#01225a]">
+            Đánh giá sản phẩm
+          </h2> <br />
+          {/* Lọc đánh giá */}
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setRatingFilter(null)}
+              className={`px-3 py-1 border rounded-full transition-all duration-200
+                ${ratingFilter === null ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+              `}
+            >
+              Tất cả ({reviews.length})
+            </button>
+            {[5, 4, 3, 2, 1].map((star:any) => {
+              const count = reviews.filter((r) => r.rating === star).length;
+              const isActive = ratingFilter === star;
+              return (
+                <button
+                  key={star}
+                  onClick={() => setRatingFilter(star === ratingFilter ? null : star)}
+                  className={`flex items-center gap-1 px-3 py-1 border rounded-full transition-all duration-200
+                    ${isActive ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+                  `}
+                >
+                  <Rate disabled defaultValue={star} count={1} />
+                  {star} ({count})
+                </button>
+              );
+            })}
+            
+          </div>
+
+          {filteredReviews.length === 0 ? (
+            <div className="mt-10 mb-10 w-full text-center">
+              <p className="text-gray-600">Chưa có đánh giá nào.</p>
+            </div>
+            
+          ) : (
+            filteredReviews.map((r, idx) => (
+              <div key={idx} className="mb-6 border-b border-gray-300 pb-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center mb-3">
+                    <div className="w-9 h-9 rounded-full bg-[#2d0d0d] text-white flex items-center justify-center text-sm font-sans font-semibold">
+                      {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
+                    </div>
+                    <span className="font-semibold text-[#01225a] ml-2">
+                      {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2 items-center">
+                    <span className="text-sm text-gray-400">{dayjs(r.created_at).format("DD/MM/YYYY")}</span>
+                    {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                      <Popconfirm
+                        title="Bạn chắc chắn muốn xóa đánh giá này?"
+                        onConfirm={() => handleDeleteReview(r._id)}
+                        okText="Xóa"
+                        cancelText="Hủy"
+                      >
+                        <Button size="small" danger>Xóa</Button>
+                      </Popconfirm>
+                    )}
+                  </div>
+                </div>
+
+                <Rate disabled defaultValue={r.rating} className="mt-1" />
+                <p className="mt-2 text-gray-700">{r.comment}</p>
+
+                {r.images?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {r.images.map((img: any, i: any) => (
+                      <img
+                        key={i}
+                        src={img}
+                        className="w-16 h-16 rounded object-cover"
+                        alt={`review-img-${i}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {r.reply && (
+                  <div className="mt-3 p-2 border-l-4 border-blue-600 bg-blue-50 text-sm text-[#01225a]">
+                    <strong>Phản hồi từ Admin:</strong> {r.reply}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div> <br />
     </div>
   );
 };

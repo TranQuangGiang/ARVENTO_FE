@@ -1,7 +1,7 @@
 import { Button, Popconfirm, Select, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useList } from '../../../hooks/useList';
-import { PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useMemo, useState } from 'react';
 import { useDelete } from '../../../hooks/useDelete';
 import { Link } from 'react-router-dom';
@@ -40,13 +40,13 @@ const ListCategoryBlog = () => {
       align: "center",
     },
     {
-      title: <span className="font-semibold">Name</span>,
+      title: <span className="font-semibold">Tên</span>,
       dataIndex: "name",
       key: "name",
       align: "center",
     },
     {
-      title: <span className="font-semibold">Slug</span>,
+      title: <span className="font-semibold">Đường dẫn</span>,
       dataIndex: "slug",
       key: "slug",
       align: "center",
@@ -59,16 +59,16 @@ const ListCategoryBlog = () => {
       align: "center",
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       align: "center",
       render: (_:any, categoryBlog: any) => {
         return <>
           <Popconfirm title="Bạn chắc chắc chứ ?" onConfirm={() => deleteCategoryBlog(categoryBlog._id)} okText="Ok" cancelText="Cancel">
-            <Button danger >Delete</Button>
+            <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
           <Link to={`/admin/editCategoryBlog/${categoryBlog._id}`}>
-            <Button className='ml-[15px]' type='primary'>Update</Button>
+            <Button className='ml-[15px]' type='primary' icon={<EditOutlined />} />
           </Link>
         </>
       } 
@@ -91,7 +91,7 @@ const ListCategoryBlog = () => {
         >
           <div className="ml-6 mr-6 mt-10 mb-10 p-8 rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-tr from-white to-gray-50">
             <span className='w-full flex items-center justify-between mb-3'>
-              <h2 className="text-[22px] font-bold text-gray-800">📝 Post Categories</h2>
+              <h2 className="text-[22px] font-bold text-gray-800">📝 Danh sách danh mục bài viết</h2>
               <Link to={`/admin/addCategoryBlog`}>
                 <Button
                   style={{width: 130, height: 40}}
@@ -99,7 +99,7 @@ const ListCategoryBlog = () => {
                   icon={<PlusOutlined />}
                   className="h-10 w-[170px] text-[18px] font-medium bg-blue-600 hover:bg-blue-700 transition-all"
                 >
-                  Create
+                  Thêm mới
                 </Button>
               </Link>
             </span>

@@ -80,6 +80,8 @@ import Review from './components/client/review'
 import EmailVerificationNotice from './components/client/auth/VerifyEmail'
 import ResendVerification from './components/client/auth/resendVerification'
 import EmailVerificationSuccess from './components/client/auth/htEmailVerificationSuccess'
+import Statistical from './components/admin/statistical/statical'
+import RequestRefund from './components/admin/order/RequestRefund'
 
 
 
@@ -167,6 +169,8 @@ function App() {
         {path: 'addcolor', element: <AddColorAvarin />},
         {path: 'listcolor', element: <ListColorAvarin />},
         {path: 'editcolor/:key', element: <UpdateColorAvarin />},
+        {path: 'statistical', element: <Statistical />},
+        {path: 'requestRefund', element: <RequestRefund />}
       ]
     }
   ])

@@ -2,6 +2,7 @@ import { Button, Form, Input, message } from "antd";
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { useRegister } from "../../../hooks/useRegister";
+import { X } from "lucide-react";
 
 const Register = ({ isOpen, onClose, switchToLogin }: any) => {
   if (!switchToLogin) return null;
@@ -19,7 +20,7 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
   function onFinish(values: any) {
     mutate(values, {
       onSuccess: () => {
-        message.success(`Account registration successful`);
+        message.success(`Đăng ký thành công`);
         switchToLogin();
       },
       onError: (err: any) => {
@@ -46,13 +47,20 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col lg:flex-row max-w-5xl min-h-[507px] mx-auto rounded-2xl shadow-lg overflow-hidden bg-white"
+            className="flex relative flex-col lg:flex-row max-w-5xl min-h-[507px] mx-auto rounded-2xl shadow-lg overflow-hidden bg-white"
             key="modal"
-          >
+          > 
+            <button
+              onClick={onClose}
+              className="absolute px-1.5 py-1.5 z-20 top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 hover:rounded-[50%] flex items-center justify-center transition-all duration-300"
+            >
+              <X />
+            </button>
             <div className="w-[50%] text-white lg:w-1/2 p-8 flex flex-col justify-center pt-[0px]">
-              <h2 className="text-3xl font-bold mb-4 text-[#01225a]">Welcome to NIKA</h2>
+              <h2 className="text-3xl font-bold mb-4 text-[#01225a]">Chào mừng đến với ARVENTO</h2>
               <p className="mb-6 text-[16px] text-[#01225a]">
-                Create an account to enjoy seamless shopping and exciting offers!
+                Tạo tài khoản để tận hưởng mua sắm 
+                liền mạch và nhiều ưu đãi hấp dẫn!
               </p>
               <img
                 src="/images/bangiay1.png"
@@ -63,11 +71,11 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
 
             <div className="lg:w-1/2 p-8 bg-white">
               <h3 className="text-2xl font-semibold text-blue-900 mb-6 text-center">
-                Create Your Account
+                Tạo tài khoản của bạn
               </h3>
               <Form onFinish={onFinish} layout="vertical">
                 <Form.Item
-                  label="Full Name"
+                  label="Họ tên"
                   name="name"
                   rules={[{ required: true, min: 2, max: 50 }]}
                   className="block text-gray-700 font-medium mb-1"
@@ -89,7 +97,7 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="Password"
+                  label="Mật khẩu"
                   name="password"
                   hasFeedback
                   rules={[{ required: true, min: 6 }]}
@@ -107,17 +115,17 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
                   htmlType="submit"
                   className="w-full mt-[15px] !text-white rounded-[4px] font-semibold hover:bg-blue-800 cursor-pointer transition-all duration-200"
                 >
-                  Register
+                  Đăng ký
                 </Button>
               </Form>
 
               <p className="text-sm text-center mt-[25px] text-gray-600">
-                Already have an account?{" "}
+                Bạn đã có tài khoản ?{" "}
                 <button
                   onClick={switchToLogin}
                   className="text-blue-700 hover:underline cursor-pointer"
                 >
-                  Log in here
+                  Đăng nhập ngay
                 </button>
               </p>
             </div>
