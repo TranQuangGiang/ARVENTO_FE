@@ -70,7 +70,7 @@ const EditProduct = () => {
   }));
   console.log(categoryOption);
   
-  {/** Thêm mới sản phẩm */}
+  {/** Cập nhập sản phẩm */}
   const { mutate } = useUpdate<FormData>({
     resource: "/products", _id: id
   })

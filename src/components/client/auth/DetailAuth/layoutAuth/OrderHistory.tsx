@@ -4,11 +4,24 @@ import { Button, Card, Image, Input, message, Modal, Popconfirm, Select, Typogra
 import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Review from '../../../review';
 
 const { Text, Title } = Typography;
 
 const OrderHistory = () => {
     const [selectedStatus, setSelectedStatus] = useState("all");
+    const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+    const [orderId, setOrderId] = useState<any>(null);
+
+    const handleOpenReviewModal = (orderId: string) => {
+        setOrderId(orderId);
+        setIsReviewModalVisible(true);
+    };
+
+    const handleCloseReviewModal = () => {
+        setIsReviewModalVisible(false);
+        setOrderId(null);
+    };
 
     const getOrderStatusLabel = (status: string) => {
         switch (status) {
@@ -465,15 +478,15 @@ const OrderHistory = () => {
                                                 )
                                             }
                                             {order.status === "completed" && (
-                                                <Link to={`/review/${order._id}`}>
-                                                    <Button
-                                                        type="default"
-                                                        style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
-                                                        className="text-[16px]"
-                                                    >
-                                                        📝 Đánh giá sản phẩm
-                                                    </Button>
-                                                </Link>
+                                                <Button
+                                                    type="default"
+                                                    style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
+                                                    className="text-[16px]"
+                                                    onClick={() => handleOpenReviewModal(order._id)} 
+                                                >
+                                                    📝 Đánh giá sản phẩm
+                                                    
+                                                </Button>
                                             )}
 
                                         </div>
@@ -487,14 +500,28 @@ const OrderHistory = () => {
                             <span className="relative z-10 w-full flex flex-col items-center">
                                 <img className="w-[170px]" src="/cartD.png" alt="" />
                             </span>
-                            <p className="mt-4 text-[13px] font-medium font-sans text-blue-950">You don't have any orders yet.</p>
+                            <p className="mt-4 text-[13px] font-medium font-sans text-blue-950">Bạn chưa có đơn hàng nào.</p>
                         </div>
                     )}
                 </div>
 
             </div>
+            <Modal
+                visible={isReviewModalVisible}
+                onCancel={handleCloseReviewModal}
+                footer={null} // Hide footer buttons
+                width={800} // Adjust width as needed
+            >
+                {orderId && (
+                    <Review 
+                        orderId={orderId}
+                        onCLose={handleCloseReviewModal}
+                    />
+                )}
+            </Modal>
         </div>
     )
+    
 }
 
 export default OrderHistory;
