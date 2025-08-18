@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { DeleteOutlined, EditOutlined, MessageOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, EyeOutlined, MessageOutlined } from '@ant-design/icons';
 
 import { Button, Popconfirm, Switch, message, Input, Select, Table, Rate } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -116,11 +116,6 @@ const ListReview = () => {
       render: (user: any) => user?.name || "Unknown",
     },
     {
-      title: "Mã sản phẩm",
-      dataIndex: "product_id",
-      render: (product: any) => product?._id || "N/A",
-    },
-    {
       title: "Tên sản phẩm",
       dataIndex: "product_id",
       render: (product: any) => product?.name || "Unknown",
@@ -148,15 +143,6 @@ const ListReview = () => {
         ),
     },
     {
-      title: "Xếp hạng",
-      dataIndex: "rating",
-      render: (rating: number) => <Rate disabled value={rating} />,
-    },
-    {
-      title: "Đánh giá",
-      dataIndex: "comment",
-    },
-    {
       title: "Phản hồi",
       dataIndex: "reply",
       render: (reply: string) => reply || "Chưa phản hồi",
@@ -168,10 +154,18 @@ const ListReview = () => {
         <div className="flex gap-2 justify-end">
           <Button
             type="primary"
-            onClick={() => navigate(`/admin/editreview/${record._id}`)}
+            onClick={() => navigate(`/admin/reply/${record._id}`)}
             icon={<MessageOutlined />}
           >
-            Reply Review
+            Phản hồi 
+          </Button>
+          <Button
+            className="ml-1"
+            onClick={() => navigate(`/admin/detailReview/${record._id}`)}
+            type="default"
+            style={{ backgroundColor: "#00CD00", color: "#fff", borderColor: "#52c41a" }}
+          >
+            Chi tiết 
           </Button>
         </div>
       ),

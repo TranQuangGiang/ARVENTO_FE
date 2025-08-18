@@ -22,7 +22,7 @@ const sizeFilters = [
 ];
 
 const ListProductCategory = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const initialCategoryId = searchParams.get('category') || undefined;
   console.log("categoryID:", initialCategoryId);
   
@@ -46,6 +46,15 @@ const ListProductCategory = () => {
     _id: initialCategoryId,
   });
   
+  // cập nhập id cho danh mục khi thay đổi
+    useEffect(() => {
+      if (initialCategoryId) {
+        setSelectedCategories([initialCategoryId]);
+      } else {
+        setSelectedCategories([]);
+      }
+      setCurrentPage(1);
+    }, [initialCategoryId])
   
   useEffect(() => {
     const fetchAllProducts = async () => {

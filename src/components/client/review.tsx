@@ -2,28 +2,31 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { Rate, Input, Upload, Button, message, Spin } from "antd";
-import { SendOutlined, CameraOutlined, CloseOutlined } from "@ant-design/icons";
+import { SendOutlined, CloseOutlined, CameraOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
 
 const { TextArea } = Input;
 
-const Review = () => {
-  const { id: orderId } = useParams();
-  const [order, setOrder] = useState(null);
+const Review = ({
+  orderId,
+}:any) => {
+  const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState({});
-  const [userId, setUserId] = useState(null);
-  const [submittedReviews, setSubmittedReviews] = useState({});
+  const [reviews, setReviews] = useState<any>({});
+  const [userId, setUserId] = useState<string | null>(null);
+  const [submittedReviews, setSubmittedReviews] = useState<any>({});
 
+  const orderID = orderId
+  console.log(orderID);
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwtDecode(token);
-        console.log(decoded);
+        const decoded: any = jwtDecode(token);
         setUserId(decoded.id);
-      } catch {
-        console.error("Invalid token");
+      } catch (e) {
+        console.error("Invalid token", e);
       }
     }
   }, []);
@@ -38,13 +41,13 @@ const Review = () => {
         setOrder(res.data.data?.order || res.data.data);
       } catch (err) {
         console.error("Error fetching order:", err);
-        message.error("Unable to load order");
+        message.error("Không thể tải đơn hàng.");
       } finally {
         setLoading(false);
       }
     };
     fetchOrder();
-  }, [orderId]);
+  }, [orderID]);
 
   const productQuantityMap =
     order?.items?.reduce((acc: any, item: any) => {
@@ -65,21 +68,20 @@ const Review = () => {
 
       try {
         const responses = await Promise.all(
-          uniqueProducts.map((item) =>
+          uniqueProducts.map((item: any) =>
             axios.get(`http://localhost:3000/api/reviews/product/${item.product._id}`, {
               headers: { Authorization: `Bearer ${token}` },
             })
           )
         );
 
-        const submitted = {};
-        uniqueProducts.forEach((item, index) => {
+        const submitted: any = {};
+        uniqueProducts.forEach((item: any, index: number) => {
           const productId = item.product._id;
           const productReviews = responses[index]?.data?.data?.reviews || [];
 
           const userHasReviewed = productReviews.some((review: any) => {
-            const reviewUser =
-              review.user_id?._id || review.user_id?.id || review.user_id || review.user?._id;
+            const reviewUser = review.user_id?._id || review.user_id?.id || review.user_id || review.user?._id;
             return reviewUser === userId;
           });
 
@@ -95,10 +97,8 @@ const Review = () => {
     fetchSubmittedReviews();
   }, [userId, order]);
 
-  const handleReviewChange = (productId: any, field: any, value: any) => {
-    setReviews((prev) => ({
-  const handleReviewChange = (productId: string, field: string, value: string) => {
-    setReviews((prev:any) => ({
+  const handleReviewChange = (productId: string, field: string, value: any) => {
+    setReviews((prev: any) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -107,35 +107,41 @@ const Review = () => {
     }));
   };
 
-  const resetAllReviews = () => {
-    const newReviews = {};
-    uniqueProducts.forEach((item: any) => {
-    uniqueProducts.forEach((item:any) => {
-      newReviews[item.product._id] = {
-        rating: 5, 
+  const resetReview = (productId: string) => {
+    setReviews((prev: any) => ({
+      ...prev,
+      [productId]: {
+        rating: 5,
         comment: "",
         images: [],
-      };
-    });
-    setReviews(newReviews);
+      },
+    }));
   };
 
-  const handleSubmitReview = async (productId:any) => {
+  const handleSubmitReview = async (productId: string) => {
     const token = localStorage.getItem("token");
-    if (!token) return message.warning("Vui lòng đăng nhập để đánh giá.");
+    if (!token) {
+      message.warning("Vui lòng đăng nhập để đánh giá.");
+      return;
+    }
 
-    let userInfo = null;
+    let userInfo: any = null;
     try {
       userInfo = jwtDecode(token);
     } catch {
-      return message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
+      message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
+      return;
     }
 
-    if (!userInfo?.id) return message.warning("Vui lòng đăng nhập để đánh giá.");
+    if (!userInfo?.id) {
+      message.warning("Vui lòng đăng nhập để đánh giá.");
+      return;
+    }
 
     const review = reviews[productId];
     if (!review || !review.rating || !review.comment?.trim()) {
-      return message.warning("Vui lòng nhập đủ thông tin.");
+      message.warning("Vui lòng nhập đủ thông tin.");
+      return;
     }
 
     const formData = new FormData();
@@ -144,7 +150,6 @@ const Review = () => {
     formData.append("product_id", productId);
 
     review.images?.forEach((file: any) => {
-    review.images?.forEach((file:any) => {
       if (file.originFileObj) {
         formData.append("images", file.originFileObj);
       }
@@ -159,199 +164,135 @@ const Review = () => {
       });
 
       message.success("Đánh giá của bạn đã được gửi!");
-      resetAllReviews();
-      setSubmittedReviews((prev) => ({
+      resetReview(productId);
+      setSubmittedReviews((prev: any) => ({
         ...prev,
         [productId]: true,
       }));
-    } catch (error) {
-
-      await axios.get(`http://localhost:3000/api/reviews/product/${productId}`);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error(error);
       message.error(error?.response?.data?.message || "Lỗi khi gửi đánh giá.");
     }
   };
 
-  if (loading) return <Spin className="mt-10" />;
-  if (!order) return <div className="p-6 text-gray-500">Không có dữ liệu đơn hàng.</div>;
-  if (!order) return <div className="p-6 text-gray-500">No order data available.</div>;
+  if (loading) {
+    return <Spin className="mt-10" />;
+  }
 
-  const productQuantityMap = order?.items.reduce((acc:any, item:any) => {
-    const productId = item.product?._id;
-    if (!acc[productId]) {
-      acc[productId] = { ...item, quantity: 0 };
-    }
-    acc[productId].quantity += item.quantity;
-    return acc;
-  }, {});
-
-  const uniqueProducts = Object.values(productQuantityMap);
+  if (!order || uniqueProducts.length === 0) {
+    return <div className="p-6 text-gray-500">Không có dữ liệu đơn hàng hoặc sản phẩm.</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-gray-100 py-8 px-4 mt-7">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-semibold tracking-wide text-[#01225a] py-3 border-b-2 border-[#01225a] text-2xl">
-          Đánh giá & nhận xét
+        <h1 className="text-center text-3xl font-bold text-gray-800">
+          Đánh giá sản phẩm
         </h1>
-        
-        <div className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm mt-2">
-          {uniqueProducts.map((item: any, index: any) => {
-            const productId = item.product._id;
-            const review = reviews[productId] || {}; 
-            const isSubmitted = submittedReviews[productId];
-        <h2 className="text-lg font-semibold text-center uppercase tracking-wide text-[#01225a] bg-gray-100 py-3 border-b-2 border-[#01225a]">
-          Product Reviews
-        </h2>
-
-        <div className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm mt-6">
-          {uniqueProducts.map((item:any, index) => {
+        <div className="border border-gray-200 rounded-[10px] p-6 bg-white shadow-sm mt-6">
+          {uniqueProducts.map((item: any, index: number) => {
             const productId = item.product?._id;
             const review = reviews[productId] || {};
+            const isSubmitted = submittedReviews[productId];
 
             return (
-              <div key={productId} className="mb-10 -mt-3">
-                <div className="flex justify-end mb-4">
-                  <Link to="/detailAuth/orderHistory">
-                    <CloseOutlined  className="text-[#01225a] text-2xl cursor-pointer hover:text-[#0f3fb6]" />
-                  </Link>
+              <div key={productId} className="mb-10">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex gap-4 items-start">
+                    <img
+                      src={item.selected_variant?.image?.url || item.product?.images?.[0]?.url}
+                      alt={item.product?.name}
+                      className="w-20 h-20 object-cover rounded border border-gray-200"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-xl text-gray-800">
+                        {item.product.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Qty:{item.quantity} -{" "}
+                        <span>Màu sắc: {item.selected_variant.color.name}</span>
+                      </p>
+                      <span className="text-red-500 font-semibold text-lg mt-1 block">
+                        {(item.unit_price * item.quantity).toLocaleString()}₫
+                      </span>
+                    </div>
+                  </div>
+                  
                 </div>
 
                 {index > 0 && <hr className="border-gray-300 w-full mb-6" />}
-                <div className="flex items-start gap-4 mt-3">
-                  <div className="flex-1">
-                    <div className="flex gap-4 items-start">
-                      <img
-                        src={item.selected_variant?.image?.url || item.product?.images?.[0]?.url}
-                        alt=""
-                        className="w-20 h-20 object-cover rounded border border-gray-200"
-                      />
 
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-2">
-                          <div>
-                            <h3 className="font-semibold text-lg md:text-xl text-gray-800 mt-3">
-                              {item.product.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              x{item.quantity} -{" "}
-                              <span className="text-red-500 font-semibold">
-                                {(item.unit_price * item.quantity).toLocaleString()}₫
-                              </span>
-                            </p>
-                          </div>
-
-                          {!isSubmitted && (
-                            <Button
-                              icon={<SendOutlined />}
-                              style={{
-                                backgroundColor: "#1e3a8a", 
-                                borderColor: "#1e3a8a",
-                                color: "white",
-                              }}
-                              onClick={() => handleSubmitReview(productId)}
-                            >
-                              Gửi đánh giá
-                            </Button>
-
-                          )}
+                {isSubmitted ? (
+                  <p className="text-green-600 font-medium mt-4 text-center">
+                    Bạn đã đánh giá sản phẩm này!
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-4 items-start w-full mt-7 px-2">
+                    <div className="w-full">
+                      <h3 className="font-semibold text-gray-700 mb-2">Đánh giá của bạn</h3>
+                      <div className="w-full mt-3">
+                        <div className="flex w-full">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <div key={star} className="flex-1 flex justify-center">
+                              <Rate
+                                value={review.rating >= star ? 1 : 0}
+                                onChange={() => handleReviewChange(productId, "rating", star)}
+                                count={1}
+                                className="text-2xl"
+                              />
+                            </div>
+                          ))}
                         </div>
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold text-base text-gray-800">
-                          {item.product?.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          x{item?.quantity} - <span className="text-red-500 font-semibold">{(item.unit_price * item.quantity).toLocaleString()}₫</span>
-                        </p>
+                        <div className="flex w-full mt-1 text-[14px] text-gray-600">
+                          <span className="flex-1 text-center">Rất Tệ</span>
+                          <span className="flex-1 text-center">Tệ</span>
+                          <span className="flex-1 text-center">Bình thường</span>
+                          <span className="flex-1 text-center">Tốt</span>
+                          <span className="flex-1 text-center">Tuyệt vời</span>
+                        </div>
                       </div>
                     </div>
 
-                    {isSubmitted ? (
-                      <p className="text-green-600 font-medium italic mt-4">
-                        Bạn đã đánh giá sản phẩm này.
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-4 items-start w-full mt-7 px-2">
-                        <div className="w-full">
-                          <h3 className="font-bold mb-1">Đánh giá chung</h3>
+                    <TextArea
+                      rows={4}
+                      placeholder="Xin mời chia sẻ một số cảm nhận về sản phẩm..."
+                      value={review.comment || ""}
+                      onChange={(e) => handleReviewChange(productId, "comment", e.target.value)}
+                      className="w-full"
+                    />
 
-                          <div className="w-full mt-3">
-                            <div className="flex w-full">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <div key={star} className="flex-1 flex justify-center">
-                                  <Rate
-                                    value={review.rating >= star ? 1 : 0}
-                                    onChange={() =>
-                                      handleReviewChange(productId, "rating", star)
-                                    }
-                                    count={1}
-                                    className="text-2xl"
-                                  />
-                                </div>
-                              ))}
-                            </div>  
-
-                            <div className="flex w-full mt-1 text-xs text-gray-600">
-                              <span className="flex-1 text-center">Rất Tệ</span>
-                              <span className="flex-1 text-center">Tệ</span>
-                              <span className="flex-1 text-center">Bình thường</span>
-                              <span className="flex-1 text-center">Tốt</span>
-                              <span className="flex-1 text-center">Tuyệt vời</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <TextArea
-                          rows={4}
-                          placeholder="Xin mời chia sẻ một số cảm nhận về sản phẩm..."
-                          value={review.comment || ""}
-                          onChange={(e) =>
-                            handleReviewChange(productId, "comment", e.target.value)
-                          }
-                          className="w-full"
-                        />
-
-                        <div className="w-full">
-                          <Upload
-                            listType="picture-card"
-                            maxCount={3}
-                            beforeUpload={() => false}
-                            onChange={({ fileList }) =>
-                              handleReviewChange(productId, "images", fileList)
-                            }
-                          >
-                            {(!review.images || review.images.length < 3) && (
-                              <div>
-                                <CameraOutlined  />
-                                <div style={{ marginTop: 8 }}>Thêm ảnh</div>
-                              </div>
-                            )}
-                          </Upload>
-                        </div>
-                      </div>
-                    )}
+                    <div className="w-full flex justify-between items-center gap-4">
                       <Upload
                         listType="picture-card"
                         maxCount={3}
                         beforeUpload={() => false}
-                        onChange={({ fileList }:any) => handleReviewChange(productId, "images", fileList)}
+                        onChange={({ fileList }) => handleReviewChange(productId, "images", fileList)}
                       >
                         {(!review.images || review.images.length < 3) && (
-                          <div className="text-sm">+ Upload</div>
+                          <div className="text-sm flex flex-col items-center">
+                            <CameraOutlined />
+                            <div className="mt-1">Thêm ảnh</div>
+                          </div>
                         )}
                       </Upload>
-
-                      <TextArea
-                        rows={4}
-                        placeholder="Share your thoughts about this product"
-                        value={review.comment || ""}
-                        onChange={(e) => handleReviewChange(productId, "comment", e.target.value)}
-                        className="rounded-md w-full"
-                      />
                     </div>
+                    <div className="w-full text-right">
+                      <Button
+                        icon={<SendOutlined />}
+                        style={{
+                          backgroundColor: "#1e3a8a",
+                          borderColor: "#1e3a8a",
+                          color: "white",
+                        }}
+                        className="cursor-pointer hover:shadow-lg"
+                        onClick={() => handleSubmitReview(productId)}
+                      >
+                        Gửi đánh giá
+                      </Button>
+                    </div>
+                    
                   </div>
-                </div>
+                )}
               </div>
             );
           })}

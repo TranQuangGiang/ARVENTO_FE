@@ -82,6 +82,8 @@ import ResendVerification from './components/client/auth/resendVerification'
 import EmailVerificationSuccess from './components/client/auth/htEmailVerificationSuccess'
 import Statistical from './components/admin/statistical/statical'
 import RequestRefund from './components/admin/order/RequestRefund'
+import ReplyReview from './components/admin/review/editReview'
+import DetailReview from './components/admin/review/detailReview'
 
 
 
@@ -161,7 +163,8 @@ function App() {
         // {path: 'addcolor', element: <AddColor />},
         // {path: 'editcolor', element: <EditColor />},
         {path: 'listreview', element: <ListReview />},
-        {path: 'editreview/:id', element: <UpdateReview />},
+        {path: 'reply/:id', element: <ReplyReview />},
+        {path: 'detailReview/:id', element: <DetailReview />},
         {path: 'listfavorite', element: <ListFavorite />},
         {path: 'favorites/:id/users', element: <FavoriteUsers />},
         {path: 'listorder', element: <ListOrder />},
