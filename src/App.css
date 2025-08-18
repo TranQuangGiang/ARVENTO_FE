@@ -110,3 +110,7 @@ h1, h2, .button {
 .content-product li {
   margin-bottom: 6px;
 }
+
+.ant-image-img {
+  object-fit: cover;
+}

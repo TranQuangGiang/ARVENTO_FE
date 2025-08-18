@@ -1,95 +1,79 @@
-import React, { useEffect } from "react";
-import { Form, Input, Button, Upload, Switch, Rate, Select } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { Form, Input, Button, Upload, Rate, Select, message } from "antd";
+import { data, useNavigate, useParams } from "react-router-dom";
 import { useOneData } from "../../../hooks/useOne";
-import { useUpdate } from "../../../hooks/useUpdate";
+import axiosInstance from "../../../utils/axiosInstance";
+import { useEffect } from "react";
 
-const UpdateReview = () => {
+const ReplyReview = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { id } = useParams();
+  const nav = useNavigate();
 
-  const { data: review } = useOneData({ resource: `/reviews`, _id: id });
-  const { mutate } = useUpdate({ resource: "/reviews", _id: id });
-
+  const { data: review, refetch } = useOneData({ resource: `/reviews`, _id: id });
   useEffect(() => {
     if (review?.data) {
-      const files = (review.data.images || []).map((url: string, index: number) => ({
-        uid: `-${index}`,
-        name: `review-image-${index}.jpg`,
-        status: "done",
-        url,
-      }));
-
+      const formattedImages = review?.data.images?.map((url:any, index:any) => ({
+        uid: `${index}`, // uid phải là duy nhất
+        name: `image-${index}.png`,
+        status: 'done',
+        url: url,
+      })) || [];
       form.setFieldsValue({
-      hidden: !review.data.hidden, 
-      comment: review.data.comment,
-      reply: review.data.reply,
-      rating: review.data.rating,
-      status: review.data.status || "pending",
-      images: files,
-    });
-
-    }
-  }, [review, form]);
-
- const onFinish = (values: any) => {
-  const payload = {
-    ...review.data,          // giữ nguyên dữ liệu cũ
-    reply: values.reply,     // cập nhật reply mới
-  };
-  mutate(payload, {
-    onSuccess: (res) => {
-      navigate("/admin/listreview", {
-        state: { updatedReview: res.data },
+        ...review?.data,
+        images: formattedImages,
       });
-    },
-  });
-};
+      refetch();
+    }
+  }, [review, id])
+  const onFinish = async (values: any) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axiosInstance.put(`/reviews/admin/reviews/${id}/reply`, 
+        {
+          reply: values.reply
+        },
+        {
+          headers: {
+            Authorization:  `Bearer ${token}`
+          }
+        }
+      )
+      message.success("Phản hồi đánh giá thành công");
+      nav('/admin/listreview');
+      await refetch();
+    } catch (error) {
+      message.error("Phản hồi đánh giá thất bại")
+    }
+  };
 
 
   return (
-    <div className="w-full mx-auto p-6 bg-white min-h-screen mt-20">
-      <h3 className="text-2xl font-semibold mb-1">UPDATE REVIEW</h3>
-      <p className="text-sm text-gray-500 mb-6">Edit reply to review</p>
+    <div className="pt-10 pl-6 pr-6 bg-gray-50 min-h-screen">
+      <h3 className="text-2xl font-semibold mb-1">Phản hồi đánh giá</h3>
+      <p className="text-sm text-gray-500 mb-6">Phản hồi đánh giá người dùng</p>
       <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
       <Form layout="vertical" onFinish={onFinish} form={form} className="space-y-4">
-        <Form.Item label="User">
+        <Form.Item label="Khách hàng">
           <Input value={review?.data?.user_id?.name} disabled />
         </Form.Item>
 
-        <Form.Item label="Product ID">
-          <Input value={review?.data?.product_id?._id} disabled />
-        </Form.Item>
-
-        <Form.Item label="Product Name">
+        <Form.Item label="Tên sản phẩm">
           <Input value={review?.data?.product_id?.name} disabled />
         </Form.Item>
 
-        <Form.Item name="hidden" label="Ẩn / Hiện" valuePropName="checked">
-          <Switch disabled />
+        <Form.Item name="rating" label="Xếp hạng">
+          <Rate disabled  />
         </Form.Item>
 
-        <Form.Item name="status" label="Phê duyệt">
-          <Select disabled>
-            <Select.Option value="pending">Chờ duyệt</Select.Option>
-            <Select.Option value="approved">Đã duyệt</Select.Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="rating" label="Rating">
-          <Rate disabled />
-        </Form.Item>
-
-        <Form.Item name="comment" label="Comment">
+        <Form.Item name="comment" label="Đánh giá">
           <Input.TextArea rows={3} disabled />
         </Form.Item>
 
         <Form.Item
           name="images"
-          label="Images"
+          label="Ảnh đánh giá"
           valuePropName="fileList"
           getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
         >
@@ -100,25 +84,23 @@ const UpdateReview = () => {
             accept="image/*"
             beforeUpload={() => false}
             disabled
-          >
-            <Button icon={<UploadOutlined />} disabled>Upload</Button>
-          </Upload>
+          /> 
         </Form.Item>
 
-        <Form.Item name="reply" label="Reply">
+        <Form.Item name="reply" label="Phản hồi">
           <Input.TextArea rows={2} />
         </Form.Item>
 
         <Form.Item>
-  <div className="flex justify-end space-x-3">
-    <Button type="primary" htmlType="submit">Reply Review</Button>
-    <Button onClick={() => navigate("/admin/listreview")}>Cancel</Button>
-  </div>
-</Form.Item>
+          <div className="flex justify-end space-x-3">
+            <Button type="primary" htmlType="submit">Phản hồi </Button>
+            <Button onClick={() => navigate("/admin/listreview")}>Hủy</Button>
+          </div>
+        </Form.Item>
 
       </Form>
     </div>
   );
 };
 
-export default UpdateReview;
+export default ReplyReview;
