@@ -31,6 +31,7 @@ const EditUser = () => {
     form.setFieldsValue({
       name: user.data.name,
       email: user.data.email,
+      password: user.data.password,
       role: user.data.role,
     });
   }, [user, form]);
@@ -56,9 +57,9 @@ const EditUser = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-start mt-10 bg-gray-50">
+    <div className="pl-6 pr-6 min-h-screen flex justify-center items-start mt-10 bg-gray-50">
       <Card
-        className="w-full max-w-6xl shadow-xl rounded-2xl border-none bg-white"
+        className="w-full shadow-xl rounded-2xl border-none bg-white"
         bodyStyle={{ padding: 32 }}
       >
         <div className="mb-8 text-center">
@@ -101,11 +102,11 @@ const EditUser = () => {
               placeholder="Enter email"
             />
           </Form.Item>
-
+          
           <Form.Item
             label="Vai trò"
             name="role"
-            rules={[{ required: true, message: "Please select role" }]}
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
           >
             <Select style={{height: 40}} className="rounded text-[15px]" placeholder="Select role">
               <Select.Option value="user">User</Select.Option>

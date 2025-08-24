@@ -310,15 +310,7 @@ const AddCoupon = () => {
           </Form.Item>
 
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Form.Item name="allowFreeShipping" valuePropName="checked">
-              <Checkbox>Cho phép miễn phí vận chuyển</Checkbox>
-            </Form.Item>
-            <Form.Item name="excludeSaleItems" valuePropName="checked">
-              <Checkbox>Loại trừ các mặt hàng giảm giá</Checkbox>
-            </Form.Item>
-            <Form.Item name="individualUse" valuePropName="checked">
-              <Checkbox>Chỉ sử dụng cá nhân</Checkbox>
-            </Form.Item>
+            
             <Form.Item label="Trạng thái" name="isActive" valuePropName="checked">
               <Switch />
             </Form.Item>

@@ -22,9 +22,9 @@ const TopSellingProducts = () => {
   });
   console.log(topConpon);
   
-  // top sản phẩm bán ế
+  // top sản sắp hết hàng
   const { data:topUnsoldProducts, refetch:refetchUnsoldProducts} = useList({
-    resource: `/dashboard/coupons/stock-warning`
+    resource: `/dashboard/stock-warning`
   });
   console.log(topUnsoldProducts);
   
@@ -36,8 +36,8 @@ const TopSellingProducts = () => {
   }, []);
 
   return (
-    <div className="mt-10 w-full px-4 sm:px-0"> 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg"> 
+    <div className="mt-10 w-full  "> 
+      <div className="bg-white border  border-gray-200 rounded-xl p-6 shadow-lg"> 
         <Tabs defaultActiveKey='1'>
           <Tabs.TabPane tab="Top sản phẩm bán chạy" key="1">
             {topProducts?.data?.length > 0 ? (
@@ -108,8 +108,38 @@ const TopSellingProducts = () => {
                 <p className="text-gray-400 text-center py-8">Không có dữ liệu sản phẩm yêu thích.</p>
               )}
           </Tabs.TabPane>
-          <TabPane tab="Top sản phẩm chậm" key="3">
-
+          <TabPane tab="Sản phẩm sắp hết hàng" key="3">
+            {topUnsoldProducts?.data?.length > 0 ? (
+              <div className="space-y-4"> 
+                {topUnsoldProducts.data.map((item: any, index: any) => (
+                  <div
+                    key={item._id}
+                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-none
+                              hover:bg-gray-50 transition-all duration-300 ease-in-out rounded-lg px-3 -mx-3 cursor-pointer" 
+                  >
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                      {/* Image with fallback */}
+                      <img
+                        src={item?.images?.[0]?.url || `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`}
+                        alt={item?.name || "Product image"}
+                        className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
+                        onError={(e: any) => { e.target.onerror = null; e.target.src = `https://placehold.co/50x50/e2e8f0/64748b?text=No+Image`; }} 
+                      />
+                      <div className="flex-grow">
+                        <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item.name}</p> 
+                        <p className="text-sm text-gray-600 mt-1">Số lượng tồn: <span className="font-medium">{item.stock}</span> sản phẩm</p> 
+                      </div>
+                    </div>
+                    <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
+                      <Star size={18} className="mr-1 fill-current text-yellow-500" /> 
+                      #{index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-center py-8">Không có dữ liệu sản phẩm sắp hết hàng.</p>
+            )}
           </TabPane>
           <TabPane tab="Danh sách mã giảm giá được sử dụng nhiều nhất" key="4">
             {
@@ -128,7 +158,7 @@ const TopSellingProducts = () => {
                     {/* Image with fallback */}
                     <div className="flex-grow">
                       <p className="font-bold font-sans text-[17px] text-gray-900 leading-tight">{item?.code}</p> 
-                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-1.5">Number of uses: <span className="font-medium">{item.count}</span> </p> 
+                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-1.5">Số lần sử dụng: <span className="font-medium">{item.count}</span> </p> 
                     </div>
                   </div>
                   <div className="mt-3 sm:mt-0 flex items-center text-yellow-600 font-extrabold text-xl sm:text-[16px] bg-yellow-50 px-3 py-1 rounded-full shadow-sm">
@@ -139,7 +169,7 @@ const TopSellingProducts = () => {
               ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-center py-8">There are no promo codes available.</p>
+              <p className="text-gray-400 text-center py-8">Không có mã khuyến mại nào khả dụng.</p>
             ) 
           }
           </TabPane>

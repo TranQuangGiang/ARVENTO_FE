@@ -88,7 +88,7 @@ const ListBanner = () => {
       dataIndex: '_id',
       align: 'right',
       render: (_: any, record: any) => (
-        <>
+        <div className="max-w-[150px] flex items-center">
           <Button
             icon={<EditOutlined />}
             onClick={() => navigate(`/admin/editbanner/${record._id}`)}
@@ -108,7 +108,7 @@ const ListBanner = () => {
             />
              
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];

@@ -1,16 +1,18 @@
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 import React, { useEffect, useState, useMemo } from 'react';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { Alert, DatePicker, Select, Spin } from 'antd';
+import { Alert, DatePicker, ConfigProvider , Select, Spin } from 'antd';
 import { useList } from '../../../hooks/useList';
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
+import viVN from 'antd/locale/vi_VN';
 
 
 dayjs.extend(advancedFormat);
 dayjs.extend(customParseFormat);
+dayjs.locale('vi');
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -91,8 +93,8 @@ const RevenueChart = () => {
                 let processedData: ProcessedRevenueData[] = [];
 
                 const isBackendAggregated  = rawDataFromApi.length > 0 && 
-                                            (groupBy === 'month' && dayjs(rawDataFromApi[0].date, 'YYYY-MM', true).isValid()) ||
-                                            (groupBy === 'year' && dayjs(rawDataFromApi[0].date, 'YYYY', true).isValid());
+                    (groupBy === 'month' && dayjs(rawDataFromApi[0].date, 'YYYY-MM', true).isValid()) ||
+                    (groupBy === 'year' && dayjs(rawDataFromApi[0].date, 'YYYY', true).isValid());
                 if (groupBy === 'day' || !isBackendAggregated) {
                     if (groupBy === 'day') {
                         processedData = rawDataFromApi;
@@ -164,7 +166,7 @@ const RevenueChart = () => {
     return (
         <div className="bg-white p-6 rounded-lg shadow-md max-w-full">
             <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-                <h2 className="text-[16px] font-semibold">
+                <h2 className="text-[20px] font-semibold">
                     Doanh thu 
                     {dateRange[0] && dateRange[1] && 
                         ` từ ${dateRange[0].format('DD/MM/YYYY')} đến ${dateRange[1].format('DD/MM/YYYY')}`
@@ -173,14 +175,17 @@ const RevenueChart = () => {
                     {dateRange[0] && !dateRange[1] && ` from ${dateRange[0].format('DD/MM/YYYY')}`}
                     {!dateRange[0] && !dateRange[1] && ` (All time)`}
                 </h2>
-                <div className='flex gap-2 items-center f'>
+                <div className='flex gap-2 items-center '>
                     <span className='text-sm whitespace-nowrap'>Chọn thời gian:</span>
-                    <RangePicker 
-                        value={dateRange}
-                        onChange={handleDateRangeChange}
-                        format="YYYY-MM-DD"
-                        className='border text-[14px] px-1.5 py-1 rounded'
-                    />
+                        <ConfigProvider locale={viVN}>
+                            <RangePicker 
+                                value={dateRange}
+                                onChange={handleDateRangeChange}
+                                format="YYYY-MM-DD"
+                                className='border text-[14px] px-1.5 py-1 rounded'
+                            />
+                        </ConfigProvider>
+                        
                     <span className='text-sm whitespace-nowrap ml-4'>Nhóm theo: </span>
                     <Select
                         value={groupBy}
