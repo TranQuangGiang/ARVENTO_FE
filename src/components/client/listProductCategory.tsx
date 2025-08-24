@@ -116,13 +116,14 @@ const ListProductCategory = () => {
       }
 
       return matchCategory && matchPrice && matchSize;
-    })
+    });
+     
   }, [allProducts, selectedCategories, selectedPrice, selectedSize])
 
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return filteredProducts.slice(startIndex, endIndex);
+    return filteredProducts.slice(startIndex, endIndex)
   }, [filteredProducts, currentPage, pageSize]);
   
   const handleCategoryChange = (checkedValues: string[]) => {

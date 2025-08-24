@@ -14,8 +14,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreate } from "../../../hooks/useCreate";
 import { EditOutlined } from "@ant-design/icons";
+import { UserAddOutlined } from "@ant-design/icons"; // Biểu tượng thêm người dùng
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const CreateUser = () => {
   const [form] = Form.useForm();
@@ -24,14 +26,15 @@ const CreateUser = () => {
 
   const { mutate } = useCreate({ resource: "/users" });
 
-  const handleFinish = (values: any) => {
+  const handleFinish = (values:any) => {
     setLoading(true);
     mutate(values, {
       onSuccess: () => {
-        navigate("/admin/listVendors");
+        navigate("/admin/listUsers"); 
       },
-      onError: () => {
-        message.error("Create failed");
+      onError: (error) => {
+        console.error("Lỗi khi thêm người dùng:", error);
+        message.error("Thêm mới thất bại. Vui lòng thử lại.");
       },
       onSettled: () => {
         setLoading(false);
@@ -40,131 +43,91 @@ const CreateUser = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-10">
-      <Card className="w-full max-w-6xl shadow-lg rounded-2xl">
+    <div className="pl-6 pr-6 mt-10 bg-gray-50 min-h-screen">
+      <Card className="w-full shadow-lg rounded-2xl">
         <div className="flex items-center justify-center mb-6">
-          <EditOutlined className="text-2xl mr-2 text-blue-500" />
+          <UserAddOutlined className="text-2xl mr-2 text-blue-500" />
           <Title level={3} className="!mb-0">
-            Create User
+            Thêm mới người dùng
           </Title>
         </div>
 
-        <Form layout="vertical" form={form} onFinish={handleFinish}>
+        <Form 
+          layout="vertical" 
+          form={form} 
+          onFinish={handleFinish}
+        >
+          {/* Hàng 1: Tên và Email */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Full Name"
+                label="Họ tên"
                 name="name"
-                rules={[{ required: true, message: "Please enter name" }]}
+                rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
               >
-                <Input className="h-[40px]" placeholder="Enter user's full name" />
+                <Input className="h-[40px]" placeholder="Nhập họ tên người dùng" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Email"
+                label="Địa chỉ email"
                 name="email"
                 rules={[
-                  { required: true, message: "Please enter email" },
-                  { type: "email", message: "Invalid email format" },
+                  { required: true, message: "Vui lòng nhập email" },
+                  { type: "email", message: "Định dạng email không hợp lệ" },
                 ]}
               >
-                <Input className="h-[40px]" placeholder="Enter user's email" />
+                <Input className="h-[40px]" placeholder="Nhập email người dùng" />
               </Form.Item>
             </Col>
           </Row>
 
+          {/* Hàng 2: Số điện thoại và Mật khẩu */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Phone"
+                label="Số điện thoại"
                 name="phone"
-                rules={[{ required: true, message: "Please enter phone number" }]}
+                rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
               >
-                <Input className="h-[40px]" placeholder="Enter phone number" />
+                <Input className="h-[40px]" placeholder="Nhập số điện thoại" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Password"
+                label="Mật khẩu"
                 name="password"
-                rules={[{ required: true, message: "Please enter password" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập mật khẩu" },
+                  { min: 6, message: "Vui lòng nhập tối thiểu 6 ký tự"}
+                ]}
               >
-                <Input.Password className="h-[40px]" placeholder="Enter password" />
+                <Input.Password style={{height: 40}} />
               </Form.Item>
             </Col>
           </Row>
 
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                label="Province (Tỉnh)"
-                name={["address", 0, "province"]}
-                rules={[{ required: true, message: "Please enter province" }]}
-              >
-                <Input className="h-[40px]" placeholder="Province" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                label="District (Quận/Huyện)"
-                name={["address", 0, "district"]}
-                rules={[{ required: true, message: "Please enter district" }]}
-              >
-                <Input className="h-[40px]" placeholder="District" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                label="Ward (Phường/Xã)"
-                name={["address", 0, "ward"]}
-                rules={[{ required: true, message: "Please enter ward" }]}
-              >
-                <Input className="h-[40px]" placeholder="Ward" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={16}>
-              <Form.Item
-                label="Detail Address"
-                name={["address", 0, "detail"]}
-                rules={[{ required: true, message: "Please enter detailed address" }]}
-              >
-                <Input className="h-[40px]" placeholder="e.g. 123 Street Name, Apartment..." />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                label="Address Phone"
-                name={["address", 0, "phone"]}
-                rules={[{ required: true, message: "Please enter phone for address" }]}
-              >
-                <Input className="h-[40px]" placeholder="Phone for address" />
-              </Form.Item>
-            </Col>
-          </Row>
-
+          {/* Hàng 3: Vai trò */}
           <Form.Item
-            label="Role"
+            label="Vai trò"
             name="role"
-            rules={[{ required: true, message: "Please select role" }]}
+            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
           >
-            <Select style={{ height: 40 }} placeholder="Select a role">
-              <Select.Option value="user">
+            <Select style={{ height: 40 }} placeholder="Chọn vai trò">
+              <Option value="user">
                 <Tag color="blue">User</Tag>
-              </Select.Option>
-              <Select.Option value="admin">
+              </Option>
+              <Option value="admin">
                 <Tag color="gold">Admin</Tag>
-              </Select.Option>
+              </Option>
             </Select>
           </Form.Item>
 
+          {/* Nút hành động */}
           <Form.Item className="pt-4">
             <div className="flex justify-end gap-4">
               <Button htmlType="reset" style={{ height: 40 }}>
-                Reset
+                Hủy
               </Button>
               <Button
                 className="w-44"
@@ -173,7 +136,7 @@ const CreateUser = () => {
                 htmlType="submit"
                 loading={loading}
               >
-                Create
+                Thêm mới
               </Button>
             </div>
           </Form.Item>

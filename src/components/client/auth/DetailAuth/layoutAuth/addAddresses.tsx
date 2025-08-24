@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card, Form, Input, Button, Typography, Row, Col, Select
+  Card, Form, Input, Button, Typography, Row, Col, Select,
+  message
 } from "antd";
 import {
   PhoneOutlined, EnvironmentOutlined, HomeOutlined, PlusOutlined
@@ -15,6 +16,7 @@ const { Title } = Typography;
 
 const AddAddresses = ({ isOpen, onClose }: any) => {
   const [showModal, setShowModal] = useState<"addAddress" | null>("addAddress");
+  const [isLoading, setIdLoading] = useState(false);
   const [form] = Form.useForm();
   const [selected, setSelected] = useState('');
   const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
@@ -32,15 +34,23 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
   const { mutate } = useCreate({ resource: `/addresses/me` });
 
   const handleFinish = (values: any) => {
+    setIdLoading(true)
     mutate(values, {
-        onSuccess: () => {
-            refetch();
-            form.resetFields(); // reset form fields
-            setSelectedProvince(null); // reset tỉnh
-            setSelectedDistrict(null); // reset huyện
-            setSelected(""); // reset label 'home' hoặc 'office'
-            onClose();
-        }
+      onSuccess: () => {
+        refetch();
+        form.resetFields(); // reset form fields
+        setSelectedProvince(null); // reset tỉnh
+        setSelectedDistrict(null); // reset huyện
+        setSelected(""); // reset label 'home' hoặc 'office'
+        onClose();
+      },
+      onError: (error) => {
+        message.error("Tạo địa chỉ thất bại");
+        console.log("Tạo địa chỉ lỗi: ", error); 
+      },
+      onSettled: () => {
+        setIdLoading(false);
+      }
     });
   };
 
@@ -278,7 +288,7 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
                       <Button onClick={onClose} htmlType="reset" style={{ height: 40 }}>
                         Hủy
                       </Button>
-                      <Button icon={<PlusOutlined />} type="primary" htmlType="submit" style={{ height: 40 }} className="w-40">
+                      <Button loading={isLoading} icon={<PlusOutlined />} type="primary" htmlType="submit" style={{ height: 40 }} className="w-40">
                         Thêm địa chỉ
                       </Button>
                     </div>

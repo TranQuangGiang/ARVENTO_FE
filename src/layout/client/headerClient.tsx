@@ -195,11 +195,7 @@ const HeaderClient = () => {
                 <button onClick={() => setShowModal("register")} className='block cursor-pointer px-3 py-2 hover:bg-gray-200 text-left'>
                   Đăng ký
                 </button>
-                <Link to={`/admin`}>
-                  <button className='w-full block px-3 py-2 border-0 cursor-pointer hover:bg-gray-200 text-left'>
-                    Truy cập trang quản trị
-                  </button>
-                </Link>
+                
               </div>
             )}
           </div>

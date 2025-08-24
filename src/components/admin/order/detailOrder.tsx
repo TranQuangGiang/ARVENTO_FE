@@ -343,7 +343,7 @@ const DetailOrder = () => {
             {/* Action Buttons */}
             <div className="flex flex-col space-y-4 mt-8">
               <Button
-                type="default"
+                type="primary"
                 size="large"
                 className="w-full font-bold rounded-lg border-2 border-gray-300 text-gray-700"
                 onClick={() => navigate("/admin/listorder")}

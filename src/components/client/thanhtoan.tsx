@@ -246,7 +246,7 @@ const Payment = () => {
             onClick={handlePayment}
             disabled={isLoading}
           >
-            {isLoading ? "Tiến hàng..." : "Tiến hành thanh toán"}
+            {isLoading ? "Tiến hành..." : "Tiến hành thanh toán"}
           </button>
         </div>
       </div>

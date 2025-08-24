@@ -1,17 +1,66 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users } from 'lucide-react';
-import { Button, Popconfirm, Table } from 'antd';
-import { useList } from '../../../hooks/useList';
+import { Button, Pagination, Popconfirm, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, EnvironmentOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import axiosInstance from '../../../utils/axiosInstance';
+import AddAddressesAdmin from './addAddressAdmin';
 
 const ListUser = () => {
-    const { data:users } = useList({
-        resource: `/users`
-    });
-    console.log(users);
-    
+    const [showModal, setShowModal] = useState<string | null>(null);
+    const [userId, setUserId ] = useState<string | null>(null);
+
+    const [allUsers, setAllUsers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;    
+
+    useEffect(() => {
+        const fetchAllUsers = async () => {
+            let fetchedUsers:any = [];
+            let page = 1;
+            let hasNextPage = true;
+            const limitPerPage = 50;
+
+            while(hasNextPage) {
+                try {
+                    const token = localStorage.getItem("token");
+                    const res = await axiosInstance.get(`/users?page=${page}&limit=${limitPerPage}`, 
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    );
+                    const { data } = res?.data;
+
+                    if (data && data.docs) {
+                        fetchedUsers = [...fetchedUsers, ...data.docs];
+                    }
+
+                    if (data && data.hasNextPage) {
+                        page = data.nextPage;
+                    } else {
+                        hasNextPage = false;
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi tải user:", error);
+                    hasNextPage = false;
+                }
+            }
+
+            setAllUsers(fetchedUsers);
+        }
+
+        fetchAllUsers();
+    }, []);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth"});
+    }
+
     const columns = [
         {
             title: "Id",
@@ -31,7 +80,26 @@ const ListUser = () => {
         {
             title: "Vai trò",
             dataIndex: "role",
-            key: "role"
+            key: "role",
+            render: (role: string) => {
+                return role === "admin" ? (
+                    <Tag color='gold'> Quản trị viên</Tag>
+                ) : (
+                    <Tag color='blue'> Người dùng</Tag>
+                )
+            }
+        },
+        {   
+            title: "Xác thực email",
+            dataIndex: "verified",
+            key: "verified",
+            render: (verified: boolean) => {
+                return verified ? (
+                    <Tag color="green">Đã xác thực</Tag>
+                ) : (
+                    <Tag color="red">Chưa xác thực</Tag>
+                );
+            }
         },
         {
             title: "Ngày tạo",
@@ -55,7 +123,14 @@ const ListUser = () => {
                     <Link to={`/admin/editUser/${record._id}`}>
                         <Button icon={<EditOutlined />} className="mr-1" type="primary" />
                     </Link>
-
+                    <Button 
+                        className="mr-1" 
+                        onClick={() => {
+                            setShowModal("addAddressAdmin")
+                            setUserId(record?._id)
+                        }} 
+                        icon={<EnvironmentOutlined />} 
+                    />
                     <Popconfirm
                         title="Bạn có chắc chắn muốn xóa người dùng này ?"
                         okText="Xóa"
@@ -92,9 +167,26 @@ const ListUser = () => {
                                 </Link>
                             </span>
                             
-                            <Table dataSource={users?.data?.docs || []} columns={columns} />
+                            <Table dataSource={allUsers} columns={columns} />
                         </div>
                     </div>
+                    <div>
+                        {allUsers.length > pageSize && (
+                            <div className='text-center'>
+                                <Pagination 
+                                    current={currentPage}
+                                    pageSize={pageSize}
+                                    total={allUsers.length}
+                                    onChange={handlePageChange}
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <AddAddressesAdmin 
+                        isOpen={showModal === "addAddressAdmin"} 
+                        onClose={() => setShowModal(null)} 
+                        userId={userId}    
+                    />
                 </motion.div>
             </motion.div>
         </AnimatePresence>      

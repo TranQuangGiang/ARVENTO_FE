@@ -11,7 +11,11 @@ import {
   CartesianGrid
 } from 'recharts';
 import dayjs, { Dayjs } from 'dayjs'; // Import Dayjs
-import { DatePicker, Spin, Alert } from 'antd'; // Chỉ cần DatePicker, Spin, Alert
+import 'dayjs/locale/vi';
+import { DatePicker, ConfigProvider , Spin, Alert } from 'antd'; // Chỉ cần DatePicker, Spin, Alert
+import viVN from 'antd/locale/vi_VN';
+
+dayjs.locale('vi');
 const { RangePicker } = DatePicker;
 
 interface RevenueData {
@@ -117,13 +121,14 @@ const Chart = () => {
         </h2>
         <div className="flex gap-2 items-center">
           <span className="text-sm">Chọn ngày:</span>
-          <RangePicker
-            value={dateRange}
-            onChange={handleDateRangeChange}
-            format="YYYY-MM-DD"
-            className="border text-[14px] h-[40px] px-1.5 py-1 rounded"
-
-          />
+          <ConfigProvider locale={viVN}>
+            <RangePicker
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              format="YYYY-MM-DD"
+              className="border text-[14px] h-[40px] px-1.5 py-1 rounded"
+            />
+          </ConfigProvider> 
         </div>
       </div>
 

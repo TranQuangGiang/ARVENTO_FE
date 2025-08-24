@@ -20,6 +20,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import { Clock, User } from "lucide-react";
 import UpdateReview from "./UpdateReview";
+import FadeInWhenVisible from "../animations/FadeInWhenVisible";
 
 const colors = [
   "#5E35B1", // Deep Purple 500 (màu tím đậm nhưng không quá chói)
@@ -650,231 +651,241 @@ const DeltaiProduct = () => {
           </div>
         </div>
       </div>
-
-      <div className="content-product max-w-[76%] mx-auto mt-10">
-        <div
-          className=" text-[16px] text-[#01225a] mb-2"
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
-      </div>
+      
+      <FadeInWhenVisible>
+        <div className="content-product max-w-[76%] mx-auto mt-[140px]">
+          <h3 className="text-[26px] mb-0">Mô tả sản phẩm</h3>
+          <div
+            className="text-[16px] text-[#01225a] mb-2 ck-content"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
+        </div>
+      </FadeInWhenVisible>
+      
       {/* Sản phẩm liên quan */}
       
-      <div className="max-w-[76%] mx-auto mt-[100px] mb-[80px]">
-        <h2 className="mb-4 text-[20px] font-semibold text-[#4A4A4A]">Có thể bạn cũng thích</h2>
-        <div className="w-full flex items-center justify-between">
-          <div className="w-full">
-            <Swiper 
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={40}
-              slidesPerView={5}
-              autoplay={{
-                delay: 2500,
-                disableOnInteraction: false
-              }}
-            >
-              {productData.map((product, index) => {
-                const imageIndex = index % 2 === 0 ? 0 : 5;
-                let imageUrl = "/default.png";
-                if (product.images && product.images.length > 0) {
-                  if (product.images && product.images.length <= 5) {
-                    imageUrl = product.images[0]?.url
-                  } else {
-                    imageUrl = product.images[imageIndex]?.url
-                  }
-                }
-                return (
-                  
-                  <SwiperSlide>
-                    <Link to={`/detailProductClient/${product._id}`} key={product._id}>
-                      <div className='list-product-one overflow-hidden w-[215px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
-                        <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
-                          <img
-                            className='w-[220px] h-[220px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
-                            src={imageUrl}
-                            alt={product.name}
-                          />
-                        </div>
-                        <div className='content w-[80%] mt-[0px]'>
-                          <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
-                            {product.name}
-                          </h4>
-                          <div className='pt-1.5 flex items-center'>
-                            <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
-                              {formatPrice(product.original_price)}<sup>đ</sup>
-                            </p>
-                          </div>
-                        </div>
-                        <div className='mt-2 text-[13px] uppercase w-[80%] mx-auto border-b-1'>
-                          <p>Select options</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </SwiperSlide>
-                )
-              })}
-              
-            </Swiper>
-          </div>
-        </div>
-      </div>
-      <div className="reviews-product max-w-[76%] mx-auto mb-12">
-        {/* Review Section */}
-        <div className="mt-10 bg-gray-100 pt-3 pb-3 rounded-lg shadow-sm">
-          <div className="px-6 w-[98%] bg-white mx-auto rounded-lg">
-            <h2 className="text-lg font-semibold  uppercase tracking-wide text-[#01225a] py-3 border-b-2 border-[#01225a]">
-              Đánh giá sản phẩm
-            </h2> <br />
-            {/* Lọc đánh giá */}
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => setRatingFilter(null)}
-                className={`px-3 py-1 border rounded-full transition-all duration-200
-                  ${ratingFilter === null ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
-                `}
+      <FadeInWhenVisible>
+        <div className="max-w-[76%] mx-auto mt-[100px] mb-[80px]">
+          <h2 className="mb-4 text-[20px] font-semibold text-[#4A4A4A]">Có thể bạn cũng thích</h2>
+          <div className="w-full flex items-center justify-between">
+            <div className="w-full">
+              <Swiper 
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={40}
+                slidesPerView={5}
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false
+                }}
               >
-                Tất cả ({reviews.length})
-              </button>
-              {[5, 4, 3, 2, 1].map((star:any) => {
-                const count = reviews.filter((r) => r.rating === star).length;
-                const isActive = ratingFilter === star;
-                return (
-                  <button
-                    key={star}
-                    onClick={() => setRatingFilter(star === ratingFilter ? null : star)}
-                    className={`flex items-center gap-1 px-3 py-1 border rounded-full transition-all duration-200
-                      ${isActive ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
-                    `}
-                  >
-                    <Rate disabled defaultValue={star} count={1} />
-                    {star} ({count})
-                  </button>
-                );
-              })}
-              
-            </div>
-
-            {filteredReviews.length === 0 ? (
-              <div className="relative w-full h-full flex items-center flex-col justify-center pt-3 pb-7">
-                <div className="absolute w-[300px] h-[140px] rounded-full bg-blue-500 opacity-30 blur-2xl"></div>
-                <span className="relative z-10 w-full flex flex-col items-center">
-                  <img className="w-[130px]" src="/reviews.png" alt="" />
-                </span>
-                <p className="mt-4 text-[13px] font-medium font-sans text-blue-950">Hiện chưa có đánh giá nào.</p>
-              </div>
-            ) : (
-              <>
-                <AnimatePresence>
-                  {(showAllReviews ? filteredReviews : filteredReviews.slice(0, 3)).map((r, id) => (
-                    <motion.div
-                      key={r._id}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      style={{ overflow: "hidden" }}
-                    >
-                      <div key={id} className="mb-6 border-b border-gray-300 pb-4">
-                        <div className="flex justify-between">
-                          <div className="flex">
-                            <div className="mt-1">
-                              <div className="flex items-center mb-3 w-[200px]">
-                                <div 
-                                  className="w-8 h-8 rounded-full text-white flex items-center justify-center text-[14px] font-sans font-semibold"
-                                  style={{ backgroundColor: stringToColor(r.user_id.name) }}
-                                  >
-                                  {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
-                                </div>
-                                <span className="font-bold text-[16px] text-gray-800 ml-2">
-                                  {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
-                                </span>
-                              </div>
-                              <p className="text-sm ml-1.5 text-gray-400 flex items-center"><Clock style={{width: 15, color: 'gray'}} className="text-gray-700" /> <span className="ml-1.5">{dayjs(r.created_at).format("DD/MM/YYYY")}</span></p>
-                            </div>
-                            <div className="ml-7">
-                              <div className="flex items-center mt-1">
-                                <Rate 
-                                  style={{ fontSize: 13 }} 
-                                  disabled 
-                                  value={r.rating} 
-                                  
-                                />
-                                <span className="text-sm ml-2.5 text-gray-600">
-                                  {desc[r.rating - 1]} 
-                                </span>
-                              </div>
-                              <p className="mt-2 text-[14px] max-w-[95%] text-gray-700">{r.comment}</p>
-
-                              {r.images?.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                  {r.images.map((img: any, i: any) => (
-                                    <Image
-                                      key={i}
-                                      src={img}
-                                      style={{width: 64, height: 64,  objectFit: "cover"}}
-                                      
-                                      alt={`review-img-${i}`}
-                                    />
-                                  ))}
-                                </div>
-                              )}
-
-                              {r.reply && (
-                                <div className="mt-3 p-2 text-[14px] border-l-4 border-blue-600 flex items-center bg-blue-50 text-sm text-[#01225a]">
-                                  <span className="w-8 h-8 rounded-[50%] bg-blue-300 flex items-center justify-center"><User style={{width: 19, color: "#003366"}} /></span><strong className="ml-1.5"> Admin:</strong> {r.reply}
-                                </div>
-                              )}
+                {productData.map((product, index) => {
+                  const imageIndex = index % 2 === 0 ? 0 : 5;
+                  let imageUrl = "/default.png";
+                  if (product.images && product.images.length > 0) {
+                    if (product.images && product.images.length <= 5) {
+                      imageUrl = product.images[0]?.url
+                    } else {
+                      imageUrl = product.images[imageIndex]?.url
+                    }
+                  }
+                  return (
+                    
+                    <SwiperSlide>
+                      <Link to={`/detailProductClient/${product._id}`} key={product._id}>
+                        <div className='list-product-one overflow-hidden w-[215px] h-[300px] bg-[#F2f2f2] flex flex-col items-center justify-center cursor-pointer group'>
+                          <div className='w-[200px] h-[160px] overflow-hidden flex items-center'>
+                            <img
+                              className='w-[220px] h-[220px] mt-0 transition-all duration-300 group-hover:scale-[1.1]'
+                              src={imageUrl}
+                              alt={product.name}
+                            />
+                          </div>
+                          <div className='content w-[80%] mt-[0px]'>
+                            <h4 className='w-full text-[15px] font-semibold font-sans text-black leading-[18px] h-[38px] overflow-hidden line-clamp-2'>
+                              {product.name}
+                            </h4>
+                            <div className='pt-1.5 flex items-center'>
+                              <p className='font-sans font-semibold text-[#0b1f4e] text-[14px]'>
+                                {formatPrice(product.original_price)}<sup>đ</sup>
+                              </p>
                             </div>
                           </div>
-                          <div className="flex gap-2 mt-1">
-                            {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                              <Button 
-                                size="small" 
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-all duration-300"  
-                                onClick={() => handleOpenReviewModal(r._id)}
-                              >
-                                Sửa
-                              </Button>
-                            )}
-                            {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                              <Popconfirm
-                                title="Bạn chắc chắn muốn xóa đánh giá này?"
-                                onConfirm={() => handleDeleteReview(r._id)}
-                                okText="Xóa"
-                                cancelText="Hủy"
-                              >
-                                <Button size="small" danger>Xóa</Button>
-                              </Popconfirm>
-                            )}
-                            
+                          <div className='mt-2 text-[13px] uppercase w-[80%] mx-auto border-b-1'>
+                            <p>Select options</p>
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                      </Link>
+                    </SwiperSlide>
+                  )
+                })}
                 
-                {filteredReviews.length > 3 && (
-                  <div className="text-center mt-4 pb-4">
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                    >
-                      <Button
-                        onClick={() => setShowAllReviews(!showAllReviews)}
-                        type="primary"
-                        style={{ background: "#01225a" }}
-                      >
-                        {showAllReviews ? "Thu gọn" : `Xem tất cả ${filteredReviews.length} đánh giá`}
-                      </Button>
-                    </motion.div>
-                  </div>
-                )}
-              </>
-            )}
+              </Swiper>
+            </div>
           </div>
         </div>
-      </div> <br />
+      </FadeInWhenVisible>
+      
+      <FadeInWhenVisible>
+        <div className="reviews-product max-w-[76%] mx-auto mb-12">
+        {/* Review Section */}
+          <div className="mt-10 bg-gray-100 pt-3 pb-3 rounded-lg shadow-sm">
+            <div className="px-6 w-[98%] bg-white mx-auto rounded-lg">
+              <h2 className="text-lg font-semibold  uppercase tracking-wide text-[#01225a] py-3 border-b-2 border-[#01225a]">
+                Đánh giá sản phẩm
+              </h2> <br />
+              {/* Lọc đánh giá */}
+              <div className="mb-6 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => setRatingFilter(null)}
+                  className={`px-3 py-1 border rounded-full transition-all duration-200
+                    ${ratingFilter === null ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+                  `}
+                >
+                  Tất cả ({reviews.length})
+                </button>
+                {[5, 4, 3, 2, 1].map((star:any) => {
+                  const count = reviews.filter((r) => r.rating === star).length;
+                  const isActive = ratingFilter === star;
+                  return (
+                    <button
+                      key={star}
+                      onClick={() => setRatingFilter(star === ratingFilter ? null : star)}
+                      className={`flex items-center gap-1 px-3 py-1 border rounded-full transition-all duration-200
+                        ${isActive ? "bg-blue-900 text-white border-white" : "bg-gray-100 text-gray-800 border-gray-300"}
+                      `}
+                    >
+                      <Rate disabled defaultValue={star} count={1} />
+                      {star} ({count})
+                    </button>
+                  );
+                })}
+                
+              </div>
+
+              {filteredReviews.length === 0 ? (
+                <div className="relative w-full h-full flex items-center flex-col justify-center pt-3 pb-7">
+                  <div className="absolute w-[300px] h-[140px] rounded-full bg-blue-500 opacity-30 blur-2xl"></div>
+                  <span className="relative z-10 w-full flex flex-col items-center">
+                    <img className="w-[130px]" src="/reviews.png" alt="" />
+                  </span>
+                  <p className="mt-4 text-[13px] font-medium font-sans text-blue-950">Hiện chưa có đánh giá nào.</p>
+                </div>
+              ) : (
+                <>
+                  <AnimatePresence>
+                    {(showAllReviews ? filteredReviews : filteredReviews.slice(0, 3)).map((r, id) => (
+                      <motion.div
+                        key={r._id}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ overflow: "hidden" }}
+                      >
+                        <div key={id} className="mb-6 border-b border-gray-300 pb-4">
+                          <div className="flex justify-between">
+                            <div className="flex">
+                              <div className="mt-1">
+                                <div className="flex items-center mb-3 w-[200px]">
+                                  <div 
+                                    className="w-8 h-8 rounded-full text-white flex items-center justify-center text-[14px] font-sans font-semibold"
+                                    style={{ backgroundColor: stringToColor(r.user_id.name) }}
+                                    >
+                                    {typeof r.user_id === 'object' && r.user_id.name ? r.user_id.name.charAt(0).toUpperCase() : "A"}
+                                  </div>
+                                  <span className="font-bold text-[16px] text-gray-800 ml-2">
+                                    {typeof r.user_id === 'object' ? r.user_id.name : "Ẩn danh"}
+                                  </span>
+                                </div>
+                                <p className="text-sm ml-1.5 text-gray-400 flex items-center"><Clock style={{width: 15, color: 'gray'}} className="text-gray-700" /> <span className="ml-1.5">{dayjs(r.created_at).format("DD/MM/YYYY")}</span></p>
+                              </div>
+                              <div className="ml-7">
+                                <div className="flex items-center mt-1">
+                                  <Rate 
+                                    style={{ fontSize: 13 }} 
+                                    disabled 
+                                    value={r.rating} 
+                                    
+                                  />
+                                  <span className="text-sm ml-2.5 text-gray-600">
+                                    {desc[r.rating - 1]} 
+                                  </span>
+                                </div>
+                                <p className="mt-2 text-[14px] max-w-[95%] text-gray-700">{r.comment}</p>
+
+                                {r.images?.length > 0 && (
+                                  <div className="flex flex-wrap gap-2 mt-2">
+                                    {r.images.map((img: any, i: any) => (
+                                      <Image
+                                        key={i}
+                                        src={img}
+                                        style={{width: 64, height: 64,  objectFit: "cover"}}
+                                        
+                                        alt={`review-img-${i}`}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+
+                                {r.reply && (
+                                  <div className="mt-3 p-2 text-[14px] border-l-4 border-blue-600 flex items-center bg-blue-50 text-sm text-[#01225a]">
+                                    <span className="w-8 h-8 rounded-[50%] bg-blue-300 flex items-center justify-center"><User style={{width: 19, color: "#003366"}} /></span><strong className="ml-1.5"> Admin:</strong> {r.reply}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex gap-2 mt-1">
+                              {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                                <Button 
+                                  size="small" 
+                                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-all duration-300"  
+                                  onClick={() => handleOpenReviewModal(r._id)}
+                                >
+                                  Sửa
+                                </Button>
+                              )}
+                              {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
+                                <Popconfirm
+                                  title="Bạn chắc chắn muốn xóa đánh giá này?"
+                                  onConfirm={() => handleDeleteReview(r._id)}
+                                  okText="Xóa"
+                                  cancelText="Hủy"
+                                >
+                                  <Button size="small" danger>Xóa</Button>
+                                </Popconfirm>
+                              )}
+                              
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  
+                  {filteredReviews.length > 3 && (
+                    <div className="text-center mt-4 pb-4">
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                      >
+                        <Button
+                          onClick={() => setShowAllReviews(!showAllReviews)}
+                          type="primary"
+                          style={{ background: "#01225a" }}
+                        >
+                          {showAllReviews ? "Thu gọn" : `Xem tất cả ${filteredReviews.length} đánh giá`}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div> <br />
+      </FadeInWhenVisible>
+
       <Modal
         visible={isReviewModalVisible}
         onCancel={handleCloseReviewModal}
