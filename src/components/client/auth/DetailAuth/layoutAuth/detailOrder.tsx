@@ -171,8 +171,8 @@ const DetailOrderClient = () => {
                         <Col xs={24} lg={16}>
                             <Card
                                 title={
-                                    <span className="flex items-center">
-                                    <ShoppingOutlined className="mr-2" /> Sản phẩm trong đơn hàng
+                                    <span className="flex items-center text-[18px]">
+                                        <ShoppingOutlined style={{ fontSize: 23 }}  className="mr-2" /> Sản phẩm trong đơn hàng
                                     </span>
                                 }
                                 className="rounded-xl shadow-lg"
@@ -259,8 +259,8 @@ const DetailOrderClient = () => {
                             <div className="space-y-3">
                                 <Card
                                     title={
-                                        <span className="flex items-center">
-                                        <TruckOutlined className="mr-2" /> Thông tin giao hàng
+                                        <span className="flex items-center text-[18px]">
+                                            <TruckOutlined className="mr-2" style={{ fontSize: 23 }}  /> Thông tin giao hàng
                                         </span>
                                     }
                                     className="rounded-xl shadow-lg"
@@ -269,17 +269,17 @@ const DetailOrderClient = () => {
                                         <div className="flex items-center">
                                             <UserOutlined className="mr-2" />
                                             
-                                            <span className="text-right">{order.address?.recipient || "N/A"}</span>
+                                            <span>{order.address?.recipient || "N/A"}</span>
                                         </div>
                                         <div className="flex items-center">
                                             <PhoneOutlined className="mr-2" />
                                             
-                                            <span className="text-right">{order.shipping_address?.phone || "N/A"}</span>
+                                            <span >{order.shipping_address?.phone || "N/A"}</span>
                                         </div>
-                                        <div className="flex items-center">
-                                            <HomeOutlined className="mr-2" />
+                                        <div className="flex items-start">
+                                            <HomeOutlined className="mr-2 mt-1.5" />
                                             
-                                            <span className="text-right text-[13px]">
+                                            <span className="break-words">
                                                 {order.address?.address || "N/A"}
                                             </span>
                                         </div>
@@ -287,7 +287,7 @@ const DetailOrderClient = () => {
                                             <DollarOutlined className="mr-2" />
                                             
                                             <span className="text-gray-600">
-                                                {order.payment_method === 'cod' ? 'Thanh toán khi nhận nhà' : order.payment_method || "N/A"}
+                                                {order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng' : order.payment_method || "N/A"}
                                             </span>
                                         </div>
                                         <div className="flex items-center mb-2">
@@ -337,7 +337,7 @@ const DetailOrderClient = () => {
                             <div className="mt-3">
                                 <Card
                                     title={
-                                    <span className="flex items-center">
+                                    <span className="flex items-center text-[18px]">
                                         <ClockCircleOutlined className="mr-2" /> Lịch sử đơn hàng
                                     </span>
                                     }

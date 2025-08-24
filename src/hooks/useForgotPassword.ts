@@ -12,7 +12,7 @@ export const useForgotPassword = ({resource, onSuccess, onError}: useListParams)
     return useMutation({
         mutationFn: (values: ForgotPasswordForm) => forgotPassword({resource, values}),
         onSuccess: () => {
-            message.success("Password reset email has been sent");
+            message.success("Email đặt lại mật khẩu đã được gửi vui lòng kiểm tra email");
             if (onSuccess) {
                 onSuccess();
             }

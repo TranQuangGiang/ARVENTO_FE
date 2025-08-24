@@ -360,14 +360,29 @@ const HomeAuth = () => {
             }
         });
     };
+
+    // address 
+    const { data:AddressData, refetch: RefetchAddress } = useList({
+        resource: `/addresses/me`
+    });
+
+    const dataAddress = AddressData?.data?.docs;
+    console.log(dataAddress);
+    useEffect(() => {
+        RefetchAddress();
+    }, [dataAddress])
     return (
         <div className='w-full'>
-            <div className='w-full h-14 border border-blue-500 rounded-[7px] flex items-center mb-3 bg-[#ebf3fe]'>
-                <span className='w-full flex items-center justify-between'>  
-                    <p className='flex text-[15px] ml-4 items-center font-medium'><Info className='mr-2 text-blue-600' style={{width: 20}} /> Thêm địa chỉ để đặt hàng nhanh hơn </p>
-                </span>
-                
-            </div>
+            {
+                dataAddress?.length === 0 && (
+                    <div className='w-full h-14 cursor-pointer border border-blue-500 rounded-[7px] flex items-center mb-3 bg-[#ebf3fe]'>
+                        <span 
+                            className='w-full flex items-center justify-between'>  
+                            <p className='flex text-[15px] ml-4 items-center font-medium'><Info className='mr-2 text-blue-600' style={{width: 20}} /> Thêm địa chỉ để đặt hàng nhanh hơn </p>
+                        </span>
+                    </div>
+                ) 
+            }
             <div className='w-full flex '>
                 <div className='w-3/4 bg-white rounded-[15px] max-h-screen p-5'>
                     <h4 className='text-[17px] font-semibold '>Đơn hàng gần đây</h4>

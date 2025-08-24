@@ -32,14 +32,25 @@ const EditBanner = () => {
     queryFn: () => fetchBanner(id!),
     enabled: !!id,
   });
-
+  console.log(banner);
+  
   useEffect(() => {
     if (banner) {
+      const fileList = banner.image_url ? [
+        {
+          uid: '-1',
+          name: 'banner.jpg',
+          status: 'done',
+          url: banner.image_url,
+        },
+      ] : [];
+
       form.setFieldsValue({
         title: banner.title,
         link: banner.link,
         position: banner.position,
         is_active: banner.is_active,
+        image: fileList
       });
       setPreviewUrl(banner.image);
     }
@@ -137,7 +148,7 @@ const EditBanner = () => {
             <Form.Item
               label="Ảnh"
               name="image"
-              valuePropName="file"
+              valuePropName="fileList"
               getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
               rules={[{ required: true, message: "Vui lòng tải lên hình ảnh" }]}
             >
@@ -149,7 +160,7 @@ const EditBanner = () => {
               >
                 <div>
                   <UploadOutlined />
-                  <div className="mt-1">tải lên</div>
+                  <div className="mt-1">Tải lên</div>
                 </div>
               </Upload>
             </Form.Item>

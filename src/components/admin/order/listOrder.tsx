@@ -3,12 +3,18 @@ import { Table, Select, Button, Input, message, Card, Typography, Tag, Popconfir
 import { useList } from "../../../hooks/useList";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
-import { ExclamationCircleOutlined, EyeOutlined } from "@ant-design/icons";
+import { ArrowDownOutlined, ArrowUpOutlined, ExclamationCircleOutlined, EyeOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from 'framer-motion';
 import ExportOrderList from "./exportOrderList";
 import axios from "axios";
 import ApproveReturnRequest from "./approveReturnRequest";
 import RefundRequestDetail from "./RequestRefund";
+import { createFromIconfontCN } from '@ant-design/icons';
+
+
+const IconFont = createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87c4g.js', // Thay bằng URL của bạn
+});
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -17,7 +23,8 @@ const ListOrder = () => {
   const [showModal, setShowModal] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   const modalParam = searchParams.get("modal");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortOrder, setSortOrder] = useState<"created_at" | "-created_at" | "total" | "-total" | null>(null);
+  const [paymentOrder, setPaymentOrder] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
   const [activeStatusTab, setActiveStatusTab] = useState<string>("all");
@@ -173,7 +180,21 @@ const ListOrder = () => {
 
   const filteredData = useMemo(() => {
     const orders = allOrders;
-    return [...orders]
+    let sortedOrders = [...orders];
+    if (sortOrder) {
+      sortedOrders.sort((a:any, b:any) => {
+        if (sortOrder === 'created_at' || sortOrder === '-created_at') {
+          const dateA = new Date(a.created_at).getTime();
+          const dateB = new Date(b.created_at).getTime();
+          return sortOrder === "created_at" ? dateA - dateB : dateB - dateA;
+        }
+        if (sortOrder === 'total' || sortOrder === '-total') {
+          return sortOrder === "total" ? a.total - b.total : b.total - a.total;
+        }
+        return 0;
+      });
+    }
+    return sortedOrders
       .filter((item) => {
         const matchesSearch =
           item._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -181,15 +202,12 @@ const ListOrder = () => {
 
         const matchesStatus =
           activeStatusTab === "all" || item.status === activeStatusTab;
-
-        return matchesSearch && matchesStatus;
+        const matchesPaymentMethod = !paymentOrder || item.payment_method === paymentOrder;
+        
+        return matchesSearch && matchesStatus && matchesPaymentMethod;
       })
-      .sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      });
-  }, [allOrders, searchTerm, sortOrder, activeStatusTab]);
+      
+  }, [allOrders, searchTerm, sortOrder, activeStatusTab, paymentOrder]);
 
   const handleComfirm = (record: any) => {
     // Thay đổi tham số truyền vào từ orderID thành cả record để lấy lý do
@@ -373,16 +391,38 @@ const ListOrder = () => {
 
               <div className="flex justify-between mb-4 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span>Sắp xếp:</span>
-                  <Select
-                    value={sortOrder}
-                    onChange={setSortOrder}
-                    style={{ width: 130 }}
-                  >
-                    <Option value="asc">Cũ nhất</Option>
-                    <Option value="desc">Mới nhất</Option>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <span>Sắp xếp:</span>
+                    <Select
+                      value={sortOrder}
+                      allowClear
+                      onChange={setSortOrder}
+                      style={{ width: 160 }}
+                      placeholder="Sắp xếp"
+                    >
+                      <Option value="-created_at"><FieldTimeOutlined /> Mới nhất</Option>
+                      <Option value="created_at"><FieldTimeOutlined /> Cũ nhất</Option>
+                      <Option value="-total"><ArrowUpOutlined /> Tổng tiền tăng dần</Option>
+                      <Option value="total"><ArrowDownOutlined /> Tổng tiền giảm dần</Option>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 ml-1.5">
+                   
+                    <Select
+                      value={paymentOrder}
+                      allowClear
+                      onChange={setPaymentOrder}
+                      style={{ width: 200 }}
+                      placeholder="Lọc theo phương thức thanh toán"
+                    >
+                      <Option value="cod"> <span className="flex items-center"><img className="w-[25px] h-[25px] " src="https://cdn-icons-png.flaticon.com/512/1041/1041883.png" /> <p className="ml-2">Thanh toán khi nhận hàng</p></span></Option>
+                      <Option value="zalopay"> <span className="flex items-center"><img className="w-[25px] h-[25px] " src="https://i.pinimg.com/1200x/a4/45/6c/a4456c70a348cced98601a00e4050ca1.jpg" /> <p className="ml-2">Zalo Pay</p></span></Option>
+                      <Option value="momo"><span className="flex items-center"><img className="w-[25px] h-[25px] " src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" /> <p className="ml-2">Momo</p></span></Option>
+                    </Select>
+                  </div>
                 </div>
+                
                 <div className="flex items-center gap-3">
                   <Input
                     placeholder="Tìm theo ID hoặc email..."

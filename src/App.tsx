@@ -84,6 +84,7 @@ import Statistical from './components/admin/statistical/statical'
 import RequestRefund from './components/admin/order/RequestRefund'
 import ReplyReview from './components/admin/review/editReview'
 import DetailReview from './components/admin/review/detailReview'
+import AddAddressesAdmin from './components/admin/user/addAddressAdmin'
 
 
 
@@ -156,6 +157,7 @@ function App() {
         {path: 'getUserOne/:id', element: <GetUserOne/>},
         {path: 'editUser/:id', element: <EditUser/>},
         {path: 'createUser', element: <CreateUser />},
+        {path: 'addAddressAdmin', element: <AddAddressesAdmin />},
         {path: 'listcoupon', element: <ListCoupon />},
         {path: 'addCoupon', element: <AddCoupon />},
         {path: 'editcoupon/:id', element: <EditCoupon />},

@@ -175,7 +175,10 @@ const AccountInformation = () => {
                     onRefetch={refetch}
                 />
             )}
-            <AddAddresses isOpen={showModal === "addAddresses"} onClose={() => setShowModal(null)} />
+            <AddAddresses 
+                isOpen={showModal === "addAddresses"} 
+                onClose={() => setShowModal(null)} 
+            />
             <UpdateAccount isOpen={showModal === "updateAccount"} onClose={() => setShowModal(null)} />
         </div>
     );

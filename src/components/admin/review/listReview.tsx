@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 
-import { DeleteOutlined, EditOutlined, EyeOutlined, MessageOutlined } from '@ant-design/icons';
+import { MessageOutlined } from '@ant-design/icons';
 
-import { Button, Popconfirm, Switch, message, Input, Select, Table, Rate } from "antd";
+import { Button, Switch, message, Input, Select, Table, Rate } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDelete } from "../../../hooks/useDelete";
 import { useListReview } from "../../../hooks/useListReview";
 import { useToggleReviewStatus } from "../../../hooks/useToggleReviewStatus";
 import { useApproveReview } from "../../../hooks/useUpdateAction";
 import type { ColumnsType } from "antd/es/table";
+import { useList } from "../../../hooks/useList";
+import axios from "axios";
 
 const { Option } = Select;
 
@@ -30,6 +31,8 @@ const ListReview = () => {
   const toggleReviewStatus = useToggleReviewStatus();
   const approveReview = useApproveReview();
   const [hasShownSuccess, setHasShownSuccess] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+  const [productFilter, setProductFilter] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (Array.isArray(reviews)) {
@@ -56,11 +59,6 @@ const ListReview = () => {
     }
   }, [location.state, navigate, hasShownSuccess]);
 
-  const filteredReviews = localReviews.filter((review: any) =>
-    (review?.user_id?.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (review?.comment ?? '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const handleToggleStatus = (id: string) => {
     toggleReviewStatus.mutate(
       { reviewId: id },
@@ -85,6 +83,59 @@ const ListReview = () => {
       });
     }
   };
+
+
+  // sản phẩm
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      let fetchedProducts:any = [];
+      let page = 1;
+      let hasNextPage = true;
+      const limitPerPage = 50;
+
+      while (hasNextPage) {
+        try {
+          const res = await axios.get(`http://localhost:3000/api/products?page=${page}&limit=${limitPerPage}`);
+          const { data } = res?.data;
+
+          if (data && data.docs) {
+            fetchedProducts = [...fetchedProducts, ...data.docs];
+          }
+
+          if (data && data.hasNextPage) {
+            page = data.nextPage;
+          } else {
+            hasNextPage = false;
+          }
+        } catch (error) {
+          console.error("Lỗi khi tải sản phẩm:", error);
+          hasNextPage = false;
+        }
+      }
+
+      setAllProducts(fetchedProducts)
+    }
+
+    fetchAllProducts();
+  }, []);
+
+  const productOption = allProducts.map((product: any) => ({
+    label: product.name,
+    value: product._id
+  }))
+
+  const filteredReviews  = localReviews
+    .filter((review: any) => 
+      (review?.user_id?.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (review.comment ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    .filter((review: any) => {
+      if (!productFilter) {
+        return true;
+      }
+      return review?.product_id?._id === productFilter;
+    })
 
   const columns: ColumnsType<any> = [
     {
@@ -171,7 +222,7 @@ const ListReview = () => {
       ),
     },
   ];
-
+  
   return (
     <AnimatePresence>
       <motion.div
@@ -189,26 +240,44 @@ const ListReview = () => {
           <div className="pl-6 pr-6 bg-gray-50 min-h-screen">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow mt-10">
               <h2 className="text-[22px] flex items-center font-bold text-gray-800 mb-5">
-                <MessageSquare className="pr-2" style={{ width: 30 }} /> Review List
+                <MessageSquare className="pr-2" style={{ width: 30 }} /> Danh sách đánh giá sản phẩm
               </h2>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex gap-2 items-center">
-                  <span className="text-gray-500">Hiện</span>
-                  <Select
-                    value={itemsPerPage}
-                    onChange={(value) => {
-                      setItemsPerPage(value);
-                      setCurrentPage(1);
-                    }}
-                    style={{ width: 80 }}
-                  >
-                    {[3, 5, 10].map((num) => (
-                      <Option key={num} value={num}>
-                        {num}
-                      </Option>
-                    ))}
-                  </Select>
+                  <div>
+                    <span className="text-gray-500 mr-1.5">Hiện</span>
+                    <Select
+                      value={itemsPerPage}
+                      onChange={(value) => {
+                        setItemsPerPage(value);
+                        setCurrentPage(1);
+                      }}
+                      style={{ width: 80 }}
+                    >
+                      {[3, 5, 10].map((num) => (
+                        <Option key={num} value={num}>
+                          {num}
+                        </Option>
+                      ))}
+                    </Select>
+                  </div>
+                  <div className="ml-4">
+                    <Select
+                      placeholder="Lọc theo sản phẩm"
+                      allowClear
+                      value={productFilter}
+                      onChange={(value) => {
+                        setProductFilter(value);
+                        setCurrentPage(1); // Quay về trang 1 khi lọc
+                      }}
+                      style={{ minWidth: 300 }}
+                      options={productOption}
+                    >
+                      
+                    </Select>
+                  </div>
                 </div>
+                
                 <Input
                   placeholder="Tìm kiếm theo người dùng hoặc bình luận..."
                   value={searchTerm}

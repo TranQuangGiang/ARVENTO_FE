@@ -71,7 +71,7 @@ const AdminSidebar = () => {
                         <Link
                             to={`/admin/listUsers`}
                             className={`flex items-center group gap-2 p-3.5 font-semibold rounded-tl-[25px] rounded-bl-[25px] transition-all text-[17px] ${
-                               isPathMatch(['/admin/listUsers', "/admin/getUserOne", "/admin/editUser"])
+                               isPathMatch(['/admin/listUsers', "/admin/getUserOne", "/admin/editUser", "/admin/createUser"])
                                 ? 'bg-[#FEE2E2] text-red-500'
                                 : 'text-[#1E293B] hover:text-red-500 hover:bg-[#FEE2E2]'
                             }`}
