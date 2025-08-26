@@ -11,14 +11,16 @@ const DetailAuth = () => {
     const location = useLocation();
     const nav = useNavigate();
 
-    const {logout} = useContext(AuthContexts);
+    const {logout, user} = useContext(AuthContexts);
+    const token = localStorage.getItem("token");
     const { data:UserMe, refetch } = useUserMe({
-        resource: `/users/me`
+        resource: `/users/me`,
+        token: token 
     })
     
     useEffect(() => {
-        refetch(); // Call API again
-    }, [location.pathname]);
+        refetch(); 
+    }, [location.pathname, user]);
 
     function maskEmail(email: string | undefined): string {
         if (!email) return "";
@@ -37,9 +39,9 @@ const DetailAuth = () => {
                         <img className='w-14 h-14' src="/tho.png" alt="" />
                     </span>
                     <span className='[&_h2]:font-bold [&_h2]:uppercase [&_h2]:font-sans [&_h2]:text-[18px]'>
-                        <h2 className='uppercase'>{UserMe?.data.name}</h2>
+                        <h2 className='uppercase'>{UserMe?.data.name || 'NAN'}</h2>
                         <p className="text-[15px] font-sans text-gray-800">
-                            {maskEmail(UserMe?.data.email)}
+                            {maskEmail(UserMe?.data.email || 'NAN')}
                         </p>
                         {!UserMe?.data?.verified ? (
                             <div style={{ marginTop: 8 }}>
@@ -213,7 +215,7 @@ const DetailAuth = () => {
                     </ul>
                 </nav>
 
-                <div className='ml-3 w-3/4'>
+                <div className='ml-3 w-3/4 mb-[20px]'>
                     <Outlet />
                 </div>
             </div>

@@ -37,7 +37,7 @@ const ListProductCategory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
 
-  const { data: categoryList, refetch, isLoading } = useList({
+  const { data: categoryList, isLoading } = useList({
     resource: '/categories/client',
   });
 
@@ -162,7 +162,7 @@ const ListProductCategory = () => {
         <nav className="text-[14px] text-gray-600">
           <Link to="/" className="hover:text-black">Trang chủ</Link>
           <span className="mx-2">/</span>
-          <span className="text-black font-medium">{singleCategory?.data.name}</span>
+          <span className="text-black font-medium">{singleCategory?.data.name || "Tất cả sản phẩm"}</span>
         </nav>
       </div>
 

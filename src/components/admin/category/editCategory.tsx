@@ -81,7 +81,7 @@ const EditCategory = () => {
       >
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            Edit Category
+            Cập nhập danh mục
           </h2>
           <Link to={`/admin/listcategory`}>
             <Button
@@ -89,12 +89,12 @@ const EditCategory = () => {
               icon={<OrderedListOutlined />}
               style={{ width: 200, height: 40 }}
             >
-              List Category
+              Danh sách danh mục
             </Button>
           </Link>
         </div>
         <p className="text-sm text-gray-500 mb-6">
-          Fill in the details to update the category.
+          Điền thông tin chi tiết để cập nhật danh mục.
         </p>
 
         <Form
@@ -102,25 +102,38 @@ const EditCategory = () => {
           form={form}
           onFinish={onFinish}
           className="space-y-5"
+          onValuesChange={(changedValues, allValues) => {
+            if ("name" in changedValues) {
+              const rawName = changedValues.name || "";
+              const generatedSlug = rawName
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9 ]/g, "")
+                .trim()
+                .replace(/\s+/g, "-");
+              form.setFieldsValue({ slug: generatedSlug });
+            }
+          }}
         >
           <Form.Item
-            label={<span className="text-base font-medium">Title</span>}
+            label={<span className="text-base font-medium">Tên danh mục</span>}
             name="name"
-            rules={[{ required: true, message: "Please enter the title" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên danh mục" }]}
           >
             <Input placeholder="Enter title" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-base font-medium">Slug</span>}
+            label={<span className="text-base font-medium">Đường dẫn</span>}
             name="slug"
-            rules={[{ required: true, message: "Please enter the slug" }]}
+            rules={[{ required: true, message: "Đường dẫn không bỏ trống" }]}
           >
             <Input placeholder="Enter slug" className="h-10" size="large" />
           </Form.Item>
 
           <Form.Item
-            label={<span className="text-base font-medium">Description</span>}
+            label={<span className="text-base font-medium">Mô tả</span>}
             name="description"
           >
             <Input.TextArea placeholder="Enter description" rows={4} />
@@ -128,7 +141,7 @@ const EditCategory = () => {
 
           <Form.Item
             name="images"
-            label={<span className="text-base font-medium">Image Category</span>}
+            label={<span className="text-base font-medium">Ảnh danh mục</span>}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
             rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm" }]}
@@ -147,7 +160,7 @@ const EditCategory = () => {
             >
               <div>
                 <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ marginTop: 8 }}>Tải lên</div>
               </div>
             </Upload>
           </Form.Item>
@@ -161,7 +174,7 @@ const EditCategory = () => {
               style={{ height: 40 }}
               type="primary"
             >
-              Update Category
+              Cập nhập
             </Button>
             <Button
               danger
@@ -172,7 +185,7 @@ const EditCategory = () => {
               style={{ height: 40 }}
               icon={<ReloadOutlined />}
             >
-              Cancel
+              Hủy
             </Button>
           </div>
         </Form>

@@ -9,6 +9,7 @@ type useListParams = {
 }
 type useListUserMe = {
     resource: string ;
+    token: string | null;
 }
 
 export const useOneData = ({ resource, _id } : useListParams) => {
@@ -19,9 +20,9 @@ export const useOneData = ({ resource, _id } : useListParams) => {
     });
 };
 
-export const useUserMe = ({ resource }:useListUserMe ) => {
+export const useUserMe = ({ resource, token }:useListUserMe ) => {
     return useQuery({
-        queryKey: [resource],
+        queryKey: [resource, token],
         queryFn: () => useUser({ resource }),
     });
 }

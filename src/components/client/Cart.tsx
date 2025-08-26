@@ -45,6 +45,9 @@ const Cart = () => {
 
   const { data: vouchers } = useList({ resource: '/coupons/admin/coupons' });
 
+  const vouchersData = vouchers?.data?.coupons.filter((p:any) => p.isActive);
+  console.log(vouchersData);
+  
   const handleQuantityChange = (product_id: string, size: string, color: { name: string; hex: string }, sku: string, price: number, image: { url: string, alt: string, id: string, _id: string }, stock: number , quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(product_id, size, color);
@@ -190,7 +193,7 @@ const Cart = () => {
 
             {showVouchers && (
               <div className="space-y-2 mt-2">
-                {vouchers?.data?.coupons?.map((voucher: any) => {
+                {vouchersData?.map((voucher: any) => {
                   const isSelected = selectedVoucher === voucher.code;
                   const isExpired = moment(voucher.expiryDate).isBefore(moment());
                   return (
