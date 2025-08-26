@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useRegister } from "../../../hooks/useRegister";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 const Register = ({ isOpen, onClose, switchToLogin }: any) => {
   if (!switchToLogin) return null;
+  const [loading,setLoading] = useState(false);
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -18,6 +20,7 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
   });
 
   function onFinish(values: any) {
+    setLoading(true);
     mutate(values, {
       onSuccess: () => {
         message.success(`Đăng ký thành công`);
@@ -26,7 +29,11 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
       onError: (err: any) => {
         const errMessage = err?.response?.data?.message || "Đã có lỗi xảy ra ";
         message.error(errMessage);
+        setLoading(false)
       },
+      onSettled: () => {
+        setLoading(false);
+      }
     });
   }
 
@@ -112,6 +119,7 @@ const Register = ({ isOpen, onClose, switchToLogin }: any) => {
                 <Button
                   style={{ height: 45 }}
                   type="primary"
+                  loading={loading}
                   htmlType="submit"
                   className="w-full mt-[15px] !text-white rounded-[4px] font-semibold hover:bg-blue-800 cursor-pointer transition-all duration-200"
                 >

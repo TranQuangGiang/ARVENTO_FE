@@ -143,7 +143,7 @@ const Thanhcong = () => {
                     </div>
                     <div className="flex items-start gap-2">
                       <HomeOutlined className="mt-1"/>
-                      <Text>{order.shipping_address?.detail}</Text>
+                      <Text>{order.address?.address}</Text>
                     </div>
                     <div className="flex items-start gap-2">
                       <FileTextOutlined className="mt-1" />

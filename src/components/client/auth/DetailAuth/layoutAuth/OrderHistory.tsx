@@ -12,7 +12,7 @@ const OrderHistory = () => {
     const [selectedStatus, setSelectedStatus] = useState("all");
     const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
     const [orderId, setOrderId] = useState<any>(null);
-
+    
     const handleOpenReviewModal = (orderId: string) => {
         setOrderId(orderId);
         setIsReviewModalVisible(true);
@@ -86,9 +86,11 @@ const OrderHistory = () => {
         { key: "returned", label: "Đã trả hàng" },
     ];
 
+    const token = localStorage.getItem("token");
     
     const { data: orderData, refetch } = useList({
-        resource: `/orders/my`
+        resource: `/orders/my`,
+        token: token
     });
     const orders = orderData?.data.orders || [];
     console.log(orders);
@@ -368,7 +370,7 @@ const OrderHistory = () => {
                                             Mã đơn: <strong className='text-black'>{order._id}</strong>
                                         </p>
                                         <p className="font-bold text-lg mb-2">Sản phẩm trong đơn:</p>
-                                        {order.items?.map((item: any) => {
+                                        {order.items?.slice(0, 2)?.map((item: any) => {
                                             return (
                                                 <div key={item.product?._id} className="flex items-center gap-3 mb-2">
                                                     <Image

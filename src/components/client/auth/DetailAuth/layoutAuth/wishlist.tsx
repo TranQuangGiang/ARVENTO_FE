@@ -1,8 +1,5 @@
-import React, { useEffect } from 'react'
 import { useList } from '../../../../../hooks/useList'
-import { Heart } from 'lucide-react';
 import { useDelete } from '../../../../../hooks/useDelete';
-import { Link } from 'react-router-dom';
 import { AnimatePresence,motion } from 'framer-motion';
 import { HeartFilled } from '@ant-design/icons';
 
@@ -13,8 +10,10 @@ const formatPrice = (price: any) => {
 };
 
 const Wishlist = () => {
+  const token = localStorage.getItem("token");
   const { data, refetch } = useList({
-    resource: `/favorites`
+    resource: `/favorites`,
+    token: token
   });
   
   const delWishlist = async (product_id:any) => {
