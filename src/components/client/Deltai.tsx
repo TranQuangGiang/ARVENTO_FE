@@ -217,8 +217,12 @@ const DeltaiProduct = () => {
 
 
   const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
+  console.log("color name: ", colorNames);
+  
   const sizes = variants.filter(v => v.color.name === selectedColor).map(v => v.size);
   const colorIndex = colorNames.indexOf(selectedColor);
+  console.log("color index: ", colorIndex);
+  
   const filteredImages = product?.images?.slice(colorIndex * 5, colorIndex * 5 + 5) || [];
   const currentStock = variants.find(v => v.color.name === selectedColor && v.size === selectedSize)?.stock || 0;
 
@@ -553,7 +557,7 @@ const DeltaiProduct = () => {
                   value={quantity}
                   min={1}
                   max={currentStock}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  onChange={(e:any) => setQuantity((e.target.value))}
                   className="w-20 sm:w-16 border px-2 py-1 text-center border-[#01225a] outline-0"
                 />
                 <Button
@@ -829,7 +833,7 @@ const DeltaiProduct = () => {
 
                                 {r.reply && (
                                   <div className="mt-3 p-2 text-[14px] border-l-4 border-blue-600 flex items-center bg-blue-50 text-sm text-[#01225a]">
-                                    <span className="w-8 h-8 rounded-[50%] bg-blue-300 flex items-center justify-center"><User style={{width: 19, color: "#003366"}} /></span><strong className="ml-1.5"> Admin:</strong> {r.reply}
+                                    <span className="w-8 h-8 rounded-[50%] bg-blue-300 flex items-center justify-center"><User style={{width: 19, color: "#003366"}} /></span><strong className="ml-1.5 mr-1"> Admin:</strong> {r.reply}
                                   </div>
                                 )}
                               </div>

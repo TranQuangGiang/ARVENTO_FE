@@ -95,7 +95,7 @@ const AddCategory = () => {
           <Form.Item
             label={<span className="text-base font-medium">Tên danh mục</span>}
             name="name"
-            rules={[{ required: true, message: "Please enter the title" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên danh mục" }]}
           >
             <Input placeholder="Nhập tên danh mục" className="h-10" size="large" />
           </Form.Item>
@@ -103,7 +103,7 @@ const AddCategory = () => {
           <Form.Item
             label={<span className="text-base font-medium">Đường dẫn</span>}
             name="slug"
-            rules={[{ required: true, message: "Please enter the slug" }]}
+            rules={[{ required: true, message: "Đường liên kết không bỏ trống" }]}
           >
             <Input placeholder="Đường dẫn" className="h-10" size="large" />
           </Form.Item>

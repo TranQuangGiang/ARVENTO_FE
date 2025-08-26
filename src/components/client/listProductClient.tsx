@@ -12,12 +12,16 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import FadeInWhenVisible from '../animations/FadeInWhenVisible';
 import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
+import { message } from 'antd';
 
 const ListProductClient = () => {
-   const location = useLocation();
+  const location = useLocation();
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [allProductsCategory, setAllProductsCategory] = useState<any[]>([]);
   const [isFetchingAll, setIsFetchingAll] = useState(true);
+  const [PostClient, setPostCLient] = useState<any[]>([]);
+  const categoryId = '6843e798c4fb85b25844b4a2';
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -103,7 +107,7 @@ const ListProductClient = () => {
   }, []);
   
   const allProductSliceCategory = [...allProductsCategory]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) // Sửa từ `create_at` thành `created_at`
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) 
     .slice(0, 4);
 
 
@@ -124,10 +128,20 @@ const ListProductClient = () => {
   const category = categorys?.data;
 
   // Bài viết
-  const { data: PostCLient } = useList({
-    resource: `/posts/client`
-  });
-  const posts = PostCLient?.data?.docs || [];
+  const fetchPost = async () => {
+    try {
+      const { data } = await axiosInstance.get(`/posts/client`);
+      setPostCLient(data?.data.docs || []);
+    } catch (error:any) {
+      message.error("Lỗi khi tải bài viết: ", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchPost();
+  }, []);
+
+  const posts = PostClient;
 
   // lấy ra 2 bài viết mới nhất
   const latesPost = posts.slice(0, 2);
@@ -135,7 +149,7 @@ const ListProductClient = () => {
   return (
     <main>
       <div className=' w-[100%]'>
-        {location.pathname === "/" && <BannerClient />}
+        
         
         <FadeInWhenVisible>
           <div className='list-product max-w-[76%] mx-auto mt-[100px] mb-[80px] flex items-center justify-between'>
@@ -221,7 +235,7 @@ const ListProductClient = () => {
                   Khám phá dòng sản phẩm đột phá, kết hợp công nghệ hiện đại và thiết kế tinh tế. Mang đến trải nghiệm hoàn toàn mới, giúp bạn giải quyết mọi vấn đề một cách hiệu quả.
                 </p>
                 <button className='mt-[10px] w-[140px] h-[45px] text-[#fff] text-[14px] border border-[#fff] transition-all cursor-pointer duration-300 hover:bg-white hover:text-black uppercase'>
-                  XEM THÊM <FontAwesomeIcon icon={faArrowRight} />
+                  Mua ngay <FontAwesomeIcon icon={faArrowRight} />
                 </button>
               </div>
               <div className='w-[35%] absolute bottom-0 right-0 z-20'>
@@ -298,11 +312,14 @@ const ListProductClient = () => {
             </div>
             <div className='flex flex-col ml-[20px] relative'>
               <div className='w-full flex items-center justify-between absolute -top-[10px]'>
-                <h3 className='text-[22px] font-bold uppercase'>FILLO Special Edition</h3>
+                <h3 className='text-[22px] font-bold uppercase'>Thương hiệu nổi bật</h3>
                 <span className='ml-[10px] mr-[10px] w-[500px] h-[1px] border border-[#ededed]'></span>
-                <p className='text-[13px] ml-[3px] cursor-pointer font-light text-black uppercase'>
-                  Xem thêm <FontAwesomeIcon className='font-light text-[12px]' icon={faArrowRight} />
-                </p>
+                <Link to={`/products?category=${categoryId}`}>
+                  <p className='text-[13px] ml-[3px] cursor-pointer font-light text-black uppercase'>
+                    Xem thêm <FontAwesomeIcon className='font-light text-[12px]' icon={faArrowRight} />
+                  </p>
+                </Link>
+                
               </div>
               <div className='list-product flex items-center justify-between gap-[21px] mt-[40px]'>
                 {isFetchingCategory && <p>Loading...</p>}
@@ -356,9 +373,12 @@ const ListProductClient = () => {
             <div className='w-[100%] flex items-center justify-between mb-[25px]'>
               <h3 className='text-[25px]  font-bold uppercase'>Tất cả sản phẩm</h3>
               <span className='w-[800px] h-[1px] border border-[#ededed]'></span>
-              <p className='text-[15px] cursor-pointer font-light  text-black uppercase'>
-                Xem thêm <FontAwesomeIcon className='font-light' icon={faArrowRight} />
-              </p>
+              <Link to={`/products?category`}>
+                <p className='text-[15px] cursor-pointer font-light  text-black uppercase'>
+                  Xem thêm <FontAwesomeIcon className='font-light' icon={faArrowRight} />
+                </p>
+              </Link>
+              
             </div>
             <div className='list-product w-full grid grid-cols-4 gap-[24px]'>
               {isFetchingAll && <p>Loading...</p>}

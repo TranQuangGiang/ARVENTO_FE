@@ -7,11 +7,25 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useOneData } from '../../../../../hooks/useOne';
 import moment from 'moment';
+import Review from '../../../review';
 
 
 const { Text, Title } = Typography;
 
 const HomeAuth = () => {
+     const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+    const [orderId, setOrderId] = useState<any>(null);
+
+    const handleOpenReviewModal = (orderId: string) => {
+        setOrderId(orderId);
+        setIsReviewModalVisible(true);
+    };
+
+    const handleCloseReviewModal = () => {
+        setIsReviewModalVisible(false);
+        setOrderId(null);
+    };
+
     const getOrderStatusLabel = (status: string) => {
         switch (status) {
             case "pending":
@@ -62,44 +76,40 @@ const HomeAuth = () => {
     };
 
     // call api khuyến mãi của bạn
-    const { data: couponsData, isLoading: isLoadingCoupons } = useList({
+    const { data: couponsData, refetch: refetchCoupons } = useList({
         resource: `/coupons/available`
     });
-    const CouponCard = ({ coupon }:any ) => {
-        const handleCopy = () => {
-            navigator.clipboard.writeText(coupon.code);
-            message.success("Đã sao chép mã!");
-        };
 
-        const isExpired = moment(coupon.end_date).isBefore(moment());
+    const CouponCard = ({ coupon }: any) => {
+        const isExpired = moment(coupon.expiryDate).isBefore(moment());
 
         return (
             <Card
-                // Removed w-full to let the parent container control the width
-                className={`mb-4 transition-all duration-300 ${isExpired ? 'opacity-60' : ''}`}
-                style={{ border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}
-                bodyStyle={{ padding: 0 }} // Slightly smaller padding
+                className={`transition-all duration-300 ${
+                    isExpired ? "opacity-60" : ""
+                }`}
+                style={{
+                    border: "1px dashed #f59e0b",
+                    borderRadius: 10,
+                    padding: "8px 12px",
+                }}
+                bodyStyle={{ padding: 0 }}
             >
-                <div className="flex items-center ">
-                    <div className="flex-shrink-0">
-                        <GiftOutlined style={{ fontSize: 32, color: '#f59e0b' }} /> {/* Smaller icon */}
-                    </div>
-                    <div className="flex-grow ml-1">
-                        <div className="flex items-center justify-between mb-1 mt-0.5">
-                            <Title level={5} style={{ margin: 0, fontWeight: 700, fontSize: 13 }}> {/* Smaller title */}
-                                {coupon.description}
-                            </Title>
-                        </div>
-                        
-                        
-                        <div className="mt-1.5 w-full text-[10px] text-gray-500 flex justify-between"> {/* Very small font size for details */}
-                            <span>
-                                Áp dụng cho đơn hàng từ **{coupon.min_amount?.toLocaleString() || 0}₫**
-                            </span>
-                            <span className='ml-1'>
-                                Hết hạn: <strong>{moment(coupon.expiryDate).format('DD/MM/YYYY')}</strong>
-                            </span>
-                        </div>
+                <div className="flex items-center gap-2">
+                    {/* Icon nhỏ */}
+                    <GiftOutlined style={{ fontSize: 20, color: "#f59e0b" }} />
+
+                    {/* Nội dung */}
+                    <div className="flex-grow">
+                        <h5 className="text-[12px] font-semibold text-gray-800 leading-tight">
+                            {coupon.description}
+                        </h5>
+                        <p className="text-[11px] text-gray-500">
+                            Giảm giá tối đa {coupon?.discountValue || 0} {coupon?.discountType === "percentage" ? "%" : "đ"}
+                        </p>
+                        <p className="text-[11px] text-red-500 font-medium">
+                            Hết hạn: {moment(coupon.expiryDate).format("DD/MM/YYYY")}
+                        </p>
                     </div>
                 </div>
             </Card>
@@ -107,13 +117,16 @@ const HomeAuth = () => {
     };
 
 
+
     const { data:orderData, refetch } = useList({
         resource: `/orders/my`
     });
     console.log(">>> orderData:", orderData);
+    
     useEffect(() => {
         refetch();
-    }, [refetch])
+    }, [refetch]);
+
     const orders = (orderData?.data.orders || [])
     .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 3);
@@ -384,9 +397,9 @@ const HomeAuth = () => {
                 ) 
             }
             <div className='w-full flex '>
-                <div className='w-3/4 bg-white rounded-[15px] max-h-screen p-5'>
+                <div className='w-3/4 bg-white rounded-[15px] min-h-screen p-5'>
                     <h4 className='text-[17px] font-semibold '>Đơn hàng gần đây</h4>
-                    <div className=' flex-col items-center gap-4 mt-4'>
+                    <div className=' flex-col items-center gap-4 mt-4 p0-4'>
                         { orders.length > 0 ? (
                                 orders.map((order:any) => (
                                     
@@ -511,6 +524,18 @@ const HomeAuth = () => {
                                                         </Popconfirm> 
                                                     )
                                                 }
+
+                                                {order.status === "completed" && (
+                                                    <Button
+                                                        type="default"
+                                                        style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
+                                                        className="text-[16px]"
+                                                        onClick={() => handleOpenReviewModal(order._id)} 
+                                                    >
+                                                        📝 Đánh giá sản phẩm
+                                                        
+                                                    </Button>
+                                                )}
                                             </div>
                                         </div>
                                     </Card>
@@ -530,28 +555,42 @@ const HomeAuth = () => {
                         }  
                     </div>
                 </div>
-                <div className='w-1/4 relative bg-white ml-3 h-[250px] rounded-[15px]'>
-                    <h4 className='absolute top-4 text-[17px] font-semibold left-4'>Ữu đãi của bạn </h4>
+                <div className="w-1/4 relative bg-white ml-3 min-h-[250px] rounded-[15px] p-4">
+                    <h4 className="text-[17px] font-semibold mb-3">
+                        Ưu đãi của bạn
+                    </h4>
                     {couponsData?.data?.length > 0 ? (
-                        couponsData.data.map((coupon:any) => (
-                            <div className='absolute top-13 w-[95%] ml-1.5 z-10'>
+                        <div className="flex flex-col gap-3  min-h-[200px] pr-1">
+                            {couponsData.data.map((coupon: any) => (
                                 <CouponCard key={coupon._id} coupon={coupon} />
-                            </div>
-                            
-                        ))
+                            ))}
+                        </div>
                     ) : (
                         <div className="relative w-full flex flex-col items-center justify-center py-8">
                             <div className="absolute w-[170px] h-[100px] rounded-full bg-blue-500 opacity-30 blur-2xl"></div>
-                            <span className="relative z-10 w-full flex flex-col items-center"> 
+                            <span className="relative z-10 w-full flex flex-col items-center">
                                 <img className="w-[170px]" src="/cartD.png" alt="" />
                             </span>
-                            <p className='mt-4 text-sm font-medium font-sans text-blue-950 text-center'>
-                                Bạn chưa có ưu đãi nào? Hãy theo dõi để nhận những mã giảm giá hấp dẫn!
+                            <p className="mt-4 text-sm font-medium font-sans text-blue-950 text-center">
+                                Bạn chưa có ưu đãi nào!
                             </p>
                         </div>
                     )}
                 </div>
             </div>
+            <Modal
+                visible={isReviewModalVisible}
+                onCancel={handleCloseReviewModal}
+                footer={null} // Hide footer buttons
+                width={800} // Adjust width as needed
+            >
+                {orderId && (
+                    <Review 
+                        orderId={orderId}
+                        onCLose={handleCloseReviewModal}
+                    />
+                )}
+            </Modal>
         </div>
     )
 }

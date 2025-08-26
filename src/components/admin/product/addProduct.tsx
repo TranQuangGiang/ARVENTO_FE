@@ -42,12 +42,15 @@ const AddProduct = () => {
       return;
     }
     const formData = new FormData();
+    const isActive = true;
     formData.append('name', values.name);
     formData.append('product_code', values.product_code);
     formData.append('slug', values.slug);
     formData.append('description', content);
     formData.append('category_id', values.category_id);
     formData.append('original_price', values.original_price);
+    formData.append('isActive', isActive.toString());
+    // formData.append('isActive', );
     (values.tags || []).forEach((tag: string) => formData.append('tags[]', tag));
 
     values.images.forEach((file: any, index: number) => {
@@ -148,7 +151,7 @@ const AddProduct = () => {
               <Form.Item
                 label="Giá gốc (VND)"
                 name="original_price"
-                className="font-semibold custom-input-number"
+                className="custom-input-number"
                 rules={[{ required: true, message: "Please enter the price" }]}
               >
                 <InputNumber<number>
@@ -196,7 +199,7 @@ const AddProduct = () => {
 
           {/* Tab 3: Thuộc tính */}
           <Tabs.TabPane tab="Thuộc tính" key="3">
-            <Form.Item label="Chọn thuộc tính">
+            <Form.Item label="Chọn thuộc tính" rules={[ { required: true, message: "Vui lòng chọn thuộc tính"} ]}>
               <Select
                 mode="multiple"
                 size="large"

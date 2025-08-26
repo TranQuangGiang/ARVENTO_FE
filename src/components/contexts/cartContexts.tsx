@@ -130,9 +130,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             );
             await fetchCart();
             message.success("Cập nhật số lượng sản phẩm thành công");
-        } catch (error) {
+        } catch (error:any) {
+            const errorMsg = 
+                error?.response?.data?.message ||
+                error?.message ||
+                "Đã xảy ra lỗi khi cập nhập số lượng trong giỏ hàng.";
             console.error("Lỗi cập nhật cart:", error);
-            message.error("Cập nhật thất bại");
+            message.error(errorMsg);
         }
     };
 

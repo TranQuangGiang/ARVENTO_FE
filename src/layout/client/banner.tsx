@@ -1,25 +1,52 @@
-import React, { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { faFeather, faShoePrints, faCircleCheck, faCartShopping,faAward,  faHandHoldingDollar  } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useList } from '../../hooks/useList';
+import axiosInstance from '../../utils/axiosInstance';
+import { message } from 'antd';
 
 const BannerClient = () => {
+    const [banners, setBanners] = useState<any[]>([]);
 
-    const { data:bannerClient, refetch } = useList({
-        resource: `/banners`
-    })
-    const bannerData = bannerClient?.data || [];
-    console.log(bannerData);
-    useEffect(() => {
-        refetch();
-    }, []);
-
-    const sortedBanners = [...bannerData].sort((a, b) => a?.position - b?.position);
+        const fetchBanner = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const { data } = await axiosInstance.get(`/banners`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setBanners(data?.data || []);
+            console.log(data);
+            
+        } catch (error) {
+            message.error("Tải banner thất bại");
+            setBanners([]);
+        }
+    }
     
-    const mainBaner = sortedBanners[0];
-    const newBalanceBanner = sortedBanners[3];
-    const nikeBanner = sortedBanners[4];
-    const adidasBanner = sortedBanners[5];
+    useEffect(() => {
+        fetchBanner();
+    }, []);
+  
+    
+
+    
+    const sortedBanners = useMemo(() => {
+        if (!banners || banners.length === 0) {
+            return [];
+        }
+        return [...banners].sort((a:any, b:any) => (a?.position || 0) - (b?.position || 0));
+    }, [banners])
+    
+    const findBannerByPosition = (position:any) => {
+        return sortedBanners.find((b:any) => b.position === position);
+    };
+
+    const mainBaner = findBannerByPosition(1);
+    const newBalanceBanner = findBannerByPosition(4);
+    const nikeBanner = findBannerByPosition(5);
+    const adidasBanner = findBannerByPosition(6);
+
     return (
         <div className='banner w-full'>
             <section className="relative w-full h-[600px] overflow-hidden">
