@@ -176,7 +176,6 @@ const EditProduct = () => {
                 <Form.Item
                   label="Giá gốc (VND)"
                   name="original_price"
-                  className="font-semibold"
                   rules={[{ required: true, message: "Please enter the price" }]}
                 >
                   <InputNumber<number>

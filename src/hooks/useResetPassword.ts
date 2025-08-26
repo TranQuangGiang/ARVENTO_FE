@@ -10,13 +10,13 @@ export const useResetPassword = ({resource, onSuccess}: useListParams) => {
     return useMutation({
         mutationFn: (values: ResetPasswordForm) => resetPassword({resource, values}),
         onSuccess: () => {
-            message.success("Password reset successful please login again");
+            message.success("Đặt lại mật khẩu thành công, vui lòng đăng nhập lại !");
             if (onSuccess) {
                 onSuccess();
             }
         },
         onError: (err:any) => {
-            message.error(err.response?.data?.message || "Password reset failed");
+            message.error(err.response?.data?.message || "Đặt mật khẩu thất bại");
         }
     })
 }

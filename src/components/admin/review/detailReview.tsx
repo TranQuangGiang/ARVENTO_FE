@@ -36,20 +36,6 @@ const DetailReview = () => {
         }
     }, [reviewData, form, refetch]);
 
-    const onFinish = async (values:any) => {
-        try {
-            const token = localStorage.getItem("token");
-            await axiosInstance.put(
-                `/reviews/admin/reviews/${id}/reply`,
-                { reply: values.reply },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            message.success("Phản hồi đánh giá thành công");
-            refetch(); // Tải lại dữ liệu để cập nhật phản hồi mới
-        } catch (error) {
-            message.error("Phản hồi đánh giá thất bại");
-        }
-    };
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -81,7 +67,7 @@ const DetailReview = () => {
             <hr className="border-t border-gray-300 mb-6 -mt-3" />
 
             <Card className="shadow-md mb-6">
-                <Form layout="vertical" form={form} onFinish={onFinish}>
+                <Form layout="vertical" form={form} >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Form.Item label="Khách hàng">
                             <Input value={user_id?.name || 'N/A'} disabled />
@@ -118,7 +104,6 @@ const DetailReview = () => {
                     </Form.Item>
 
                     <div className="flex justify-end space-x-3 mt-6">
-                        <Button type="primary" htmlType="submit">Gửi phản hồi</Button>
                         <Button onClick={() => navigate('/admin/listreview')}>Quay lại</Button>
                         <Button danger onClick={handleDelete}>Xóa đánh giá</Button>
                     </div>
