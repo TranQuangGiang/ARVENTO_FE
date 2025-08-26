@@ -170,7 +170,7 @@ const ApproveReturnRequest = ({
                             <Text strong>Khách hàng:</Text> {orderOne?.data?.address?.recipient}
                         </Paragraph>
                         <Paragraph>
-                            <Text strong>Số điện thoại:</Text> {orderOne?.data?.shipping_address.phone}
+                            <Text strong>Số điện thoại:</Text> {orderOne?.data?.shipping_address?.phone}
                         </Paragraph>
                         <Paragraph>
                             <Text strong>Địa chỉ giao hàng:</Text> {orderOne?.data?.address?.address}

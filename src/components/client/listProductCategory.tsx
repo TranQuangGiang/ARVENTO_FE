@@ -83,8 +83,8 @@ const ListProductCategory = () => {
           hasNextPage = false;
         }
       }
-      
-      setAllProducts(fetchedProducts);
+      const activeProducts = fetchedProducts.filter((p:any) => p.isActive); 
+      setAllProducts(activeProducts);
       setIsFetchingAll(false)
     }
     fetchAllProducts();

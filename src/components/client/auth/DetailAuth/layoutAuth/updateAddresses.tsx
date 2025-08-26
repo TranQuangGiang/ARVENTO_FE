@@ -260,8 +260,8 @@ const UpdateAddresses = ({ isOpen, onClose, addressId, onRefetch }: any) => {
                                                 className="rounded-lg h-[40px]"
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Laber" 
-                                            name="Loại địa chỉ" 
+                                        <Form.Item label="Loại địa chỉ" 
+                                            name="label" 
                                         >
                                             <Button type={selected === 'home' ? 'primary' : 'default'} 
                                                 onClick={() => {

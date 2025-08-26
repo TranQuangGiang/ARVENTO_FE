@@ -7,18 +7,15 @@ import { GiftOutlined, ClockCircleOutlined, RightCircleOutlined } from '@ant-des
 const { Title, Text } = Typography;
 
 const DiscountCode = () => {
+    const token = localStorage.getItem("token");
+
     const { data, isLoading } = useList({
-        resource: `/coupons/available`
+        resource: `/coupons/available`,
+        token: token
     });
 
     // Loading State
-    if (isLoading) {
-        return (
-            <div className='w-full relative min-h-[240px] rounded-[15px] bg-white flex justify-center items-center'>
-                <Spin size="large" />
-            </div>
-        );
-    }
+   
 
     // No Discount UI - Redesigned
     const NoDiscountUI = (
@@ -105,11 +102,11 @@ const DiscountCode = () => {
         </div>
     );
 
-    return (
-        <div className='w-full'>
-            {data?.data?.length === 0 ? NoDiscountUI : DiscountListUI}
-        </div>
-    );
+    if (!data?.data || data.data.length === 0) {
+        return NoDiscountUI;
+    }
+    
+    return DiscountListUI;
 };
 
 export default DiscountCode;

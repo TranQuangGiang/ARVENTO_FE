@@ -74,10 +74,13 @@ const HomeAuth = () => {
                 return "bg-gray-100 text-gray-600";
         }
     };
+    const token = localStorage.getItem("token");
+
 
     // call api khuyến mãi của bạn
     const { data: couponsData, refetch: refetchCoupons } = useList({
-        resource: `/coupons/available`
+        resource: `/coupons/available`,
+        token: token,
     });
 
     const CouponCard = ({ coupon }: any) => {
@@ -116,20 +119,18 @@ const HomeAuth = () => {
         );
     };
 
-
-
     const { data:orderData, refetch } = useList({
-        resource: `/orders/my`
+        resource: `/orders/my`,
+        token: token
     });
-    console.log(">>> orderData:", orderData);
     
     useEffect(() => {
         refetch();
     }, [refetch]);
 
     const orders = (orderData?.data.orders || [])
-    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 3);
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 3);
 
     // xác nhận đã nhận hàng
     const handleConfirmComplete = async (orderId: number) => {
@@ -376,7 +377,8 @@ const HomeAuth = () => {
 
     // address 
     const { data:AddressData, refetch: RefetchAddress } = useList({
-        resource: `/addresses/me`
+        resource: `/addresses/me`,
+        token: token
     });
 
     const dataAddress = AddressData?.data?.docs;
@@ -387,7 +389,7 @@ const HomeAuth = () => {
     return (
         <div className='w-full'>
             {
-                dataAddress?.length === 0 && (
+                dataAddress?.length === 0 || dataAddress?.data === null && (
                     <div className='w-full h-14 cursor-pointer border border-blue-500 rounded-[7px] flex items-center mb-3 bg-[#ebf3fe]'>
                         <span 
                             className='w-full flex items-center justify-between'>  
@@ -418,7 +420,7 @@ const HomeAuth = () => {
                                                     Mã đơn: <strong className='text-black'>{order._id}</strong>
                                                 </p>
                                                 <p className="font-bold text-gray-700 text-[17px] mb-3.5">Sản phẩm trong đơn:</p>
-                                                {order.items?.map((item: any) => {
+                                                {order.items?.slice(0, 2)?.map((item: any) => {
                                                     return (
                                                         <div key={item?.product?._id} className="flex items-center gap-3 mb-2">
                                                             {item.selected_variant?.image?.url ? (

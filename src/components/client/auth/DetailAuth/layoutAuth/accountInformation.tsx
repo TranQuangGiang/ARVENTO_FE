@@ -21,9 +21,17 @@ const AccountInformation = () => {
         }
     }, [modalParam]);
 
-    const { data: UserMe } = useUserMe({ resource: `/users/me` });
+    const token = localStorage.getItem("token");
+    const { data: UserMe, refetch:refetchUser } = useUserMe({ 
+        resource: `/users/me`, 
+        token: token
+    });
 
-    const { data: addressData, refetch } = useList({ resource: `/addresses/me` });
+   
+    const { data: addressData, refetch } = useList({ 
+        resource: `/addresses/me`, 
+        token: token
+    });
     const addresses: any[] = addressData?.data?.docs || [];
     const sortedAddresses = [...addresses].sort((a, b) => b.isDefault - a.isDefault);
 
@@ -61,11 +69,11 @@ const AccountInformation = () => {
                     <div className='flex flex-col gap-3'>
                         <div className='flex justify-between border-b pb-2'>
                             <p className='text-gray-500 text-[14px]'>Họ tên:</p>
-                            <p className='text-[14px] font-sans font-medium'>{UserMe?.data.name}</p>
+                            <p className='text-[14px] font-sans font-medium'>{UserMe?.data.name || 'NAN'}</p>
                         </div>
                         <div className='flex justify-between '>
                             <p className='text-gray-500 text-[14px]'>Email:</p>
-                            <p className='text-[14px] font-sans font-medium'>{UserMe?.data.email}</p>
+                            <p className='text-[14px] font-sans font-medium'>{UserMe?.data.email || 'NAN'}</p>
                         </div>
                     </div>
                     <div className='flex flex-col gap-3'>
@@ -179,7 +187,10 @@ const AccountInformation = () => {
                 isOpen={showModal === "addAddresses"} 
                 onClose={() => setShowModal(null)} 
             />
-            <UpdateAccount isOpen={showModal === "updateAccount"} onClose={() => setShowModal(null)} />
+            <UpdateAccount 
+                isOpen={showModal === "updateAccount"} 
+                onClose={() => setShowModal(null)} 
+            />
         </div>
     );
 };

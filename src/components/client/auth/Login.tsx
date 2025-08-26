@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContexts } from "../../contexts/authContexts";
 import ForgotPassword from "./ForgotPassword";
 import { X } from "lucide-react";
+import ScrollToTop from "../../ScrollToTop";
 
 
 const Login = ({ isOpen, onClose, switchToRegister }: any) => {
@@ -30,6 +31,7 @@ const Login = ({ isOpen, onClose, switchToRegister }: any) => {
         message.success("Đăng nhập thành công");
         login(data);
         onClose();
+        window.scrollTo(0, 0);
         nav('/');
       },
       onError: (err:any) => {

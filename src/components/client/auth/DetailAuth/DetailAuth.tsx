@@ -20,7 +20,7 @@ const DetailAuth = () => {
     
     useEffect(() => {
         refetch(); 
-    }, [location.pathname, user]);
+    }, [location.pathname]);
 
     function maskEmail(email: string | undefined): string {
         if (!email) return "";
