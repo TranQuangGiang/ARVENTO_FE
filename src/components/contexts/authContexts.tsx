@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import apiClient from "../../hooks/refreshToken";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
+import ScrollToTop from "../ScrollToTop";
 
 type AuthContextType = {
   user: any;
@@ -65,6 +66,7 @@ export const AuthProvider = ({ children }: any) => {
 
     apiClient.defaults.headers.common["Authorization"] = "Bearer " + access_token;
     nav('/');
+    
   };
 
   const logout = async () => {
@@ -81,6 +83,8 @@ export const AuthProvider = ({ children }: any) => {
       Cookies.remove("user");
       Cookies.remove("token");
       nav('/');
+      window.scrollTo(0, 0);
+
     }
   };
 

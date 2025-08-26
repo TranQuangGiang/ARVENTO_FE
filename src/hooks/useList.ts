@@ -8,11 +8,12 @@ type useListParams = {
     config?: object,
     options?: object,
     responseType?: string,
+    token?: string | null;
 }
 
-export const useList = ({resource}: useListParams) => {
+export const useList = ({resource, token}: useListParams) => {
     return useQuery({
-        queryKey: [resource],
+        queryKey: [resource, token],
         queryFn: () => getList({resource})
     })
 };

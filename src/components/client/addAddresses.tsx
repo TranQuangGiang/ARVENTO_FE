@@ -131,7 +131,11 @@ const AddAddressesClient = ({ isOpen, onClose }: any) => {
                           label="Số điện thoại"
                           name="phone"
                           rules={[
-                            { required: true, message: "Please enter phone number" },
+                            { required: true, message: "Vui lòng nhập số điện thoại" },
+                            {
+                              pattern: /^0\d{9}$/,
+                              message: "Số điện thoại không hợp lệ."
+                            }
                           ]}
                         >
                           <Input

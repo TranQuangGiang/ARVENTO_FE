@@ -4,9 +4,8 @@ import {
   message
 } from "antd";
 import {
-  PhoneOutlined, EnvironmentOutlined, HomeOutlined, PlusOutlined
+  PhoneOutlined, HomeOutlined, PlusOutlined
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCreate } from "../../../../../hooks/useCreate";
 import { useList } from "../../../../../hooks/useList";
@@ -29,7 +28,11 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
     }
   };
 
-  const { data:addresses, refetch } = useList({ resource: `/addresses/me` });
+  const token = localStorage.getItem("token")
+  const { data:addresses, refetch } = useList({ 
+    resource: `/addresses/me`,
+    token: token
+  });
 
   const { mutate } = useCreate({ resource: `/addresses/me` });
 
@@ -45,7 +48,6 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
         onClose();
       },
       onError: (error) => {
-        message.error("Tạo địa chỉ thất bại");
         console.log("Tạo địa chỉ lỗi: ", error); 
       },
       onSettled: () => {
@@ -119,7 +121,13 @@ const AddAddresses = ({ isOpen, onClose }: any) => {
                         <Form.Item
                           label="Số điện thoại"
                           name="phone"
-                          rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+                          rules={[
+                            { required: true, message: "Vui lòng nhập số điện thoại" },
+                            {
+                              pattern: /^0\d{9}$/,
+                              message: "Số điện thoại không hợp lệ."
+                            }
+                          ]}
                         >
                           <Input prefix={<PhoneOutlined />} placeholder="Nhập số điện thoại" className="rounded-lg h-[40px]" />
                         </Form.Item>

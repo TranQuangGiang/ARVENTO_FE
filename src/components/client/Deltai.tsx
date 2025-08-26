@@ -379,9 +379,10 @@ const DeltaiProduct = () => {
         setIsFavorite(true);
         message.success("Đã thêm vào yêu thích!");
       }
-    } catch (err) {
+    } catch (err:any) {
+      const errMg = err?.response?.data?.message;
       console.error("Lỗi khi cập nhật yêu thích:", err);
-      message.error("Thao tác không thành công!");
+      message.error(errMg);
     }
   };
 

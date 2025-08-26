@@ -15,8 +15,10 @@ const UpdateAccount = ({ isOpen, onClose }: any) => {
         }
     };
 
+    const token = localStorage.getItem("token");
     const { data:user, refetch } = useUserMe({
-        resource: `/users/me`
+        resource: `/users/me`,
+        token: token,
     })
     useEffect(() => {
         if (!user?.data) return;
