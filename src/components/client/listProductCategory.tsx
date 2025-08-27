@@ -4,6 +4,7 @@ import { Checkbox, Pagination, Spin } from 'antd';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useOneData } from '../../hooks/useOne';
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 const priceFilters = [
   { id: 1, label: "Dưới 500,000₫", min: 0, max: 500000 },
@@ -24,11 +25,6 @@ const sizeFilters = [
 const ListProductCategory = () => {
   const [searchParams] = useSearchParams();
   const initialCategoryId = searchParams.get('category') || undefined;
-  console.log("categoryID:", initialCategoryId);
-  
-
-  const [allProducts, setAllProducts] = useState([]);
-  const [isFetchingAll, setIsFetchingAll] = useState(true);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategoryId ? [initialCategoryId] : []);
   const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
@@ -47,18 +43,18 @@ const ListProductCategory = () => {
   });
   
   // cập nhập id cho danh mục khi thay đổi
-    useEffect(() => {
-      if (initialCategoryId) {
-        setSelectedCategories([initialCategoryId]);
-      } else {
-        setSelectedCategories([]);
-      }
-      setCurrentPage(1);
-    }, [initialCategoryId])
-  
   useEffect(() => {
-    const fetchAllProducts = async () => {
-      setIsFetchingAll(true);
+    if (initialCategoryId) {
+      setSelectedCategories([initialCategoryId]);
+    } else {
+      setSelectedCategories([]);
+    }
+    setCurrentPage(1);
+  }, [initialCategoryId])
+  
+  const { data: allProductData, isLoading: isFetchingAll} = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
       let fetchedProducts:any = [];
       let page = 1;
       let hasNextPage = true;
@@ -84,16 +80,14 @@ const ListProductCategory = () => {
         }
       }
       const activeProducts = fetchedProducts.filter((p:any) => p.isActive); 
-      setAllProducts(activeProducts);
-      setIsFetchingAll(false)
+      return activeProducts;
     }
-    fetchAllProducts();
-  }, []); 
+  })
 
   const filteredProducts  = useMemo(() => {
-    if (!allProducts) return [];
+    if (!allProductData) return [];
 
-    return allProducts.filter((product: any) => {
+    return allProductData.filter((product: any) => {
       const matchCategory  = selectedCategories.length === 0 || selectedCategories.includes(product.category_id);
 
       let matchPrice = true;
@@ -118,7 +112,7 @@ const ListProductCategory = () => {
       return matchCategory && matchPrice && matchSize;
     });
      
-  }, [allProducts, selectedCategories, selectedPrice, selectedSize])
+  }, [allProductData, selectedCategories, selectedPrice, selectedSize])
 
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
