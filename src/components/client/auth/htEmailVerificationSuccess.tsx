@@ -72,7 +72,7 @@ const EmailVerificationSuccess = () => {
                         <Result
                             icon={<MailTwoTone twoToneColor="#52c41a" style={{ fontSize: '4rem' }} />}
                             title="Xác thực email thành công"
-                            subTitle="Tài khoản của bạn đã được xác minh thành công. Bây giờ bạn có thể đăng nhập và bắt đầu khám phá các tính năng của chúng tôi."
+                            subTitle="Tài khoản của bạn đã được xác minh thành công. Bây giờ bạn có thể bắt đầu khám phá các tính năng của chúng tôi."
                             extra={[
                                 
                                 <Link to={`/`} key="home">
