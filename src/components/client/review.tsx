@@ -82,7 +82,7 @@ const Review = ({
 
           const userHasReviewed = productReviews.some((review: any) => {
             const reviewUser = review.user_id?._id || review.user_id?.id || review.user_id || review.user?._id;
-            return reviewUser === userId;
+            return reviewUser === userId && review.order_id === orderId;
           });
 
           submitted[productId] = userHasReviewed;
@@ -148,7 +148,8 @@ const Review = ({
     formData.append("rating", review.rating);
     formData.append("comment", review.comment);
     formData.append("product_id", productId);
-
+    formData.append("order_id", orderID);
+    
     review.images?.forEach((file: any) => {
       if (file.originFileObj) {
         formData.append("images", file.originFileObj);

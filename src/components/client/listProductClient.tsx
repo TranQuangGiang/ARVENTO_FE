@@ -11,12 +11,9 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import FadeInWhenVisible from '../animations/FadeInWhenVisible';
 import axios from 'axios';
-import axiosInstance from '../../utils/axiosInstance';
-import { message } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 
 const ListProductClient = () => {
-  const [PostClient, setPostCLient] = useState<any[]>([]);
   const categoryId = '6843e798c4fb85b25844b4a2';
  
   const { data: allProductsData,  isLoading: isFetchingAll } = useQuery({
@@ -107,29 +104,32 @@ const ListProductClient = () => {
   };
 
   // danh mục sản phẩm
-  const { data: categorys } = useList({
+  const { data: categorys, refetch } = useList({
     resource: `/categories/client`
   });
+  useEffect(() => {
+    refetch();
+  }, []);
   const category = categorys?.data;
 
   
-  const fetchPost = async () => {
-    try {
-      const { data } = await axiosInstance.get(`/posts/client`);
-      setPostCLient(data?.data.docs || []);
-    } catch (error:any) {
-      message.error("Lỗi khi tải bài viết: ", error);
+  const { data:PostData } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/posts/client`);
+        const posts = res?.data?.data.docs; 
+        return posts || [];
+      } catch (error) {
+        console.log("Lỗi khi tải bài viết ", error );
+      }
     }
-  }
-
-  useEffect(() => {
-    fetchPost();
-  }, []);
-
-  const posts = PostClient;
-
+  });
+  console.log(PostData);
+  
+  
   // lấy ra 2 bài viết mới nhất
-  const latesPost = posts.slice(0, 2);
+  const latesPost = PostData?.slice(0, 2);
   
   return (
     <main>
@@ -413,7 +413,7 @@ const ListProductClient = () => {
         <FadeInWhenVisible>
           <div className='list-page w-[74%] mx-auto flex gap-[25px] mb-[120px]'>
             {
-              latesPost.map((post: any) => (
+              latesPost?.map((post: any) => (
                 <div className='list-page-1 w-[50%] h-[320px] overflow-hidden relative group'>
                   <img className='w-full absolute transition-all duration-300 group-hover:scale-[1.1]' src={post.thumbnail} alt="" />
                   <div className="className='w-full h-full absolute inset-0 bg-black/40"></div>

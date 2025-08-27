@@ -85,7 +85,7 @@ const ExportOrderList = ({ isOpen, onClose }: any ) => {
                             { showModal === "exportPDF" && (
                                 <div className='w-full'>
                                     <h2 className="text-[26px] font-bold font-sans mb-8 text-center tracking-tight"> {/* Larger, bolder title with blue color */}
-                                        Export invoice to PDF
+                                        Xuất đơn hàng ra file PDF
                                     </h2>
 
                                     <Form
@@ -95,7 +95,7 @@ const ExportOrderList = ({ isOpen, onClose }: any ) => {
                                     >
                                         <Form.Item
                                             
-                                            label={<span className="font-semibold text-gray-700 text-lg">Start Date</span>} 
+                                            label={<span className="font-semibold text-gray-700 text-lg">Từ ngày</span>} 
                                             name="startDate"
                                             rules={[{ required: true, message: 'Please select a start date!' }]}
                                         >
@@ -111,7 +111,7 @@ const ExportOrderList = ({ isOpen, onClose }: any ) => {
 
                                         <Form.Item
                                             className='mt-4'
-                                            label={<span className="font-semibold text-gray-700 text-[16px]">End Date</span>} 
+                                            label={<span className="font-semibold text-gray-700 text-[16px]">Đến ngày</span>} 
                                             name="endDate"
                                             rules={[{ required: true, message: 'Please select an end date!' }]}
                                         >
