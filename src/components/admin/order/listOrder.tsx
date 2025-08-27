@@ -161,11 +161,13 @@ const ListOrder = () => {
     try {
       setLoadingOrderId(orderId);
       const token = localStorage.getItem("token");
+
+      const vietnameseStatus = statusLabels[newStatus] || "không xác định";
       await axiosInstance.patch(
         `/orders/${orderId}/status`,
         { 
           status: newStatus,
-          note: `Cập nhập thành công trạng thái ${newStatus}`
+          note: `Cập nhập thành công trạng thái ${vietnameseStatus}`
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

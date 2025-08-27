@@ -12,6 +12,7 @@ import { FiPlus } from "react-icons/fi";
 import axios from "axios";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
+import { useProductContext } from "../../contexts/productContexts";
 const { Option } = Select;
 
 const ProductList = () => {
@@ -100,6 +101,7 @@ const ProductList = () => {
         resource: `/products`,
         onSuccess: () => {
             fetchAllProducts();
+            console.log("Admin: refresh được set thành công!")
         },
     });
 

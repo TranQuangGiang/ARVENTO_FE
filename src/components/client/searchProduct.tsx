@@ -3,16 +3,17 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useList } from '../../hooks/useList';
 import axios from 'axios';
 import { Pagination } from 'antd';
+import { useQuery } from '@tanstack/react-query';
 
 const SearchProduct = () => {
     const [searchParams] = useSearchParams();
     const keyword = searchParams.get('keyword');
-    const [allProducts, setAllProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 15;
     
-    useEffect(() => {
-        const fetchAllProducts = async () => {
+    const { data:allProductData, isLoading: isFetchingAll } = useQuery({
+        queryKey: ['products', keyword],
+        queryFn: async () => {
             let fetchedProducts:any = [];
             let page = 1;
             let hasNextPage = true;
@@ -36,12 +37,10 @@ const SearchProduct = () => {
                     hasNextPage = false;
                 }
             }
-            setAllProducts(fetchedProducts);
+            const activeProducts = fetchedProducts.filter((p: any) => p.isActive);
+            return activeProducts;
         }
-        fetchAllProducts();
-        
-    }, [keyword]);
-    
+    })    
 
     const formatPrice = (price: any) => {
         if (typeof price === 'object' && price?.$numberDecimal) {
@@ -54,11 +53,14 @@ const SearchProduct = () => {
     };
     
     const paginatedProducts = useMemo(() => {
+        if (!allProductData) {
+            return []; // Trả về mảng rỗng nếu chưa có dữ liệu
+        }
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
-        return allProducts.slice(startIndex, endIndex);
+        return allProductData.slice(startIndex, endIndex);
 
-    }, [allProducts, currentPage, pageSize]); 
+    }, [allProductData, currentPage, pageSize]); 
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -128,12 +130,12 @@ const SearchProduct = () => {
             </div>
             <div className='max-w-[76%] mx-auto mt-10 mb-10 right-0 flex justify-end'>
                 {
-                    allProducts.length > pageSize && (
+                    allProductData?.length > pageSize && (
                         <div className='text-center'>
                         <Pagination 
                             current={currentPage}
                             pageSize={pageSize}
-                            total={allProducts.length}
+                            total={allProductData?.length}
                             onChange={handlePageChange}
                         />
                         </div>
