@@ -85,6 +85,7 @@ import RequestRefund from './components/admin/order/RequestRefund'
 import ReplyReview from './components/admin/review/editReview'
 import DetailReview from './components/admin/review/detailReview'
 import AddAddressesAdmin from './components/admin/user/addAddressAdmin'
+import Contact from './components/client/contact'
 
 
 
@@ -129,6 +130,7 @@ function App() {
       {path: 'huong-dan-chon-size-giay-arvento', element: <ChonSize />},
       {path: 'chuong-trinh-khuyen-mai-arvento', element: <KhuyenMai />},
       {path: 'review/:id', element: <Review />},
+      {path: 'contact', element: <Contact />}
     ]},
     {
       path: '/admin', element: <LayoutAdmin />, children: [

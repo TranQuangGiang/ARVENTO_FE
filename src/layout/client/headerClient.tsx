@@ -117,7 +117,7 @@ const HeaderClient = () => {
               </div>
 
               <Link to={`/listBlogClient`}>Bài viết</Link>
-              <a href="">Liên hệ</a>
+              <Link to={`/contact`}>Liên hệ</Link>
             </nav>
 
             {/* Search Section */}

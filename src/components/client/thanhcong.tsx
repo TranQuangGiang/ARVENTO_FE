@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, List, Image, Typography, Divider, Row, Col, Button, Tag, Spin } from "antd"; // ✅ Thêm Tag
 import { motion } from "framer-motion";
@@ -9,9 +9,9 @@ import {
   FileTextOutlined,
   ClockCircleOutlined,
   DollarOutlined,
-  MailOutlined, // ✅ Thêm icon email
+  MailOutlined, 
   CheckCircleOutlined,
-  CloseCircleOutlined, // ✅ Thêm icon thành công
+  CloseCircleOutlined, 
 } from "@ant-design/icons";
 import { useOneData } from "../../hooks/useOne";
 

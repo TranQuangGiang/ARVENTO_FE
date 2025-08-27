@@ -2,6 +2,7 @@ import React from 'react'
 import { faFacebook, faTwitter, faInstagram, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const FooterClient = () => {
   return (
@@ -23,46 +24,50 @@ const FooterClient = () => {
         <section className=' mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
           <h3 className='font-semibold text-[18px]'>Về chúng tôi</h3>
           <ul className='[&_li]:pt-[10px] [&_li]:text-[14px] [&_li]:text-white'>
-            <a href="/gioithieu">
+            <Link to={`/gioithieu`}>
               <li>Giới thiệu</li>
-            </a>
-            <a href="/dieukhoan">
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Điều khoản</li>
-            </a>
-            <a href="/chinhsach">
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Chính sách</li>
-            </a>
-            <li>Tin tức</li>
+            </Link>
+            <Link to={`/gioithieu`}>
+              <li>Tin tức</li>
+            </Link>
           </ul>
         </section>
 
         <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
           <h3 className='font-semibold text-[18px]'>Khách hàng</h3>
           <ul className='[&_li]:text-white [&_li]:pt-[10px] [&_li]:text-[14px]'>
-            <a href="/hdmh">
+            <Link to={`/gioithieu`}>
               <li>Hướng dẫn mua sắm</li>
-            </a>
-            <a href="/chinhsachmuahang">
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Chính sách mua hàng</li>
-            </a>
-            <a href="/chinhsachdoitra">
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Chính sách hoàn trả</li>
-            </a>
-            <a href="/huongdanchonsize">
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Hướng dẫn chọn kích thước</li>
-            </a>
-            <li>Khách hàng thân thiết</li>
-            <a href="/khuyenmai">
+            </Link>
+            <Link to={`/gioithieu`}>
+              <li>Khách hàng thân thiết</li>
+            </Link>
+            <Link to={`/gioithieu`}>
               <li>Chương trình khuyến mại</li>
-            </a>
+            </Link>
           </ul>
         </section>
 
         <section className='mt-[15px] [&_ul]:mt-[10px] [&_h3]:text-white'>
           <h3 className='font-semibold text-[18px]'>Địa chỉ liên hệ</h3>
           <ul className='[&_li]:text-white [&_li]:pt-[10px] [&_li]:text-[14px]'>
-            <li className='flex items-center'><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faLocationDot} /> <address>102 Tran Phu, Ha Dong</address></li>
-            <li><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faPhone} /> <span>0348892533</span></li>
+            <li className='flex items-center'><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faLocationDot} /> <address>Đường Vạn Phúc, Làng Vạn Phúc, TP Hà Nội</address></li>
+            <li><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faPhone} /> <span>0961918362</span></li>
             <li><FontAwesomeIcon className='font-semibold text-red-600 text-[15px] mr-[5px]' icon={faEnvelope} /> <span>arvento@gmail.com</span></li>
           </ul>
         </section>
