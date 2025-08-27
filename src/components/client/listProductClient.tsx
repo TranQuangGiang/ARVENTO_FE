@@ -1,8 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { Link, useLocation } from 'react-router-dom';
-import { useList, useListClient } from '../../hooks/useList';
-import BannerClient from '../../layout/client/banner';
+import { Link } from 'react-router-dom';
+import { useList } from '../../hooks/useList';
 import { useEffect, useState } from 'react'; // Import useState and useEffect
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
@@ -14,32 +13,29 @@ import FadeInWhenVisible from '../animations/FadeInWhenVisible';
 import axios from 'axios';
 import axiosInstance from '../../utils/axiosInstance';
 import { message } from 'antd';
+import { useQuery } from '@tanstack/react-query';
 
 const ListProductClient = () => {
-  const location = useLocation();
-  const [allProducts, setAllProducts] = useState<any[]>([]);
-  const [allProductsCategory, setAllProductsCategory] = useState<any[]>([]);
-  const [isFetchingAll, setIsFetchingAll] = useState(true);
   const [PostClient, setPostCLient] = useState<any[]>([]);
   const categoryId = '6843e798c4fb85b25844b4a2';
-
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      setIsFetchingAll(true);
+ 
+  const { data: allProductsData,  isLoading: isFetchingAll } = useQuery({
+    queryKey: ['products'], 
+    queryFn: async () => {
       let fetchedProducts: any[] = [];
       let page = 1;
       let hasNextPage = true;
       const limitPerPage = 50;
 
-      while ( hasNextPage ) {
+      while (hasNextPage) {
         try {
-          const res = await axios.get(`http://localhost:3000/api/products?page=${page}&limit=${limitPerPage}`);
+          const res = await axios.get(`http://localhost:3000/api/products?page=${page}&limit=${limitPerPage}`, {
+            headers: { 'Cache-Control': 'no-cache' }
+          });
           const { data } = res?.data;
-
           if (data && data.docs) {
-            fetchedProducts = [...fetchedProducts, ...data.docs]
+            fetchedProducts = [...fetchedProducts, ...data.docs];
           }
-
           if (data && data.hasNextPage) {
             page = data.nextPage;
           } else {
@@ -48,46 +44,37 @@ const ListProductClient = () => {
         } catch (error) {
           console.error("Lỗi khi tải sản phẩm:", error);
           hasNextPage = false;
+          return []; // Trả về mảng rỗng nếu có lỗi
         }
       }
-
-      const activeProducts = fetchedProducts.filter((p:any) => p.isActive);
-      setAllProducts(activeProducts);
-      setIsFetchingAll(false);
-    }
-
-    fetchAllProducts();
-  }, []);
-
-  const newestProducts = [...allProducts]
+      const activeProducts = fetchedProducts.filter((p: any) => p.isActive);
+      return activeProducts;
+    },
+  });
+ 
+  const newestProducts = [...(allProductsData || [])]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 12);
 
-  const allProductSlice = [...allProducts]
+  const allProductSlice = [...(allProductsData || [])]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 12);
 
-  const [isFetchingCategory, setIsFetchingCategory] = useState(true);
-
-  useEffect(() => {
-    const fetchCategoryProducts  = async () => {
-      setIsFetchingCategory(true);
-
+  const { data: allProductsCategoryData, isLoading: isFetchingCategory } = useQuery({
+    queryKey: ['products', categoryId], // Sử dụng array để tạo key duy nhất cho query
+    queryFn: async () => {
       let fetchedProducts: any[] = [];
       let page = 1;
       let hasNextPage = true;
       const limitPerPage = 50;
-      const categoryId = '6843e798c4fb85b25844b4a2';
 
-      while ( hasNextPage ) {
+      while (hasNextPage) {
         try {
           const res = await axios.get(`http://localhost:3000/api/products?category_id=${categoryId}&page=${page}&limit=${limitPerPage}`);
           const { data } = res?.data;
-
           if (data && data.docs) {
-            fetchedProducts = [...fetchedProducts, ...data.docs]
+            fetchedProducts = [...fetchedProducts, ...data.docs];
           }
-
           if (data && data.hasNextPage) {
             page = data.nextPage;
           } else {
@@ -96,17 +83,15 @@ const ListProductClient = () => {
         } catch (error) {
           console.error("Lỗi khi tải sản phẩm theo danh mục:", error);
           hasNextPage = false;
+          return []; // Trả về mảng rỗng nếu có lỗi
         }
       }
+      const activeProducts = fetchedProducts.filter((p: any) => p.isActive);
+      return activeProducts
+    },
+  });    
 
-      const activeProducts = fetchedProducts.filter((p:any) => p.isActive);
-      setAllProductsCategory(activeProducts);
-      setIsFetchingCategory(false);
-    };
-    fetchCategoryProducts();
-  }, []);
-  
-  const allProductSliceCategory = [...allProductsCategory]
+  const allProductSliceCategory = [...(allProductsCategoryData || [])]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) 
     .slice(0, 4);
 
@@ -127,7 +112,7 @@ const ListProductClient = () => {
   });
   const category = categorys?.data;
 
-  // Bài viết
+  
   const fetchPost = async () => {
     try {
       const { data } = await axiosInstance.get(`/posts/client`);
@@ -145,12 +130,10 @@ const ListProductClient = () => {
 
   // lấy ra 2 bài viết mới nhất
   const latesPost = posts.slice(0, 2);
-
+  
   return (
     <main>
       <div className=' w-[100%]'>
-        
-        
         <FadeInWhenVisible>
           <div className='list-product max-w-[76%] mx-auto mt-[100px] mb-[80px] flex items-center justify-between'>
             {isFetchingAll && <p>Loading...</p>}
@@ -462,7 +445,9 @@ const ListProductClient = () => {
           </form>
         </div>
       </div>
+      
     </main>
+    
   );
 };
 
