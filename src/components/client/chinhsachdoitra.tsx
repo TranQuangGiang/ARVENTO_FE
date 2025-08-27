@@ -48,9 +48,9 @@ const DoiTra = () => {
           {post.title}
         </h2>
         <div
-  className="text-gray-700 text-[17px] leading-8 text-justify mb-8"
-  dangerouslySetInnerHTML={{ __html: post.content }}
-/>
+          className="text-gray-700 text-[17px] leading-8 text-justify mb-8"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
 
         {post.tags && post.tags.length > 0 && (

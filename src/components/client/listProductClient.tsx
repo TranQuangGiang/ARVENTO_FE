@@ -126,8 +126,6 @@ const ListProductClient = () => {
     }
   });
   console.log(PostData);
-  
-  
   // lấy ra 2 bài viết mới nhất
   const latesPost = PostData?.slice(0, 2);
   
