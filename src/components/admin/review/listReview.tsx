@@ -12,6 +12,7 @@ import { useApproveReview } from "../../../hooks/useUpdateAction";
 import type { ColumnsType } from "antd/es/table";
 import { useList } from "../../../hooks/useList";
 import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 
 const { Option } = Select;
 
@@ -21,24 +22,53 @@ const ListReview = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-
-  const {
-    data: reviews,
-    refetch: refetchReview,
-  } = useListReview({ resource: "/reviews/admin/reviews" });
-
   const [localReviews, setLocalReviews] = useState<any[]>([]);
   const toggleReviewStatus = useToggleReviewStatus();
   const approveReview = useApproveReview();
   const [hasShownSuccess, setHasShownSuccess] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
   const [productFilter, setProductFilter] = useState<string | undefined>(undefined);
+  
+  const fetchAllReviews = async () => {
+    let fetchedReviews: any[] = [];
+    let page = 1;
+    let totalPages = 1;
+    const limitPerPage = 50;
+    const token = localStorage.getItem("token");
+
+    try {
+      do {
+        
+        const res = await axiosInstance.get(
+          `/reviews/admin/reviews?page=${page}&limit=${limitPerPage}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        const { data } = res?.data;
+
+        if (data && data.reviews) {
+          fetchedReviews = [...fetchedReviews, ...data.reviews];
+        }
+
+        totalPages = data.totalPages;
+        page++;
+      } while (page <= totalPages);
+
+      setLocalReviews(fetchedReviews);
+    } catch (error) {
+      console.error("Lỗi khi tải toàn bộ review:", error);
+    }
+  };
 
   useEffect(() => {
-    if (Array.isArray(reviews)) {
-      setLocalReviews(reviews);
+    if (localReviews) {
+      fetchAllReviews();
     }
-  }, [reviews]);
+    
+  }, [localReviews]);
+    
 
   useEffect(() => {
     const updated = location.state?.updatedReview;
@@ -65,7 +95,7 @@ const ListReview = () => {
       {
         onSuccess: () => {
           message.success("Cập nhật hiển thị đánh giá thành công");
-          refetchReview();
+          fetchAllReviews();
         },
         onError: () => message.error("Cập nhật thất bại"),
       }
@@ -77,7 +107,7 @@ const ListReview = () => {
       approveReview.mutate(reviewId, {
         onSuccess: () => {
           message.success("Đã duyệt đánh giá");
-          refetchReview();
+          fetchAllReviews();
         },
         onError: () => message.error("Lỗi khi duyệt đánh giá"),
       });
