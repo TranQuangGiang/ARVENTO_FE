@@ -1,24 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { Rate, Input, Upload, Button, message, Spin } from "antd";
+import { Rate, Input, Upload, Button, message, Spin, Image } from "antd";
 import { SendOutlined, CloseOutlined, CameraOutlined } from "@ant-design/icons";
 import { jwtDecode } from "jwt-decode";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "../../utils/axiosInstance";
 
 const { TextArea } = Input;
 
 const Review = ({
   orderId,
+  refetchOrders,
+  isOpen
 }:any) => {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [submittedReviews, setSubmittedReviews] = useState<any>({});
 
   const orderID = orderId
   console.log(orderID);
   
+  const { data:reviewData, refetch:refetchRview } = useQuery({
+    queryKey: ['reviews', orderID],
+    queryFn: async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axiosInstance.get(`/reviews/order/${orderID}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const reviews = res?.data.data;
+        return reviews;
+      } catch (error) {
+        console.log("Lỗi tải đánh giá", error);
+      }
+    }
+  });
+  
+  useEffect(() => {
+    if (isOpen) {
+      refetchRview();
+    }
+  }, [isOpen, refetchRview]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -61,42 +88,6 @@ const Review = ({
 
   const uniqueProducts = Object.values(productQuantityMap);
 
-  useEffect(() => {
-    const fetchSubmittedReviews = async () => {
-      if (!userId || !uniqueProducts.length) return;
-      const token = localStorage.getItem("token");
-
-      try {
-        const responses = await Promise.all(
-          uniqueProducts.map((item: any) =>
-            axios.get(`http://localhost:3000/api/reviews/product/${item.product._id}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-          )
-        );
-
-        const submitted: any = {};
-        uniqueProducts.forEach((item: any, index: number) => {
-          const productId = item.product._id;
-          const productReviews = responses[index]?.data?.data?.reviews || [];
-
-          const userHasReviewed = productReviews.some((review: any) => {
-            const reviewUser = review.user_id?._id || review.user_id?.id || review.user_id || review.user?._id;
-            return reviewUser === userId && review.order_id === orderId;
-          });
-
-          submitted[productId] = userHasReviewed;
-        });
-
-        setSubmittedReviews(submitted);
-      } catch (err) {
-        console.error("Error checking submitted reviews", err);
-      }
-    };
-
-    fetchSubmittedReviews();
-  }, [userId, order]);
-
   const handleReviewChange = (productId: string, field: string, value: any) => {
     setReviews((prev: any) => ({
       ...prev,
@@ -111,13 +102,16 @@ const Review = ({
     setReviews((prev: any) => ({
       ...prev,
       [productId]: {
-        rating: 5,
+        rating: 0,
         comment: "",
         images: [],
       },
     }));
   };
 
+  const resetAllReviews = () => {
+    setReviews({});
+  };
   const handleSubmitReview = async (productId: string) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -163,19 +157,23 @@ const Review = ({
           Authorization: `Bearer ${token}`,
         },
       });
-
       message.success("Đánh giá của bạn đã được gửi!");
+
       resetReview(productId);
-      setSubmittedReviews((prev: any) => ({
-        ...prev,
-        [productId]: true,
-      }));
+      refetchRview();
+
+
+      setTimeout(() => {
+        refetchOrders();
+        resetAllReviews();
+      }, 300);
+
     } catch (error: any) {
       console.error(error);
-      message.error(error?.response?.data?.message || "Lỗi khi gửi đánh giá.");
+      message.error(error?.response?.data?.message);
     }
   };
-
+  
   if (loading) {
     return <Spin className="mt-10" />;
   }
@@ -194,7 +192,7 @@ const Review = ({
           {uniqueProducts.map((item: any, index: number) => {
             const productId = item.product?._id;
             const review = reviews[productId] || {};
-            const isSubmitted = submittedReviews[productId];
+            const submittedReview = reviewData?.find((rev: any) => rev.product_id?._id === productId);
 
             return (
               <div key={productId} className="mb-10">
@@ -223,10 +221,54 @@ const Review = ({
 
                 {index > 0 && <hr className="border-gray-300 w-full mb-6" />}
 
-                {isSubmitted ? (
-                  <p className="text-green-600 font-medium mt-4 text-center">
-                    Bạn đã đánh giá sản phẩm này!
-                  </p>
+                {submittedReview ? (
+                  <div className="flex flex-col gap-4 bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <div className="flex items-center gap-3 text-green-600">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className="w-6 h-6"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h4 className="font-semibold text-gray-800 text-lg">Bạn đã đánh giá sản phẩm này</h4>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <span className="text-gray-600 font-medium">Đánh giá của bạn:</span>
+                        <Rate
+                          allowHalf
+                          disabled
+                          defaultValue={submittedReview?.rating} // Sử dụng dữ liệu đánh giá đã lưu
+                          className="text-lg"
+                        />
+                    </div>
+
+                    <div className="text-gray-700 leading-relaxed">
+                        <p className="flex items-center gap-2">
+                          <span className="text-gray-600 font-medium block">Bình luận:</span> {submittedReview?.comment || "Không có bình luận."} {/* Hiển thị bình luận */}
+                        </p>
+                    </div>
+
+                    {submittedReview?.images?.length > 0 && ( // Hiển thị hình ảnh nếu có
+                      <div>
+                        <span className="text-gray-600 font-medium mb-2 block">Hình ảnh đánh giá:</span>
+                        <div className="flex gap-2">
+                          {submittedReview.images.map((img: any, i: number) => (
+                            <Image
+                              key={i}
+                              src={img}
+                              style={{ width: 80, height: 80}}
+                              className="w-20 h-20 object-cover rounded-md border border-gray-300"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                </div>
                 ) : (
                   <div className="flex flex-col gap-4 items-start w-full mt-7 px-2">
                     <div className="w-full">

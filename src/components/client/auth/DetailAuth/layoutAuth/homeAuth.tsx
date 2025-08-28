@@ -1,79 +1,99 @@
 import { Info } from 'lucide-react'
 import { useList } from '../../../../../hooks/useList';
-import { Button, Card, Checkbox, Image, Input, message, Modal, Popconfirm, Select, Tag, Typography } from 'antd';
-import { CalendarOutlined, CopyOutlined, DollarOutlined, ExclamationCircleOutlined, GiftOutlined } from '@ant-design/icons';
+import { Button, Card, Image, Input, message, Modal, Popconfirm, Select, Tag, Typography } from 'antd';
+import { CalendarOutlined, DollarOutlined, ExclamationCircleOutlined, GiftOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useOneData } from '../../../../../hooks/useOne';
 import moment from 'moment';
 import Review from '../../../review';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '../../../../../utils/axiosInstance';
+import OrderReviewPage from '../../../orderReviewPage';
 
 
 const { Text, Title } = Typography;
 
+const getOrderStatusLabel = (status: string) => {
+    switch (status) {
+        case "pending":
+            return "Chờ xác nhận";
+        case "confirmed":
+            return "Đã xác nhận";
+        case "processing":
+            return "Đang xử lý";
+        case "shipping":
+            return "Đang giao hàng";
+        case "delivered":
+            return "Đã giao hàng";
+        case "completed":
+            return "Hoàn thành";
+        case "cancelled":
+            return "Đã hủy";
+        case "returning": 
+            return "Đang trả hàng"
+        case "returned":
+            return "Đã trả hàng";
+        default:
+            return "Không xác định";
+    }
+};
+const getOrderStatusStyle = (status: string) => {
+    switch (status) {
+        case "pending":
+            return "bg-yellow-100 text-yellow-700";
+        case "confirmed":
+            return "bg-blue-100 text-blue-700";
+        case "processing":
+            return "bg-cyan-100 text-cyan-700";
+        case "shipping":
+            return "bg-purple-100 text-purple-700";
+        case "delivered":
+            return "bg-green-100 text-green-700";
+        case "completed":
+            return "bg-green-200 text-green-800";
+        case "cancelled":
+            return "bg-red-100 text-red-700";
+        case "returning":
+            return "bg-orange-100 text-orange-700"
+        case "returned":
+            return "bg-red-200 text-red-800";
+        default:
+            return "bg-gray-100 text-gray-600";
+    }
+};
+
 const HomeAuth = () => {
-     const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
-    const [orderId, setOrderId] = useState<any>(null);
+    const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+    const [isUpdateReviewModalVisible, setUpdateIsReviewModalVisible] = useState(false);
+    const [reviewOrderId, setReviewOrderId] = useState<any>(null);
+    const [updateReviewOrderId, setUpdateReviewOrderId] = useState<any>(null);
 
     const handleOpenReviewModal = (orderId: string) => {
-        setOrderId(orderId);
+        setReviewOrderId(orderId);
         setIsReviewModalVisible(true);
     };
 
-    const handleCloseReviewModal = () => {
+    const handleCloseReviewModal = async () => {
         setIsReviewModalVisible(false);
-        setOrderId(null);
+        setReviewOrderId(null);
+        await refetchReviews();
+        await refetchOrders();
     };
 
-    const getOrderStatusLabel = (status: string) => {
-        switch (status) {
-            case "pending":
-                return "Chờ xác nhận";
-            case "confirmed":
-                return "Đã xác nhận";
-            case "processing":
-                return "Đang xử lý";
-            case "shipping":
-                return "Đang giao hàng";
-            case "delivered":
-                return "Đã giao hàng";
-            case "completed":
-                return "Hoàn thành";
-            case "cancelled":
-                return "Đã hủy";
-            case "returning": 
-                return "Đang trả hàng"
-            case "returned":
-                return "Đã trả hàng";
-            default:
-                return "Không xác định";
-        }
+    // cập nhập đánh giá
+    const handleOpenUpdateReviewModal = (orderId: string) => {
+        setUpdateReviewOrderId(orderId);
+        setUpdateIsReviewModalVisible(true);
+    }
+
+    const handleCloseUpdateReviewModal = async () => {
+        setUpdateIsReviewModalVisible(false);
+        setUpdateReviewOrderId(null);
+        await refetchReviews();
+        await refetchOrders();
     };
-    const getOrderStatusStyle = (status: string) => {
-        switch (status) {
-            case "pending":
-                return "bg-yellow-100 text-yellow-700";
-            case "confirmed":
-                return "bg-blue-100 text-blue-700";
-            case "processing":
-                return "bg-cyan-100 text-cyan-700";
-            case "shipping":
-                return "bg-purple-100 text-purple-700";
-            case "delivered":
-                return "bg-green-100 text-green-700";
-            case "completed":
-                return "bg-green-200 text-green-800";
-            case "cancelled":
-                return "bg-red-100 text-red-700";
-            case "returning":
-                return "bg-orange-100 text-orange-700"
-            case "returned":
-                return "bg-red-200 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-600";
-        }
-    };
+
     const token = localStorage.getItem("token");
 
 
@@ -119,14 +139,14 @@ const HomeAuth = () => {
         );
     };
 
-    const { data:orderData, refetch } = useList({
+    const { data:orderData, refetch:refetchOrders } = useList({
         resource: `/orders/my`,
         token: token
     });
     
     useEffect(() => {
-        refetch();
-    }, [refetch]);
+        refetchOrders();
+    }, [refetchOrders]);
 
     const orders = (orderData?.data.orders || [])
         .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -148,7 +168,7 @@ const HomeAuth = () => {
                 }
             );
             message.success("Đơn hàng đã được xác nhận hoàn tất, vui lòng đánh giá sản phẩm để giúp chúng tôi!");
-            refetch();
+            refetchOrders();
         } catch (error) {
             console.error(error);
             message.error("Không thể xác nhận hoàn tất đơn hàng.");
@@ -259,7 +279,7 @@ const HomeAuth = () => {
                         }
                     );
                     message.success("Đã gửi yêu cầu trả hàng!");
-                    refetch();
+                    refetchOrders();
                 } catch (error) {
                     console.error(error);
                     message.error("Gửi yêu cầu thất bại!");
@@ -366,7 +386,7 @@ const HomeAuth = () => {
                         }
                     );
                     message.success("Hủy đơn hàng thành công!");
-                    refetch();
+                    refetchOrders();
                 } catch (error) {
                     console.error(error);
                     message.error("Hủy đơn hàng thất bại ");
@@ -385,7 +405,52 @@ const HomeAuth = () => {
     console.log(dataAddress);
     useEffect(() => {
         RefetchAddress();
-    }, [dataAddress])
+    }, [dataAddress]);
+
+    // call api review
+    const { data:reviewData, refetch: refetchReviews } = useQuery({
+        queryKey: ['reviews'],
+        queryFn: async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const res = await axiosInstance.get('/reviews/my-reviews', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const reviews = res?.data.data;
+                return reviews
+            } catch (error) {
+                console.log("Lỗi khi tải đánh giá của chính người dùng !", error);
+            }
+            
+        }
+    })
+
+    const hasReviewedProduct = (orderId:any, productId:any) => {
+        if (!reviewData || !Array.isArray(reviewData)) {
+            return false
+        } 
+
+        return reviewData.some(review => 
+            review.order_id === orderId && review.product_id === productId
+        )
+    }
+
+    const hasReviewedAllProducts = (order: any) => {
+        if (!order || !order.items || !reviewData) return false;
+        return order.items.every((item: any) => 
+            hasReviewedProduct(order._id, item.product._id)
+        );
+    };
+
+    const hasReviewedSomeProducts = (order: any) => {
+        if (!order || !order.items || !reviewData) return false;
+        return order.items.some((item: any) => 
+            hasReviewedProduct(order._id, item.product._id)
+        );
+    };
+
     return (
         <div className='w-full'>
             {
@@ -528,15 +593,55 @@ const HomeAuth = () => {
                                                 }
 
                                                 {order.status === "completed" && (
-                                                    <Button
-                                                        type="default"
-                                                        style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
-                                                        className="text-[16px]"
-                                                        onClick={() => handleOpenReviewModal(order._id)} 
-                                                    >
-                                                        📝 Đánh giá sản phẩm
-                                                        
-                                                    </Button>
+                                                    <div className='flex flex-wrap gap-2 justify-end '>
+                                                        {hasReviewedAllProducts(order) ? (
+                                                            <Button
+                                                                style={{
+                                                                    height: 38,
+                                                                    fontSize: 13,
+                                                                    fontWeight: 500,
+                                                                    color: '#fff',
+                                                                    backgroundColor: '#ec4899',
+                                                                    borderColor: '#ec4899',
+                                                                    borderRadius: 6,
+                                                                    boxShadow: '0 2px 6px rgba(236,72,153,0.4)',
+                                                                    transition: 'all 0.3s ease',
+                                                                }}
+                                                                onMouseOver={(e) => {
+                                                                    e.currentTarget.style.backgroundColor = '#db2777';
+                                                                    e.currentTarget.style.borderColor = '#db2777';
+                                                                }}
+                                                                onMouseOut={(e) => {
+                                                                    e.currentTarget.style.backgroundColor = '#ec4899';
+                                                                    e.currentTarget.style.borderColor = '#ec4899';
+                                                                }}
+                                                                className="text-[16px]"
+                                                                onClick={() => handleOpenUpdateReviewModal(order._id)}
+                                                            >
+                                                                Cập nhập đánh giá
+                                                            </Button>
+                                                        ): hasReviewedSomeProducts(order) ? (
+                                                            <Button
+                                                                className="custom-review-btn"
+                                                                style={{ height: 38 }}
+                                                                onClick={() => handleOpenReviewModal(order._id)}
+                                                            >
+                                                            
+                                                                Tiếp tục đánh giá
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                
+                                                                type="default"
+                                                                style={{ height: 38, color: '#2563eb', borderColor: '#2563eb' }}
+                                                                className="text-[16px]"
+                                                                onClick={() => handleOpenReviewModal(order._id)}
+                                                            >
+                                                                📝 Đánh giá sản phẩm
+                                                            </Button> 
+                                                            )
+                                                        }
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
@@ -586,10 +691,24 @@ const HomeAuth = () => {
                 footer={null} // Hide footer buttons
                 width={800} // Adjust width as needed
             >
-                {orderId && (
+                {reviewOrderId && (
                     <Review 
-                        orderId={orderId}
+                        orderId={reviewOrderId}
                         onCLose={handleCloseReviewModal}
+                    />
+                )}
+            </Modal>
+
+            <Modal
+                visible={isUpdateReviewModalVisible}
+                onCancel={handleCloseUpdateReviewModal}
+                footer={null} // Hide footer buttons
+                width={800} // Adjust width as needed
+            >
+                {updateReviewOrderId && (
+                    <OrderReviewPage 
+                        orderId={updateReviewOrderId}
+                        onCLose={handleCloseUpdateReviewModal}
                     />
                 )}
             </Modal>
