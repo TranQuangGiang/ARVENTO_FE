@@ -19,8 +19,9 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import { Clock, User } from "lucide-react";
-import UpdateReview from "./UpdateReview";
 import FadeInWhenVisible from "../animations/FadeInWhenVisible";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "../../utils/axiosInstance";
 
 const colors = [
   "#5E35B1", // Deep Purple 500 (màu tím đậm nhưng không quá chói)
@@ -67,19 +68,6 @@ const DeltaiProduct = () => {
   const desc = ['Rất Tệ', 'Tệ', 'Bình thường', 'Tốt', 'Tuyệt vời'];
 
   // Cập nhập review
-  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
-  const [rewiewId, setReviewId] = useState<any>(null);
-
-  const handleOpenReviewModal = (reviewId: string) => {
-    setReviewId(reviewId)
-    setIsReviewModalVisible(true);
-  }
-
-  const handleCloseReviewModal = () => {
-    setIsReviewModalVisible(false);
-    setReviewId(null);
-  };
-
   const { addToCart } = useCart();
   const { id } = useParams();
   const { data: productDetail } = useOneData({ resource: '/products', _id: id });
@@ -190,31 +178,20 @@ const DeltaiProduct = () => {
     }
   }, [selectedColor, selectedSize, variants, product]);
 
-
+  const{ data:reviewsData } = useQuery({
+    queryKey: ['reviewsProduct', product],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/reviews/product/${product._id}`);
+      const review = res?.data.data.reviews;
+      const filtered = review.filter((r: any) => r.approved === true && r.hidden === false);
+      return(filtered);
+    }
+  });
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3000/api/reviews/product/${product._id}`);
-        console.log("REVIEW RESPONSE", res.data);
-        const reviewData = res.data?.data?.reviews || [];
-
-        // Chỉ hiển thị các review đã được duyệt và không bị ẩn
-        const filtered = reviewData.filter((r: any) => r.approved === true && r.hidden === false);
-        setReviews(filtered);
-      } catch (err) {
-        console.error("Lỗi khi tải đánh giá:", err);
-        setReviews([]);
-      }
-    };
-    if (product?._id) {
-      fetchReviews();
+    if (reviewsData) {
+      setReviews(reviewsData);
     }
-    if (isReviewModalVisible === false) {
-      fetchReviews();
-      
-    }
-  }, [product, isReviewModalVisible]);
-
+  }, [reviewsData])
 
   const colorNames = Array.from(new Set(variants.map(v => v.color.name)));
   console.log("color name: ", colorNames);
@@ -841,15 +818,6 @@ const DeltaiProduct = () => {
                             </div>
                             <div className="flex gap-2 mt-1">
                               {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
-                                <Button 
-                                  size="small" 
-                                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-all duration-300"  
-                                  onClick={() => handleOpenReviewModal(r._id)}
-                                >
-                                  Sửa
-                                </Button>
-                              )}
-                              {userId && typeof r.user_id === "object" && r.user_id._id === userId && (
                                 <Popconfirm
                                   title="Bạn chắc chắn muốn xóa đánh giá này?"
                                   onConfirm={() => handleDeleteReview(r._id)}
@@ -890,20 +858,6 @@ const DeltaiProduct = () => {
           </div>
         </div> <br />
       </FadeInWhenVisible>
-
-      <Modal
-        visible={isReviewModalVisible}
-        onCancel={handleCloseReviewModal}
-        footer={null} // Hide footer buttons
-        width={800} // Adjust width as needed
-      >
-        {rewiewId && (
-          <UpdateReview 
-            rewiewId={rewiewId}
-            onCLose={handleCloseReviewModal}
-          />
-        )}
-      </Modal>
     </div>
   );
 };
