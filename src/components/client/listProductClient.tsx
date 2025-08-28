@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useList } from '../../hooks/useList';
-import { useEffect, useState } from 'react'; // Import useState and useEffect
+import { useEffect } from 'react'; // Import useState and useEffect
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
